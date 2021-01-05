@@ -1,0 +1,9 @@
+type Events @model {
+  id:ID!
+  title:String!
+  secure:Int!
+  capacity : Int!
+  token : Int!
+  location:String!
+  description:String
+}
