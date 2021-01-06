@@ -11,6 +11,7 @@ export const onCreateEvents = /* GraphQL */ `
       token
       location
       description
+      type
       createdAt
       updatedAt
     }
@@ -26,6 +27,7 @@ export const onUpdateEvents = /* GraphQL */ `
       token
       location
       description
+      type
       createdAt
       updatedAt
     }
@@ -41,6 +43,7 @@ export const onDeleteEvents = /* GraphQL */ `
       token
       location
       description
+      type
       createdAt
       updatedAt
     }

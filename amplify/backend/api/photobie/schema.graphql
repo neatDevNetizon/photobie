@@ -6,4 +6,5 @@ type Events @model {
   token : Int!
   location:String!
   description:String
+  type:String!
 }

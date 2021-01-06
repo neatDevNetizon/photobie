@@ -1,5 +1,5 @@
 {
-  "AppSyncApiName": "photo",
+  "AppSyncApiName": "photobie",
   "DynamoDBBillingMode": "PAY_PER_REQUEST",
   "DynamoDBEnableServerSideEncryption": false
 }

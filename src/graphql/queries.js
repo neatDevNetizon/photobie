@@ -11,6 +11,7 @@ export const getEvents = /* GraphQL */ `
       token
       location
       description
+      type
       createdAt
       updatedAt
     }
@@ -31,6 +32,7 @@ export const listEventss = /* GraphQL */ `
         token
         location
         description
+        type
         createdAt
         updatedAt
       }

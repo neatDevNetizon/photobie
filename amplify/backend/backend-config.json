@@ -1,6 +1,6 @@
 {
   "api": {
-    "photo": {
+    "photobie": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "output": {
@@ -9,7 +9,7 @@
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
               "apiKeyExpirationDays": 7,
-              "description": "devdemo"
+              "description": "demo"
             }
           },
           "additionalAuthenticationProviders": []
@@ -18,12 +18,18 @@
     }
   },
   "auth": {
-    "photo02c57294": {
+    "photobie679662e0": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "customAuth": false
     }
   },
-  "hosting": {}
+  "hosting": {
+    "amplifyhosting": {
+      "service": "amplifyhosting",
+      "providerPlugin": "awscloudformation",
+      "type": "manual"
+    }
+  }
 }
