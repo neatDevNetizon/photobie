@@ -88,7 +88,7 @@ function StatisticsArea(props) {
     history.push("/p/detail");
   }
   return (
-    <Grid container spacing={3} style = {{width:"80%",marginRight:"auto", marginLeft:"auto"}}>
+    <Grid container spacing={3} style = {{width:"80%",marginRight:"auto", marginLeft:"auto",cursor:"pointer"}}>
     {events.map((item,i)=>{
       return viewMode=="left"?<Grid item xs={12} md={12}>
         <Card onClick = {viewEvent}>

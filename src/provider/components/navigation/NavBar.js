@@ -74,6 +74,7 @@ const styles = (theme) => ({
     backgroundColor: theme.palette.secondary.main,
     height: 24,
     width: 24,
+    cursor:"pointer",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
@@ -119,6 +120,7 @@ const styles = (theme) => ({
   brandText: {
     fontFamily: "'Baloo Bhaijaan', cursive",
     fontWeight: 400,
+    cursor:"pointer"
   },
   username: {
     paddingLeft: 0,
@@ -233,21 +235,13 @@ function NavBar(props) {
             width="100%"
             openAddBalanceDialog={openAddBalanceDialog}
           >
-           {isWidthUp("sm", width) && (
-              <Box mr={6}
+            <Button
+              color="secondary"
+              size="large"
               onClick={goListPage}
-              >
-                <Typography
-                variant="h6"
-                display="inline"
-                color = "primary"
-              >
-                View List
-              </Typography>
-                
-              </Box>
-              
-            )}
+            >
+              View List
+            </Button>
             <MessagePopperButton messages={messages} />
             
             <ListItem

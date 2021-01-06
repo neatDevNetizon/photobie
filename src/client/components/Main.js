@@ -8,6 +8,7 @@ import ConsecutiveSnackbarMessages from "../../shared/components/ConsecutiveSnac
 import smoothScrollTop from "../../shared/functions/smoothScrollTop";
 import persons from "../dummy_data/persons";
 import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
+import {Auth} from "aws-amplify"
 
 const styles = (theme) => ({
   main: {
@@ -303,6 +304,30 @@ function Main(props) {
   );
 
   useEffect(() => {
+    async function fetchData() {
+      const user =await Auth.currentUserInfo()
+      
+      if(!user){
+        window.location.href = "/"
+      } else if (user.attributes["custom:type"]!="1"){
+        switch(user.attributes["custom:type"]){
+          case "1":
+            window.location.href = "/c/dashboard"
+            break;
+          case "2":
+            window.location.href = "/p/dashboard"
+            break;
+          case "3":
+            window.location.href = "/m/dashboard"
+            break;
+          case "4":
+            window.location.href = "/a/dashboard"
+            break;
+        }
+        
+      }
+    }
+    fetchData();
     fetchRandomTargets();
     fetchRandomStatistics();
     fetchRandomTransactions();

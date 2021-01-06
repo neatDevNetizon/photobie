@@ -8,7 +8,7 @@ import ConsecutiveSnackbarMessages from "../../shared/components/ConsecutiveSnac
 import smoothScrollTop from "../../shared/functions/smoothScrollTop";
 import persons from "../dummy_data/persons";
 import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
-
+import {Auth} from "aws-amplify"
 const styles = (theme) => ({
   main: {
     // marginLeft: theme.spacing(9),
@@ -231,7 +231,7 @@ function Main(props) {
 
   const selectDashboard = useCallback(() => {
     smoothScrollTop();
-    document.title = "WaVer - Dashboard";
+    document.title = "Photobie - Dashboard";
     setSelectedTab("Dashboard");
     if (!hasFetchedCardChart) {
       setHasFetchedCardChart(true);
@@ -248,7 +248,7 @@ function Main(props) {
 
   const selectPosts = useCallback(() => {
     smoothScrollTop();
-    document.title = "WaVer - Posts";
+    document.title = "Photobie - Posts";
     setSelectedTab("Posts");
     if (!hasFetchedEmojiTextArea) {
       setHasFetchedEmojiTextArea(true);
@@ -292,7 +292,7 @@ function Main(props) {
 
   const selectSubscription = useCallback(() => {
     smoothScrollTop();
-    document.title = "WaVer - Subscription";
+    document.title = "Photobie - Subscription";
     setSelectedTab("Subscription");
   }, [setSelectedTab]);
 
@@ -304,6 +304,29 @@ function Main(props) {
   );
 
   useEffect(() => {
+    async function fetchData() {
+      const user =await Auth.currentUserInfo()
+      if(!user){
+        window.location.href = "/"
+      }
+      else if (user.attributes["custom:type"]!="3"){
+        switch(user.attributes["custom:type"]){
+          case "1":
+            window.location.href = "/c/dashboard"
+            break;
+          case "2":
+            window.location.href = "/p/dashboard"
+            break;
+          case "3":
+            window.location.href = "/m/dashboard"
+            break;
+          case "4":
+            window.location.href = "/a/dashboard"
+            break;
+        }
+      }
+    }
+    fetchData();
     fetchRandomTargets();
     fetchRandomStatistics();
     fetchRandomTransactions();
@@ -316,7 +339,6 @@ function Main(props) {
     fetchRandomMessages,
     fetchRandomPosts,
   ]);
-
   return (
     <Fragment>
       <LazyLoadAddBalanceDialog

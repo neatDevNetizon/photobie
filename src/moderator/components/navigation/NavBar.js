@@ -74,6 +74,7 @@ const styles = (theme) => ({
     backgroundColor: theme.palette.secondary.main,
     height: 24,
     width: 24,
+    cursor:"pointer",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
@@ -119,6 +120,7 @@ const styles = (theme) => ({
   brandText: {
     fontFamily: "'Baloo Bhaijaan', cursive",
     fontWeight: 400,
+    cursor:"pointer"
   },
   username: {
     paddingLeft: 0,
@@ -206,7 +208,7 @@ function NavBar(props) {
     <Fragment>
       <AppBar position="sticky" className={classes.appBar}>
         <Toolbar className={classes.appBarToolbar}>
-          <Box display="flex" alignItems="center" onClick = {goLandingPage}>
+          <Box display="flex" alignItems="center" onClick = {goLandingPage} style = {{cursor:"hand"}}>
             <Hidden smUp>
               <Box mr={1}>
                 <IconButton
@@ -236,36 +238,20 @@ function NavBar(props) {
             width="100%"
             openAddBalanceDialog={openAddBalanceDialog}
           >
-            {isWidthUp("sm", width) && (
-              <Box mr={6}
+            <Button
+              color="secondary"
+              size="large"
               onClick={goListPage}
-              >
-                <Typography
-                variant="h6"
-                display="inline"
-                color = "primary"
-              >
-                View List
-              </Typography>
-                
-              </Box>
-              
-            )}
-            {isWidthUp("sm", width) && (
-              <Box mr={6}
-              onClick={navigateTo}
-              >
-                <Typography
-                variant="h6"
-                display="inline"
-                color = "primary"
-              >
-                Post Event  
-              </Typography>
-                
-              </Box>
-              
-            )}
+            >
+              View List
+            </Button>
+             <Button
+               onClick={navigateTo}
+              color="secondary"
+              size="large"
+            >
+              Post Event 
+            </Button>
             
             <MessagePopperButton messages={messages} />
             

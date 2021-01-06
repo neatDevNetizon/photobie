@@ -149,12 +149,14 @@ const styles = {
     marginTop: 20, 
     display:"flex", 
     flexDirection:"row", 
-    float:"right"
+    float:"right",
+    cursor:"pointer"
   },
   aLink:{
     float:"right",
     textDecoration:"none",
     fontSize:20,
+    marginTop:-5,
   }
 }
 export default withWidth()(FeatureSection);

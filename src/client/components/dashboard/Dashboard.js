@@ -6,6 +6,10 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import AppsIcon from '@material-ui/icons/Apps';
 function Dashboard(props) {
   const {
     selectDashboard,
@@ -19,27 +23,21 @@ function Dashboard(props) {
   } = props;
   const[targetValue, setTargetValue]=useState("left")
   useEffect(selectDashboard, [selectDashboard]);
-  function changeMode(e){
-
-    if(targetValue == "left"){
-      setTargetValue("right")
-    }else {
-      setTargetValue("left")
-    }
-    
+ 
+  function changeModeList(){
+    setTargetValue("left")
+  }
+  function changeModeGrid(){
+    setTargetValue("right")
   }
   return (
     <Fragment>
-       <FormControl component="fieldset" >
-
-        <FormControlLabel
-            value={targetValue}
-            label="Change Mode"
-            control={<Switch color="primary" onChange = {changeMode} />}
-            labelPlacement="start"
-          />
-          {/* <Typography style = {{marginTop:7,marginLeft:10}}>Grid Mode</Typography> */}
-       </FormControl>
+       
+       <ButtonGroup size="large" color="secondary" aria-label="large outlined primary button group" style = {{marginLeft:"75%",marginBottom:30,}}>
+        <Button onClick = {changeModeList}><FormatListBulletedIcon/></Button>
+        <Button onClick = {changeModeGrid}><AppsIcon/></Button>
+      </ButtonGroup>
+       
       <StatisticsArea CardChart={CardChart} data={statistics} viewMode = {targetValue}/>
   
     </Fragment>

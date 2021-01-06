@@ -52,6 +52,17 @@ function RegisterDialog(props) {
   async function register() {
     const username = loginEmail.current.value;
     const password = registerPassword.current.value;
+    const confirm = registerPasswordRepeat.current.value;
+    if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(username)){
+      // alert("You have entered an invalid email address!")
+      // return false;
+    }else if(password != confirm){
+      setStatus("passwordsDontMatch")
+      return false;
+    }else if(password.length<7){
+      setStatus("passwordTooShort")
+      return false;
+    }
     try {
       const { user } = await Auth.signUp({
           username,
@@ -61,6 +72,7 @@ function RegisterDialog(props) {
               "custom:type":userTypeFlag.toString()
           }
       });
+      console.log(user)
       setStatus(null);
       setIsLoading(true);
       setTimeout(() => {
@@ -153,7 +165,7 @@ function RegisterDialog(props) {
             }}
             helperText={(() => {
               if (status === "passwordTooShort") {
-                return "Create a password at least 6 characters long.";
+                return "Create a password at least 8 characters long.";
               }
               if (status === "passwordsDontMatch") {
                 return "Your passwords dont match.";
@@ -185,7 +197,7 @@ function RegisterDialog(props) {
             }}
             helperText={(() => {
               if (status === "passwordTooShort") {
-                return "Create a password at least 6 characters long.";
+                return "Create a password at least 8 characters long.";
               }
               if (status === "passwordsDontMatch") {
                 return "Your passwords dont match.";

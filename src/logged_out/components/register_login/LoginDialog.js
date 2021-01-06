@@ -15,6 +15,9 @@ import HighlightedInformation from "../../../shared/components/HighlightedInform
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import VisibilityPasswordTextField from "../../../shared/components/VisibilityPasswordTextField";
 import {Auth} from "aws-amplify"
+import VerifyCode from "./verifyCode"
+
+ 
 const styles = (theme) => ({
   forgotPassword: {
     marginTop: theme.spacing(2),
@@ -49,7 +52,7 @@ function LoginDialog(props) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const loginEmail = useRef();
   const loginPassword = useRef();
-
+  const [confirmStatus, setConfirmStatus] = useState(1)
   async function  login(){
     try {
       setIsLoading(true);
@@ -76,17 +79,19 @@ function LoginDialog(props) {
           }, 1500);
         }
     } catch (error) {
-        console.log('error signing in', error);
+      if(error.message == "User is not confirmed."){
+        setConfirmStatus(2)
+      } else {
+        setConfirmStatus(1)
+        window.location.href = "/"
+      }
+      
     }
-    
-    
-
-    
     
   }
 
   return (
-    <Fragment>
+    confirmStatus==1?<Fragment>
       <FormDialog
         open
         onClose={onClose}
@@ -195,7 +200,7 @@ function LoginDialog(props) {
           </Fragment>
         }
       />
-    </Fragment>
+    </Fragment>:<VerifyCode username = {loginEmail.current.value} onClose = {onClose}/>
   );
 }
 
