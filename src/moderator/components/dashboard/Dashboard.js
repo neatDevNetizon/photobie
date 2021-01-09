@@ -13,7 +13,7 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import Pagination from '@material-ui/lab/Pagination';
-
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
 function Dashboard(props) {
   const {
     selectDashboard,
@@ -92,7 +93,8 @@ function Dashboard(props) {
     isAccountActivated,
   } = props;
 
-  useEffect(selectDashboard, [selectDashboard]);
+  useEffect(()=>{
+  }, []);
   const classes = useStyles();
   return (
     
@@ -131,7 +133,11 @@ function Dashboard(props) {
     </Fragment>
   );
 }
-
+const mapStateToProps = () => state => {
+  return {
+      items: state.userEmail
+  };
+};
 Dashboard.propTypes = {
   CardChart: PropTypes.elementType,
   statistics: PropTypes.object.isRequired,
@@ -143,4 +149,4 @@ Dashboard.propTypes = {
   selectDashboard: PropTypes.func.isRequired,
 };
 
-export default Dashboard;
+export default connect(mapStateToProps)(Dashboard);

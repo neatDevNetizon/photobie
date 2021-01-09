@@ -12,6 +12,9 @@ export const getEvents = /* GraphQL */ `
       location
       description
       type
+      user
+      status
+      image
       createdAt
       updatedAt
     }
@@ -33,6 +36,48 @@ export const listEventss = /* GraphQL */ `
         location
         description
         type
+        user
+        status
+        image
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getUsers = /* GraphQL */ `
+  query GetUsers($id: ID!) {
+    getUsers(id: $id) {
+      id
+      email
+      type
+      name
+      address
+      age
+      photo
+      payment
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listUserss = /* GraphQL */ `
+  query ListUserss(
+    $filter: ModelUsersFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listUserss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        email
+        type
+        name
+        address
+        age
+        photo
+        payment
         createdAt
         updatedAt
       }

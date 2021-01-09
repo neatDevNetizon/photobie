@@ -31,5 +31,11 @@
       "providerPlugin": "awscloudformation",
       "type": "manual"
     }
+  },
+  "storage": {
+    "photobie": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
   }
 }

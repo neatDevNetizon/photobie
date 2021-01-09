@@ -284,7 +284,7 @@ function NavBar(props) {
                 style = {{marginTop:30, width:300}}
               >
                 <MenuItem onClick={handleClose}>Setting</MenuItem>
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleClose}>Manage your Profile</MenuItem>
                 <MenuItem onClick={logOut}>Logout</MenuItem>
               </Menu>
           </Box>

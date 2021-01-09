@@ -17,8 +17,9 @@ import FormDialog from "../../../shared/components/FormDialog";
 import HighlightedInformation from "../../../shared/components/HighlightedInformation";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import VisibilityPasswordTextField from "../../../shared/components/VisibilityPasswordTextField";
-import { Auth } from 'aws-amplify';
+import Amplify, {API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import VerifyCode from "./verifyCode"
+import * as mutations from '../../../graphql/mutations';
 const styles = (theme) => ({
   link: {
     transition: theme.transitions.create(["background-color"], {
@@ -73,6 +74,12 @@ function RegisterDialog(props) {
           }
       });
       console.log(user)
+      const data = {
+        email:username,
+        type:userTypeFlag
+      }
+      await API.graphql(graphqlOperation(mutations.createUsers, {input: data}));
+
       setStatus(null);
       setIsLoading(true);
       setTimeout(() => {

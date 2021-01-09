@@ -16,7 +16,9 @@ import ButtonCircularProgress from "../../../shared/components/ButtonCircularPro
 import VisibilityPasswordTextField from "../../../shared/components/VisibilityPasswordTextField";
 import {Auth} from "aws-amplify"
 import VerifyCode from "./verifyCode"
-
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { addTodoAction } from '../../../actions/addTodoAction';
  
 const styles = (theme) => ({
   forgotPassword: {
@@ -58,7 +60,9 @@ function LoginDialog(props) {
       setIsLoading(true);
       setStatus(null);
       const user = await Auth.signIn(loginEmail.current.value, loginPassword.current.value);
+      props.addTodo(loginEmail.current.value);
       onClose();
+
       switch(user.attributes['custom:type']){
         case "4":
           history.push("/a/dashboard");
@@ -203,6 +207,14 @@ function LoginDialog(props) {
     </Fragment>:<VerifyCode username = {loginEmail.current.value} onClose = {onClose}/>
   );
 }
+const mapStateToProps = () => state => {
+  return {
+      items: state.todoList
+  };
+};
+const mapDistachToProps = () => dispatch => {
+  return bindActionCreators({ addTodo: addTodoAction }, dispatch);
+};
 
 LoginDialog.propTypes = {
   classes: PropTypes.object.isRequired,
@@ -212,5 +224,4 @@ LoginDialog.propTypes = {
   history: PropTypes.object.isRequired,
   status: PropTypes.string,
 };
-
-export default withRouter(withStyles(styles)(LoginDialog));
+export default withRouter(withStyles(styles)(connect(mapStateToProps,mapDistachToProps)(LoginDialog)));

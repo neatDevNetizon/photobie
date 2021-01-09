@@ -12,6 +12,9 @@ export const onCreateEvents = /* GraphQL */ `
       location
       description
       type
+      user
+      status
+      image
       createdAt
       updatedAt
     }
@@ -28,6 +31,9 @@ export const onUpdateEvents = /* GraphQL */ `
       location
       description
       type
+      user
+      status
+      image
       createdAt
       updatedAt
     }
@@ -44,6 +50,57 @@ export const onDeleteEvents = /* GraphQL */ `
       location
       description
       type
+      user
+      status
+      image
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateUsers = /* GraphQL */ `
+  subscription OnCreateUsers {
+    onCreateUsers {
+      id
+      email
+      type
+      name
+      address
+      age
+      photo
+      payment
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateUsers = /* GraphQL */ `
+  subscription OnUpdateUsers {
+    onUpdateUsers {
+      id
+      email
+      type
+      name
+      address
+      age
+      photo
+      payment
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteUsers = /* GraphQL */ `
+  subscription OnDeleteUsers {
+    onDeleteUsers {
+      id
+      email
+      type
+      name
+      address
+      age
+      photo
+      payment
       createdAt
       updatedAt
     }

@@ -13,6 +13,7 @@ const ModeratorComponent = lazy(() => import("./moderator/components/Main"));
 const LoggedOutComponent = lazy(() => import("./logged_out/components/Main"));
 
 function App() {
+ 
   return (
     <BrowserRouter>
       <MuiThemeProvider theme={theme}>

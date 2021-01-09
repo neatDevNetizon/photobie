@@ -5,6 +5,20 @@ type Events @model {
   capacity : Int!
   token : Int!
   location:String!
-  description:String
+  description:String!
   type:String!
+  user:String!
+  status:Int!
+  image:String
 }
+type Users @model {
+  id:ID!
+  email:String!
+  type:Int!
+  name:String
+  address:String
+  age:Int
+  photo:String
+  payment:String
+}
+
