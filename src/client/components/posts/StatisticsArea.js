@@ -95,7 +95,7 @@ function StatisticsArea(props) {
           </div>
         </Card>
     </Grid>:<Grid item xs = {12} md={4} >
-      <Card style = {cardstyles.cardbody} onClick = {()=>viewEvent(item.id)}>
+      <Card style = {cardstyles.cardbody} onClick = {viewEvent}>
           <CardActionArea>
             <img src = {item.image} style = {cardstyles.images}></img>
             <CardContent>

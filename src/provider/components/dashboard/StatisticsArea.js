@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback,useEffect } from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
 import {
@@ -14,87 +14,65 @@ import {
 import CardActionArea from '@material-ui/core/CardActionArea';
 import Button from '@material-ui/core/Button';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
+import { connect } from 'react-redux';
+import UpdateIcon from '@material-ui/icons/Update';
+import * as queries from '../../../graphql/queries';
 
-
-const events = [{
-  capacity: 23,
-  id: "fcaf11b9-88a1-4c8d-a406-eed4f8afccd9",
-  location: "Moscow",
-  secure: 2,
-  title: "Math events",
-  token: 2,
-  imageSrc:"/images/logged_out/blogPost1.jpg",
-  description:"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et."
-},
-{
-  capacity: 34,
-  id: "da16da06-61d4-41f9-a86b-32ce35c70334",
-  location: "London",
-  secure: 2,
-  title: "POPULATION",
-  token: 232,
-  imageSrc:"/images/logged_out/blogPost2.jpg",
-  description:"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et."
-},
-{
-  capacity: 23,
-  id: "0c5722e3-9561-4de7-850a-1c404a79bbc5",
-  location: "London",
-  secure: 1,
-  title: "12-22",
-  token: 2,
-  imageSrc:"/images/logged_out/blogPost3.jpg",
-  description:"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et."
-},
-  {
-  capacity: 23,
-  id: "fcaf11b9-88a1-4c8d-a406-eed4f8afccd9",
-  location: "New York",
-  secure: 2,
-  title: "Holly Wood",
-  token: 2,
-  imageSrc:"/images/logged_out/blogPost4.jpg",
-  description:"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et."
-  },
-  {
-  capacity: 34,
-  id: "da16da06-61d4-41f9-a86b-32ce35c70334",
-  location: "Califonia",
-  secure: 2,
-  title: "Happy Birthday",
-  token: 232,
-  imageSrc:"/images/logged_out/blogPost5.jpg",
-  description:"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et."
-  },
-  {
-  capacity: 23,
-  id: "0c5722e3-9561-4de7-850a-1c404a79bbc5",
-  location: "Singapore",
-  secure: 1,
-  title: "January 1",
-  token: 2,
-  imageSrc:"/images/logged_out/blogPost6.jpg",
-  description:"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et."
-  },
-]
 function StatisticsArea(props) {
   const { theme, CardChart, data,classes, viewMode, width} = props;
+  const [events, setEvents] = useState(['']);
   const[pageNum, setPageNum] = useState(1)
   function handleClick(){
     setPageNum(2)
   }
   const history = useHistory();
   const viewEvent = async(event)=>{
-    history.push("/p/detail");
+    history.push("/p/detail?id="+event);
   }
+  useEffect(()=>{
+    async function fetchUser() {
+      const user = await Auth.currentUserInfo()
+      if(!user){
+        window.location.href = "/"
+      } else{
+        const email = user.attributes.email;
+        
+        const eventlist = await API.graphql(graphqlOperation(queries.listEventss));
+          const data = eventlist.data.listEventss.items;
+          let array = [];
+          for(let i=0; i<data.length; i++){
+            const downloadUrl = await Storage.get(data[i].image, { expires: 300 }).then(res=>{
+              array.push({
+                id:data[i].id,
+                user:data[i].user,
+                token:data[i].token,
+                location:data[i].location,
+                title:data[i].title,
+                secure:data[i].secure,
+                capacity:data[i].capacity,
+                description:data[i].description,
+                type:data[i].type,
+                status:data[i].status,
+                image:res,
+              })
+            });
+          }
+          setEvents(array)
+        }
+        
+    }
+    fetchUser();
+
+  },[])
   return (
     <Grid container spacing={3} style = {{width:"80%",marginRight:"auto", marginLeft:"auto",cursor:"pointer"}}>
     {events.map((item,i)=>{
-      return viewMode=="left"?<Grid item xs={12} md={12}>
-        <Card onClick = {viewEvent}>
+      return viewMode=="left"?<Grid item xs={12} md={12} key = {i}>
+        <Card onClick = {()=>viewEvent(item.id)}>
           <div style = {{display:"flex", flexDirection:"row",}}>
           <Box style = {{display:"inline-block"}}>
-            <img src = {item.imageSrc} style = {{width:300, height:"100%",objectFit:"cover"}}></img>
+            <img src = {item.image} style = {{width:300, height:"100%",objectFit:"cover"}}></img>
           </Box>
             <div style = {{display:"flex", flexDirection:"column",}}>
               <Box pt={2} px={2} pb={4} style = {{display:"block"}}>
@@ -115,10 +93,10 @@ function StatisticsArea(props) {
             </div>
           </div>
         </Card>
-    </Grid>:<Grid item xs = {12} md={4} >
-      <Card style = {cardstyles.cardbody} onClick = {viewEvent}>
+    </Grid>:<Grid item xs = {12} md={4} key = {i}>
+      <Card style = {cardstyles.cardbody} onClick = {()=>viewEvent(item.id)}>
           <CardActionArea>
-            <img src = {item.imageSrc} style = {cardstyles.images}></img>
+            <img src = {item.image} style = {cardstyles.images}></img>
             <CardContent>
               <Typography gutterBottom variant="h5" component="h2">
                 {item.title}

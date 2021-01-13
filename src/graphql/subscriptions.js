@@ -106,3 +106,93 @@ export const onDeleteUsers = /* GraphQL */ `
     }
   }
 `;
+export const onCreateProviders = /* GraphQL */ `
+  subscription OnCreateProviders {
+    onCreateProviders {
+      id
+      provider
+      eventid
+      description
+      capacity
+      token
+      location
+      images
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateProviders = /* GraphQL */ `
+  subscription OnUpdateProviders {
+    onUpdateProviders {
+      id
+      provider
+      eventid
+      description
+      capacity
+      token
+      location
+      images
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteProviders = /* GraphQL */ `
+  subscription OnDeleteProviders {
+    onDeleteProviders {
+      id
+      provider
+      eventid
+      description
+      capacity
+      token
+      location
+      images
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateMessage = /* GraphQL */ `
+  subscription OnCreateMessage {
+    onCreateMessage {
+      id
+      channelID
+      author
+      receiver
+      body
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateMessage = /* GraphQL */ `
+  subscription OnUpdateMessage {
+    onUpdateMessage {
+      id
+      channelID
+      author
+      receiver
+      body
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteMessage = /* GraphQL */ `
+  subscription OnDeleteMessage {
+    onDeleteMessage {
+      id
+      channelID
+      author
+      receiver
+      body
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;

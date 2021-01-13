@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core";
 import MessageIcon from "@material-ui/icons/Message";
 import MessageListItem from "./MessageListItem";
+import { Iso } from "@material-ui/icons";
 
 const styles = (theme) => ({
   tabContainer: {
@@ -49,7 +50,9 @@ function MessagePopperButton(props) {
   const handleClickAway = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);
-
+  const handleIsOpen = () =>{
+    setIsOpen(!isOpen)
+  }
   const id = isOpen ? "scroll-playground" : null;
   return (
     <Fragment>
@@ -96,6 +99,7 @@ function MessagePopperButton(props) {
               <MessageListItem
                 key={index}
                 message={element}
+                isOpen = {handleClickAway}
                 divider={index !== messages.length - 1}
               />
             ))

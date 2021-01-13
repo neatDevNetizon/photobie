@@ -124,3 +124,111 @@ export const deleteUsers = /* GraphQL */ `
     }
   }
 `;
+export const createProviders = /* GraphQL */ `
+  mutation CreateProviders(
+    $input: CreateProvidersInput!
+    $condition: ModelProvidersConditionInput
+  ) {
+    createProviders(input: $input, condition: $condition) {
+      id
+      provider
+      eventid
+      description
+      capacity
+      token
+      location
+      images
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateProviders = /* GraphQL */ `
+  mutation UpdateProviders(
+    $input: UpdateProvidersInput!
+    $condition: ModelProvidersConditionInput
+  ) {
+    updateProviders(input: $input, condition: $condition) {
+      id
+      provider
+      eventid
+      description
+      capacity
+      token
+      location
+      images
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteProviders = /* GraphQL */ `
+  mutation DeleteProviders(
+    $input: DeleteProvidersInput!
+    $condition: ModelProvidersConditionInput
+  ) {
+    deleteProviders(input: $input, condition: $condition) {
+      id
+      provider
+      eventid
+      description
+      capacity
+      token
+      location
+      images
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createMessage = /* GraphQL */ `
+  mutation CreateMessage(
+    $input: CreateMessageInput!
+    $condition: ModelMessageConditionInput
+  ) {
+    createMessage(input: $input, condition: $condition) {
+      id
+      channelID
+      author
+      receiver
+      body
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateMessage = /* GraphQL */ `
+  mutation UpdateMessage(
+    $input: UpdateMessageInput!
+    $condition: ModelMessageConditionInput
+  ) {
+    updateMessage(input: $input, condition: $condition) {
+      id
+      channelID
+      author
+      receiver
+      body
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteMessage = /* GraphQL */ `
+  mutation DeleteMessage(
+    $input: DeleteMessageInput!
+    $condition: ModelMessageConditionInput
+  ) {
+    deleteMessage(input: $input, condition: $condition) {
+      id
+      channelID
+      author
+      receiver
+      body
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;

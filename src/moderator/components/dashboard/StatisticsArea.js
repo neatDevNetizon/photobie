@@ -41,7 +41,6 @@ function StatisticsArea(props) {
           let array = [];
           for(let i=0; i<data.length; i++){
             const downloadUrl = await Storage.get(data[i].image, { expires: 300 }).then(res=>{
-              console.log(res)
               array.push({
                 user:data[i].user,
                 token:data[i].token,

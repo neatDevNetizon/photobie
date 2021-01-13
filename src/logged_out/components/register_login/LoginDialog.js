@@ -61,6 +61,7 @@ function LoginDialog(props) {
       setStatus(null);
       const user = await Auth.signIn(loginEmail.current.value, loginPassword.current.value);
       props.addTodo(loginEmail.current.value);
+      localStorage.setItem('userEmail', loginEmail.current.value);
       onClose();
 
       switch(user.attributes['custom:type']){

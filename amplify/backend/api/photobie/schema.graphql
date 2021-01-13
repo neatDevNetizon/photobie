@@ -21,4 +21,26 @@ type Users @model {
   photo:String
   payment:String
 }
+type Providers @model {
+  id:ID!
+  provider:String!
+  eventid:String!
+  description:String!
+  capacity:Int!
+  token:Int!
+  location:String!
+  images:String
+}
+type Message
+  @model
+  @key(name: "byChannelID", fields: ["channelID", "createdAt"], queryField: "messagesByChannelID") {
+  id: ID!
+  channelID: ID!
+  author: String!
+  receiver:String!
+  body: String!
+  status:Int!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
 

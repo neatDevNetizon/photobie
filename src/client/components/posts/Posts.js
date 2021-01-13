@@ -4,6 +4,8 @@ import PostContent from "./PostContent";
 import AddPost from "./AddPost";
 
 function Posts(props) {
+  const handle  = props.location.search;
+  const id = new URLSearchParams(handle).get('id');
   const {
     selectPosts,
     EmojiTextArea,
@@ -26,12 +28,14 @@ function Posts(props) {
 
   useEffect(() => {
     selectPosts();
+    // console.log(id)
   }, [selectPosts]);
-
+ 
   return <PostContent
     posts={posts}
     setPosts={setPosts}
     pushMessageToSnackbar={pushMessageToSnackbar}
+    id = {id}
   />
 }
 

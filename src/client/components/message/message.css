@@ -1,0 +1,188 @@
+
+  .mes-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.0);
+  }
+  
+  .mes-messages {
+    flex: 1;
+    position: relative;
+  }
+  
+  .mes-messages-scroller {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+  }
+  
+  .mes-message {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 8px 12px;
+    max-width: 60vw;
+    background: #f1f0f0;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+  
+  .mes-message.me {
+    align-self: flex-end;
+    background: #f19e38;
+    color: white;
+  }
+  
+  .mes-chat-bar {
+    height: 64px;
+    border-top: 1px solid #ddd;
+    position: fixed;
+    bottom: 10px;
+    width: calc(100vw - 300px);
+  }
+  
+  .mes-chat-bar form {
+    height: 100%;
+    padding: 16px;
+  }
+  
+  .mes-chat-bar form input {
+    width: 100%;
+    height: 32px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    outline: none;
+  }
+  
+  .mes-chat-bar form input:focus {
+    border: 1px solid #f19e38;
+  }
+
+  .chatBox {
+    display: flex;
+    flex-direction: row;
+    /* margin-top: -50px;  */
+  }
+  .leftSideBox {
+    width: 300px;
+    background-color:#f1f0f0;
+    overflow-y:hidden;
+    margin-top: -10px;
+    height: calc( 100vh - 62px );
+    margin-bottom: -10px;
+    display: block;
+  }
+  .rightSideBox {
+    width: calc(100vw - 300px);
+    height: auto;
+    overflow-y: scroll;
+    margin-bottom: 63px;
+  }
+  .hamburger{
+    display: none;
+  }
+  @media screen and (max-width: 900px) {
+    #leftSideBox{
+      display: none;
+    }
+    .rightSideBox{
+      width: 100vw;
+    }
+    .hamburger{
+      display: inline;
+    }
+  }
+.search__container {
+  width: 100%;
+}   
+.search__input {
+  width: 100%;
+  padding: 12px 24px;
+
+  background-color: transparent;
+  transition: transform 250ms ease-in-out;
+  font-size: 14px;
+  line-height: 18px;
+  
+  color: #575756;
+  background-color: transparent;
+
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  background-position: 95% center;
+  border-radius: 50px;
+  border: 1px solid #575756;
+  transition: all 250ms ease-in-out;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+.search:focus {
+  padding: 12px 0;
+  outline: 0;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #575756;
+  border-radius: 0;
+  background-position: 100% center;
+
+} 
+.chatClients {
+  overflow-y: scroll;
+  height: calc(100vh - 214px);
+}
+
+#style-7::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+	border-radius: 10px;
+}
+
+#style-7::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+#style-7::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	background-image: -webkit-gradient(linear,
+    left bottom,
+    left top,
+    color-stop(0.44, rgb(122,153,217)),
+    color-stop(0.72, rgb(73,125,189)),
+    color-stop(0.86, rgb(28,58,148)));
+}
+#style-6::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+#style-6::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+#style-6::-webkit-scrollbar-thumb
+{
+	background-color: #F90;	
+	background-image: -webkit-linear-gradient(45deg,
+    rgba(255, 255, 255, .2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, .2) 50%,
+    rgba(255, 255, 255, .2) 75%,
+    transparent 75%,
+    transparent)
+}

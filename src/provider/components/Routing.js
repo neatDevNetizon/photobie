@@ -67,7 +67,7 @@ function Routing(props) {
   return (
     <div className={classes.wrapper}>
       <Switch>
-        <PropsRoute
+      <PropsRoute
           path="/p/detail"
           component={Posts}
           EmojiTextArea={EmojiTextArea}

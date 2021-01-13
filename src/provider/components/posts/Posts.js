@@ -4,6 +4,8 @@ import PostContent from "./PostContent";
 import AddPost from "./AddPost";
 
 function Posts(props) {
+  const handle  = props.location.search;
+  const id = new URLSearchParams(handle).get('id');
   const {
     selectPosts,
     EmojiTextArea,
@@ -42,6 +44,7 @@ function Posts(props) {
     openAddPostModal={openAddPostModal}
     posts={posts}
     setPosts={setPosts}
+    id = {id}
     pushMessageToSnackbar={pushMessageToSnackbar}
   />
 }

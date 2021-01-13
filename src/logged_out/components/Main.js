@@ -32,7 +32,7 @@ function Main(props) {
   const selectHome = useCallback(() => {
     smoothScrollTop();
     document.title =
-      "Photobie - Free template for building an SaaS or admin application";
+      "Photobie";
     setSelectedTab("Home");
   }, [setSelectedTab]);
 

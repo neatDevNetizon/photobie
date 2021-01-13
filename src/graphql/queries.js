@@ -85,3 +85,108 @@ export const listUserss = /* GraphQL */ `
     }
   }
 `;
+export const getProviders = /* GraphQL */ `
+  query GetProviders($id: ID!) {
+    getProviders(id: $id) {
+      id
+      provider
+      eventid
+      description
+      capacity
+      token
+      location
+      images
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listProviderss = /* GraphQL */ `
+  query ListProviderss(
+    $filter: ModelProvidersFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listProviderss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        provider
+        eventid
+        description
+        capacity
+        token
+        location
+        images
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getMessage = /* GraphQL */ `
+  query GetMessage($id: ID!) {
+    getMessage(id: $id) {
+      id
+      channelID
+      author
+      receiver
+      body
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listMessages = /* GraphQL */ `
+  query ListMessages(
+    $filter: ModelMessageFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listMessages(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        channelID
+        author
+        receiver
+        body
+        status
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const messagesByChannelId = /* GraphQL */ `
+  query MessagesByChannelId(
+    $channelID: ID
+    $createdAt: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelMessageFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    messagesByChannelID(
+      channelID: $channelID
+      createdAt: $createdAt
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        channelID
+        author
+        receiver
+        body
+        status
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
