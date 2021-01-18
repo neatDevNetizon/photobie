@@ -57,6 +57,7 @@ export const getUsers = /* GraphQL */ `
       age
       photo
       payment
+      verified
       createdAt
       updatedAt
     }
@@ -78,6 +79,7 @@ export const listUserss = /* GraphQL */ `
         age
         photo
         payment
+        verified
         createdAt
         updatedAt
       }
@@ -92,10 +94,10 @@ export const getProviders = /* GraphQL */ `
       provider
       eventid
       description
-      capacity
       token
       location
       images
+      clients
       createdAt
       updatedAt
     }
@@ -113,10 +115,10 @@ export const listProviderss = /* GraphQL */ `
         provider
         eventid
         description
-        capacity
         token
         location
         images
+        clients
         createdAt
         updatedAt
       }
@@ -152,6 +154,97 @@ export const listMessages = /* GraphQL */ `
         receiver
         body
         status
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getUserA = /* GraphQL */ `
+  query GetUserA($id: ID!) {
+    getUserA(id: $id) {
+      id
+      token
+      having
+      email
+      eventid
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listUserAs = /* GraphQL */ `
+  query ListUserAs(
+    $filter: ModelUserAFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listUserAs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        token
+        having
+        email
+        eventid
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getUserB = /* GraphQL */ `
+  query GetUserB($id: ID!) {
+    getUserB(id: $id) {
+      id
+      likes
+      token
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listUserBs = /* GraphQL */ `
+  query ListUserBs(
+    $filter: ModelUserBFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listUserBs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        likes
+        token
+        email
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getUserC = /* GraphQL */ `
+  query GetUserC($id: ID!) {
+    getUserC(id: $id) {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listUserCs = /* GraphQL */ `
+  query ListUserCs(
+    $filter: ModelUserCFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listUserCs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        email
         createdAt
         updatedAt
       }

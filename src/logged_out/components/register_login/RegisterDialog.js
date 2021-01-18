@@ -79,6 +79,33 @@ function RegisterDialog(props) {
         type:userTypeFlag
       }
       await API.graphql(graphqlOperation(mutations.createUsers, {input: data}));
+      switch(userTypeFlag){
+        case 1:
+          var userData = {
+            email:username,
+          }
+          await API.graphql(graphqlOperation(mutations.createUserA, {input: userData}));
+          break;
+        case 2:
+          var userData = {
+            email:username,
+          }
+          await API.graphql(graphqlOperation(mutations.createUserB, {input: userData}));
+          break;
+        case 3:
+          var userData = {
+            email:username,
+          }
+          await API.graphql(graphqlOperation(mutations.createUserC, {input: userData}));
+          break;
+        // case 4:
+        //   var userData = {
+        //     id:username,
+        //   }
+        //   await API.graphql(graphqlOperation(mutations.createUserD, {input: userData}));
+        //   break;
+      }
+
 
       setStatus(null);
       setIsLoading(true);

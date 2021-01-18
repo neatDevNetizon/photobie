@@ -30,10 +30,10 @@ function Subscription(props) {
   useEffect(selectSubscription, [selectSubscription]);
 
   return (
-    <Paper>
+    <Paper style = {{marginTop:50}}>
       
       <List disablePadding><Fab color="secondary" aria-label="add" className={classes.fabButton}>
-        <AddIcon />
+        <AddIcon/>
       </Fab>
         <SubscriptionInfo openAddBalanceDialog={openAddBalanceDialog} />
         {/* <Divider className={classes.divider} /> */}

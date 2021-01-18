@@ -80,8 +80,6 @@ function PostContent(props) {
       }
       // setUser(user.data.listUserAs.items[0].email);
 
-      const userToken = await API.graphql(graphqlOperation(queries.listUserAs, { filter: {email:{eq:user.attributes.email}}}));
-      setUserToken(userToken.data.listUserAs.items[0].token);
       
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
       const selEvent = eventlist.data.listEventss.items[0];

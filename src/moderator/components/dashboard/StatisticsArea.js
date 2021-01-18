@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Grid, withTheme } from "@material-ui/core";
 import * as queries from '../../../graphql/queries';
+import { useHistory } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -28,6 +29,10 @@ function StatisticsArea(props) {
     setAnchorEl(null);
   }, [setAnchorEl]);
 
+  const history = useHistory();
+  const viewEvent = async(event)=>{
+    history.push("/m/detail?id="+event);
+  }
   useEffect(()=>{
     async function fetchUser() {
       const user = await Auth.currentUserInfo()
@@ -42,6 +47,7 @@ function StatisticsArea(props) {
           for(let i=0; i<data.length; i++){
             const downloadUrl = await Storage.get(data[i].image, { expires: 300 }).then(res=>{
               array.push({
+                id:data[i].id,
                 user:data[i].user,
                 token:data[i].token,
                 location:data[i].location,
@@ -70,8 +76,8 @@ function StatisticsArea(props) {
   
   return (
     events.map((item, index)=>{
-      return <Grid item xs={12} md={12} style = {{marginTop:15}}>
-      <Card >
+      return <Grid item xs={12} md={12} style = {{marginTop:15,marginRight:"2%",marginLeft:"2%", cursor:"pointer"}}>
+      <Card onClick = {()=>viewEvent(item.id)}>
         <div style = {{display:"flex", flexDirection:"row",}}>
         <Box style = {{display:"inline-block"}}>
           <img src = {item.image} style = {{width:300, height:"100%",objectFit:"cover"}}></img>

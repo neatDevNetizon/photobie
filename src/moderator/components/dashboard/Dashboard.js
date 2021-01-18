@@ -97,14 +97,14 @@ function Dashboard(props) {
   }, []);
   const classes = useStyles();
   return (
-    
-    <Fragment>
+<div style = {{marginRight:"5%", marginLeft:"5%"}}>
+    <Fragment >
       <Typography variant="h3" align="center" >
           Posted Events 
         </Typography>
       <AppBar className={classes.appBar} position="static">
         <Toolbar className={classes.toolBar}>
-        <Pagination size="large" color="secondary" className={classes.pagination} count={10} variant="outlined" shape="rounded" />
+        {/* <Pagination size="large" color="secondary" className={classes.pagination} count={10} variant="outlined" shape="rounded" /> */}
           <IconButton
             edge="start"
             // className={classes.menuButton}
@@ -113,7 +113,7 @@ function Dashboard(props) {
           >
           </IconButton>
           
-          <div className={classes.search}>
+          {/* <div className={classes.search}>
             <div className={classes.searchIcon}>
             <SearchIcon />
             </div>
@@ -125,12 +125,13 @@ function Dashboard(props) {
               }}
               inputProps={{ 'aria-label': 'search' }}
             />
-          </div>
+          </div> */}
         </Toolbar>
       </AppBar>
       
       <StatisticsArea CardChart={CardChart} data={statistics} />
     </Fragment>
+    </div>
   );
 }
 const mapStateToProps = () => state => {

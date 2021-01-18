@@ -1,7 +1,7 @@
-import React, { Fragment, useRef, useCallback, useState } from "react";
+import React, { Fragment, useRef, useCallback, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
-import PropTypes from "prop-types";
+import PropTypes, { resetWarningCache } from "prop-types";
 import classNames from "classnames";
 import {
   AppBar,
@@ -32,12 +32,14 @@ import MessagePopperButton from "./MessagePopperButton";
 import SideDrawer from "./SideDrawer";
 import Balance from "./Balance";
 import NavigationDrawer from "../../../shared/components/NavigationDrawer";
-import {Auth} from 'aws-amplify';
+import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import 'bootstrap/dist/css/bootstrap.css';
 import MessageListItem from "./MessageListItem";
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import * as queries from '../../../graphql/queries';
+import MessageIcon from "@material-ui/icons/Message";
 const styles = (theme) => ({
   
   appBar: {
@@ -81,6 +83,14 @@ const styles = (theme) => ({
       marginLeft: theme.spacing(1.5),
       marginRight: theme.spacing(1.5),
     },
+  },
+  messageIcon:{
+    width:24,
+    height:24,
+    cursor:"pointer",
+    marginLeft: 10,
+    marginRight: 10,
+
   },
   drawerPaper: {
     height: "100%vh",
@@ -156,6 +166,14 @@ const styles = (theme) => ({
   },
   dropdown: {
     display: "block"
+  },
+  hideImage : {
+    display:"none"
+  },
+  showImage:{
+    display:"block",
+    width:40,
+    height:40,
   }
 
 });
@@ -166,6 +184,8 @@ function NavBar(props) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [rankingImage, setRankingImage] = useState("")
+  const [showAndHide, setShowAndHide] = useState("classes.hideImage")
   const openMobileDrawer = useCallback(() => {
     setIsMobileOpen(true);
   }, [setIsMobileOpen]);
@@ -192,6 +212,38 @@ function NavBar(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
+
+  useEffect(()=>{
+    async function fetchUser() {
+      const user = await Auth.currentUserInfo()
+      if(!user){
+        window.location.href = "/"
+      }
+      else {
+        const id = user.attributes.email;
+        fetchToken(id)
+      }
+    }
+    async function fetchToken(id){
+      const eventlist2 = await API
+          .graphql(graphqlOperation(queries.listUserAs, { filter: {
+            email: {eq:id} 
+          }}));
+      const rankingNum = eventlist2.data.listUserAs.items[0].token*1;
+      if(rankingNum==0) setRankingImage("/ranking/grey.png");
+      else if(0<rankingNum&&rankingNum<100)setRankingImage("/ranking/blue.png");
+      else if(100<=rankingNum&&rankingNum<1000)setRankingImage("/ranking/orange.png");
+      else if(1000<=rankingNum&&rankingNum<3000)setRankingImage("/ranking/silver.png");
+      else if(3000<=rankingNum&&rankingNum<10000)setRankingImage("/ranking/gold.png");
+      else if(10000<=rankingNum)setRankingImage("/ranking/purple.png");
+      setShowAndHide("classes.showImage");
+    }
+    fetchUser();
+  },[]);
+
+  async function handleMessage(){
+    history.push("/c/message");
+  }
   return (
     <Fragment>
       <AppBar position="sticky" className={classes.appBar}>
@@ -234,6 +286,9 @@ function NavBar(props) {
             width="100%"
             openAddBalanceDialog={openAddBalanceDialog}
           >
+            {/* <img src = {rankingImage} className = {showAndHide} style = {{width:40,height:40}}/> */}
+
+
             <Button
               color="secondary"
               size="large"
@@ -241,11 +296,13 @@ function NavBar(props) {
             >
               View List
             </Button>
-            <MessagePopperButton messages={messages} />
+            <MessageIcon onClick = {handleMessage} color=  "primary" style = {{marginRight:10,marginLeft:10}}/>
+            {/* <MessagePopperButton messages={messages} /> */}
             <ListItem
               disableGutters
               className={classNames(classes.iconListItem, classes.smBordered)}
             >
+              
               <Avatar
                 alt="profile picture"
                 src={`${process.env.PUBLIC_URL}/images/logged_in/profilePicture.jpg`}
@@ -270,7 +327,7 @@ function NavBar(props) {
                 style = {{marginTop:30,width:300}}
               >
                 <MenuItem onClick={handleClose}>Setting</MenuItem>
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleClose}>Profile<img src = {rankingImage} style = {{width:40, height:40}} /></MenuItem>
                 <MenuItem onClick={logOut}>Logout</MenuItem>
               </Menu>
           </Box>

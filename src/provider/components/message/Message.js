@@ -87,7 +87,7 @@ function Message() {
         } else {
           setUser(user.attributes.email);
           switch(user.attributes["custom:type"]*1){
-            case 1: 
+            case 2: 
               const eventlist2 = await API
                 .graphql(graphqlOperation(queries.listUserss, { filter: {
                   type: {eq:4} 
@@ -100,9 +100,6 @@ function Message() {
               var chatClientsList2 = eventlist1.data.listUserss.items
               var chatClientList = chatClientsList1.concat(chatClientsList2)
               setChatClient(chatClientList)
-              break;
-            case 2:
-              console.log(2)
               break;
             case 3:
               console.log(3)
@@ -199,7 +196,6 @@ function Message() {
             selected={selectedIndex === index}
             onClick={(event) => handleListItemClick(event, index, item.email)}
             key = {index}
-            style = {{width:"fit-content"}}
             >
               <ListItemAvatar>
                 <Avatar>

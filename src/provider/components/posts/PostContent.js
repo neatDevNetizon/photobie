@@ -153,7 +153,6 @@ function PostContent(props) {
         provider:user,
         eventid:props.id,
         description:bidText,
-        capacity:proCapacity,
         token:proToken,
         location:proLocation,
         images:e,
@@ -163,7 +162,6 @@ function PostContent(props) {
         provider:user,
         eventid:props.id,
         description:bidText,
-        capacity:proCapacity,
         token:proToken,
         location:proLocation,
         images:""
@@ -210,9 +208,6 @@ function PostContent(props) {
         
         </Grid>
         <Grid container spacing = {3} >
-          <Grid item xs = {12} md={3} >
-             <TextField id="outlined-search" label="Capacity" type="number" variant="outlined" onChange = {handleCapacity} />
-          </Grid>
           <Grid item xs = {12} md={3} >
              <TextField id="outlined-search" label="Token" type="number" variant="outlined" onChange = {handleToken} />
           </Grid>

@@ -142,6 +142,7 @@
 .chatClients {
   overflow-y: scroll;
   height: calc(100vh - 214px);
+  overflow-x: hidden;
 }
 
 #style-7::-webkit-scrollbar-track

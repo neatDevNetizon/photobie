@@ -6,7 +6,7 @@ import Dashboard from "./dashboard/Dashboard";
 import Posts from "./posts/Posts";
 import Subscription from "./subscription/Subscription";
 import PropsRoute from "../../shared/components/PropsRoute";
-
+import Message from "./message/Message"
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -15,26 +15,26 @@ const styles = (theme) => ({
       width: "100%",
       marginLeft: "auto",
       marginRight: "auto",
-      marginTop: theme.spacing(4),
-      marginBottom: theme.spacing(4),
+      // marginTop: theme.spacing(4),
+      // marginBottom: theme.spacing(4),
     },
     [theme.breakpoints.up("sm")]: {
-      marginTop: theme.spacing(6),
-      marginBottom: theme.spacing(6),
+      // marginTop: theme.spacing(6),
+      // marginBottom: theme.spacing(6),
       width: "100%",
       marginLeft: "auto",
       marginRight: "auto",
     },
     [theme.breakpoints.up("md")]: {
-      marginTop: theme.spacing(6),
-      marginBottom: theme.spacing(6),
+      // marginTop: theme.spacing(6),
+      // marginBottom: theme.spacing(6),
       width: "100%",
       marginLeft: "auto",
       marginRight: "auto",
     },
     [theme.breakpoints.up("lg")]: {
-      marginTop: theme.spacing(6),
-      marginBottom: theme.spacing(6),
+      // marginTop: theme.spacing(6),
+      // marginBottom: theme.spacing(6),
       width: "100%",
       marginLeft: "auto",
       marginRight: "auto",
@@ -86,6 +86,10 @@ function Routing(props) {
           pushMessageToSnackbar={pushMessageToSnackbar}
           selectSubscription={selectSubscription}
           openAddBalanceDialog={openAddBalanceDialog}
+        />
+        <PropsRoute
+          path="/p/message"
+          component={Message}
         />
         <PropsRoute
           path=""

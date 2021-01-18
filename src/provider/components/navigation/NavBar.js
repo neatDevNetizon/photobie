@@ -38,6 +38,7 @@ import MessageListItem from "./MessageListItem";
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import MessageIcon from "@material-ui/icons/Message";
 const styles = (theme) => ({
   
   appBar: {
@@ -201,6 +202,9 @@ function NavBar(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
+  async function handleMessage(){
+    history.push("/p/message");
+  }
   return (
     <Fragment>
       <AppBar position="sticky" className={classes.appBar}>
@@ -242,8 +246,8 @@ function NavBar(props) {
             >
               View List
             </Button>
-            <MessagePopperButton messages={messages} />
-            
+            {/* <MessagePopperButton messages={messages} /> */}
+            <MessageIcon onClick = {handleMessage} color=  "primary" style = {{marginRight:10,marginLeft:10}}/>
             <ListItem
               disableGutters
               className={classNames(classes.iconListItem, classes.smBordered)}

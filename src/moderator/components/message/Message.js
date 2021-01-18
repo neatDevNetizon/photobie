@@ -58,10 +58,7 @@ function Message() {
         .then((response) => {
           const items = response?.data?.listMessages?.items;
           if (items) {
-            // console.log(message)
-            // setMessages(items);
             message.push(...items)
-            console.log(message)
             var mmm = message
             mmm.sort(function(a, b){
              var aa = new Date(a.createdAt)
@@ -74,7 +71,6 @@ function Message() {
                return 0
              }
             })
-            console.log(mmm)
             setMessages(mmm)
           }
         })
@@ -87,25 +83,25 @@ function Message() {
         } else {
           setUser(user.attributes.email);
           switch(user.attributes["custom:type"]*1){
-            case 1: 
-              const eventlist2 = await API
+            case 3: 
+              const user4 = await API
                 .graphql(graphqlOperation(queries.listUserss, { filter: {
                   type: {eq:4} 
                 }}));
-              var chatClientsList1 = eventlist2.data.listUserss.items
-              const eventlist1 = await API
+              var userlist = user4.data.listUserss.items
+              const user1 = await API
                 .graphql(graphqlOperation(queries.listUserss, { filter: {
-                  type: {eq:3} 
+                  type: {eq:1} 
                 }}));
-              var chatClientsList2 = eventlist1.data.listUserss.items
-              var chatClientList = chatClientsList1.concat(chatClientsList2)
-              setChatClient(chatClientList)
-              break;
-            case 2:
-              console.log(2)
-              break;
-            case 3:
-              console.log(3)
+              var userlist1 = user1.data.listUserss.items
+              userlist = userlist.concat(userlist1)
+              const user2 = await API
+                .graphql(graphqlOperation(queries.listUserss, { filter: {
+                  type: {eq:2} 
+                }}));
+              var userlist2 = user2.data.listUserss.items;
+              userlist = userlist.concat(userlist2)
+              setChatClient(userlist)
               break;
             case 4:
               
@@ -199,7 +195,6 @@ function Message() {
             selected={selectedIndex === index}
             onClick={(event) => handleListItemClick(event, index, item.email)}
             key = {index}
-            style = {{width:"fit-content"}}
             >
               <ListItemAvatar>
                 <Avatar>

@@ -28,24 +28,14 @@ function Posts(props) {
 
   useEffect(() => {
     selectPosts();
+    // console.log(id)
   }, [selectPosts]);
-
-  if (isAddPostPaperOpen) {
-    return <AddPost
-      onClose={closeAddPostModal}
-      EmojiTextArea={EmojiTextArea}
-      ImageCropper={ImageCropper}
-      Dropzone={Dropzone}
-      DateTimePicker={DateTimePicker}
-      pushMessageToSnackbar={pushMessageToSnackbar}
-    />
-  }
+ 
   return <PostContent
-    openAddPostModal={openAddPostModal}
     posts={posts}
     setPosts={setPosts}
-    id = {id}
     pushMessageToSnackbar={pushMessageToSnackbar}
+    id = {id}
   />
 }
 

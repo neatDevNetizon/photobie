@@ -20,16 +20,17 @@ type Users @model {
   age:Int
   photo:String
   payment:String
+  verified:Int
 }
 type Providers @model {
   id:ID!
   provider:String!
   eventid:String!
   description:String!
-  capacity:Int!
   token:Int!
   location:String!
   images:String
+  clients:String
 }
 type Message
   @model
@@ -42,5 +43,22 @@ type Message
   status:Int!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
+}
+type UserA @model{
+  id:ID!
+  token:Int
+  having:Int
+  email:String!
+  eventid:String
+}
+type UserB @model{
+  id:ID!
+  likes:Int
+  token:Int
+  email:String!
+}
+type UserC @model {
+  id:ID!
+  email:String!
 }
 

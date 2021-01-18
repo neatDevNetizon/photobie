@@ -69,6 +69,7 @@ export const onCreateUsers = /* GraphQL */ `
       age
       photo
       payment
+      verified
       createdAt
       updatedAt
     }
@@ -85,6 +86,7 @@ export const onUpdateUsers = /* GraphQL */ `
       age
       photo
       payment
+      verified
       createdAt
       updatedAt
     }
@@ -101,6 +103,7 @@ export const onDeleteUsers = /* GraphQL */ `
       age
       photo
       payment
+      verified
       createdAt
       updatedAt
     }
@@ -113,10 +116,10 @@ export const onCreateProviders = /* GraphQL */ `
       provider
       eventid
       description
-      capacity
       token
       location
       images
+      clients
       createdAt
       updatedAt
     }
@@ -129,10 +132,10 @@ export const onUpdateProviders = /* GraphQL */ `
       provider
       eventid
       description
-      capacity
       token
       location
       images
+      clients
       createdAt
       updatedAt
     }
@@ -145,10 +148,10 @@ export const onDeleteProviders = /* GraphQL */ `
       provider
       eventid
       description
-      capacity
       token
       location
       images
+      clients
       createdAt
       updatedAt
     }
@@ -191,6 +194,111 @@ export const onDeleteMessage = /* GraphQL */ `
       receiver
       body
       status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateUserA = /* GraphQL */ `
+  subscription OnCreateUserA {
+    onCreateUserA {
+      id
+      token
+      having
+      email
+      eventid
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateUserA = /* GraphQL */ `
+  subscription OnUpdateUserA {
+    onUpdateUserA {
+      id
+      token
+      having
+      email
+      eventid
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteUserA = /* GraphQL */ `
+  subscription OnDeleteUserA {
+    onDeleteUserA {
+      id
+      token
+      having
+      email
+      eventid
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateUserB = /* GraphQL */ `
+  subscription OnCreateUserB {
+    onCreateUserB {
+      id
+      likes
+      token
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateUserB = /* GraphQL */ `
+  subscription OnUpdateUserB {
+    onUpdateUserB {
+      id
+      likes
+      token
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteUserB = /* GraphQL */ `
+  subscription OnDeleteUserB {
+    onDeleteUserB {
+      id
+      likes
+      token
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateUserC = /* GraphQL */ `
+  subscription OnCreateUserC {
+    onCreateUserC {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateUserC = /* GraphQL */ `
+  subscription OnUpdateUserC {
+    onUpdateUserC {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteUserC = /* GraphQL */ `
+  subscription OnDeleteUserC {
+    onDeleteUserC {
+      id
+      email
       createdAt
       updatedAt
     }
