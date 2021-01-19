@@ -80,12 +80,14 @@ function PostContent(props) {
   const [user, setUser] = useState("");
   const [file, setFile] = useState([]);
   const [toUpload, setToUpload] = useState([]);
-  const [proLocation, setProLocation] = useState('');
+  const [capacity, setCapacity] = useState(null);
+  // const [proLocation, setProLocation] = useState('');
   const [proCapacity, setProCapacity] = useState('');
   const [proToken, setProToken] = useState('');
   const [plusFade, setPlusFade] = useState("showPlus")
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
+  const [requiredToken, setRequiredToken] = useState(null);
   useEffect(() => {
     async function fetchUser() {
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
@@ -95,6 +97,8 @@ function PostContent(props) {
         setTitle(selEvent.title);
         setLocation(selEvent.location);
         setDescription(selEvent.description);
+        setCapacity(selEvent.capacity);
+        setRequiredToken(selEvent.token)
       })
       
     }
@@ -153,8 +157,9 @@ function PostContent(props) {
         provider:user,
         eventid:props.id,
         description:bidText,
+        capacity:proCapacity,
         token:proToken,
-        location:proLocation,
+        // location:proLocation,
         images:e,
       }
     } else{
@@ -162,8 +167,9 @@ function PostContent(props) {
         provider:user,
         eventid:props.id,
         description:bidText,
+        capacity:proCapacity,
         token:proToken,
-        location:proLocation,
+        // location:proLocation,
         images:""
       }
     }
@@ -183,9 +189,7 @@ function PostContent(props) {
   function handleToken(e){
     setProToken(e.target.value)
   }
-  function handleLocation(e){
-    setProLocation(e.target.value)
-  }
+  
   function handleCapacity(e){
     setProCapacity(e.target.value)
   }
@@ -198,22 +202,29 @@ function PostContent(props) {
         <img src = {imageSrc} style = {{width:"100%", marginTop:-50, height:400,objectFit:"cover"}}></img>
       </Paper>
       <Grid container spacing={3} style = {{width:"70%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
-        <Grid item xs = {12} md={4} >
+        <Grid item xs = {12} md={3} >
         <Typography>Details</Typography>
         </Grid>
-        <Grid item xs = {12} md={8} >
-        <Typography>{title}</Typography>
-        <Typography>{location}</Typography>
-        <Typography>{description}</Typography>
-        
+        <Grid item xs = {12} md={6} >
+          <Typography>Title : {title}</Typography>
+          <Typography>Location : {location}</Typography>
+          <Typography>{description}</Typography>
+          
+        </Grid>
+        <Grid item xs = {12} md={3} >
+          <Typography>Capacity:{capacity}</Typography>
+          <Typography>Required token : {requiredToken}</Typography>
         </Grid>
         <Grid container spacing = {3} >
           <Grid item xs = {12} md={3} >
+             <TextField id="outlined-search" label="Capacity" type="number" variant="outlined" onChange = {handleCapacity} />
+          </Grid>
+          <Grid item xs = {12} md={3} >
              <TextField id="outlined-search" label="Token" type="number" variant="outlined" onChange = {handleToken} />
           </Grid>
-          <Grid item xs = {12} md={6} >
+          {/* <Grid item xs = {12} md={6} >
              <TextField id="outlined-search" label="Location" type="text" variant="outlined" onChange = {handleLocation} style = {{width:"100%"}} />
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <Grid container spacing = {3} style = {{marginTop:20}}>

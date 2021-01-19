@@ -9,7 +9,7 @@ const background = "#f5f5f5";
 const warningLight = "rgba(253, 200, 69, .3)";
 const warningMain = "rgba(253, 200, 69, .5)";
 const warningDark = "rgba(253, 200, 69, .7)";
-
+const nicepink = "#9c27b0";
 // border
 const borderWidth = 2;
 const borderColor = "rgba(0, 0, 0, 0.13)";
@@ -28,6 +28,7 @@ const theme = createMuiTheme({
   palette: {
     primary: { main: primary },
     secondary: { main: secondary },
+    nicepink:{main:nicepink},
     common: {
       black,
       darkBlack

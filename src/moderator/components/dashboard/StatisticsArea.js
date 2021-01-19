@@ -8,11 +8,13 @@ import {
   CardContent,
   Typography,
   IconButton,
+  Button,
   Box,
 } from "@material-ui/core";
 import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import { connect } from 'react-redux';
 import UpdateIcon from '@material-ui/icons/Update';
+
 function StatisticsArea(props) {
   const { theme, CardChart, data,classes } = props;
   const [events, setEvents] = useState(['']);
@@ -73,12 +75,17 @@ function StatisticsArea(props) {
     fetchUser();
 
   },[])
-  
+  async function handleUpdate(){
+    console.log("adfadfadf11")
+  }
+  async function handleFinish(){
+    console.log("adfadfadf11")
+  }
   return (
     events.map((item, index)=>{
       return <Grid item xs={12} md={12} style = {{marginTop:15,marginRight:"2%",marginLeft:"2%", cursor:"pointer"}}>
-      <Card onClick = {()=>viewEvent(item.id)}>
-        <div style = {{display:"flex", flexDirection:"row",}}>
+      <Card >
+        <div style = {{display:"flex", flexDirection:"row",}} onClick = {()=>viewEvent(item.id)}>
         <Box style = {{display:"inline-block"}}>
           <img src = {item.image} style = {{width:300, height:"100%",objectFit:"cover"}}></img>
         </Box>
@@ -99,10 +106,11 @@ function StatisticsArea(props) {
                       aria-label="More"
                       aria-owns={isOpen ? "long-menu" : undefined}
                       aria-haspopup="true"
-                      onClick={handleClick}
+                      onClick={(e)=>handleUpdate}
                     >
                       <UpdateIcon />
                     </IconButton>
+                    
                 </div>
               </Box>
             </Box >

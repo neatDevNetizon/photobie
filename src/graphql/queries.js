@@ -15,6 +15,7 @@ export const getEvents = /* GraphQL */ `
       user
       status
       image
+      final
       createdAt
       updatedAt
     }
@@ -39,6 +40,7 @@ export const listEventss = /* GraphQL */ `
         user
         status
         image
+        final
         createdAt
         updatedAt
       }
@@ -95,9 +97,10 @@ export const getProviders = /* GraphQL */ `
       eventid
       description
       token
-      location
       images
       clients
+      capacity
+      status
       createdAt
       updatedAt
     }
@@ -116,9 +119,10 @@ export const listProviderss = /* GraphQL */ `
         eventid
         description
         token
-        location
         images
         clients
+        capacity
+        status
         createdAt
         updatedAt
       }

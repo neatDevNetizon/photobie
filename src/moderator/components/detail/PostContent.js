@@ -1,5 +1,6 @@
 import React, { useState, useCallback,useEffect } from "react";
 import PropTypes from "prop-types";
+import { useHistory } from "react-router-dom";
 import {
   Grid,
   TablePagination,
@@ -28,6 +29,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Rating from '@material-ui/lab/Rating';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import CheckIcon from '@material-ui/icons/Check';
+import LinearProgress from '@material-ui/core/LinearProgress';
 const styles = {
   dBlock: { display: "block" },
   dNone: { display: "none" },
@@ -54,23 +56,22 @@ const styles = {
 };
 
 function PostContent(props) {
+  const history = useHistory();
+
   const [imageSrc, setImageSrc] = useState("")
   const [title, setTitle] = useState("")
   const [location, setLocation] = useState("")
   const [description, setDescription] = useState("");
   const [providers, setProviders] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [expanded, setExpanded] = React.useState(false);
-  const [rankingStar, setRankingStar] = useState(0);
-  const [userToken, setUserToken] = useState("");
-  const [onDisable, setOnDisable] = useState(false);
-  const [checked, setChecked] = useState("primary");
   const [user, setUser] = useState("");
-  const [uptickState, setUptickStatus] = useState("Uptick")
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
+  const [awardFlag, setAwardFlag] = useState(null)
+  const [images, setImages] = useState([])
+  const [ranking, setRanking]= useState([]);
+  const [uptick, setUptick] = useState([]);
+  const [proEmail,setProEmail] = useState("")
   useEffect(() => {
+    
     async function fetchUser() {
       const user =await Auth.currentUserInfo();
       if(!user){
@@ -78,8 +79,6 @@ function PostContent(props) {
       } else if (user.attributes["custom:type"]){
        setUser(user.attributes.email)
       }
-      // setUser(user.data.listUserAs.items[0].email);
-
       
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
       const selEvent = eventlist.data.listEventss.items[0];
@@ -95,17 +94,15 @@ function PostContent(props) {
     async function fetchBids(){
       await API.graphql(graphqlOperation(queries.listProviderss, { filter: {eventid:{eq:props.id}}})).then(async(respnse)=>{
         const providers = respnse.data.listProviderss.items;
+
         var providerArray = [];
         for(let i = 0; i<providers.length;i++){
-          var uptickStatus = null;
-          var clientsList = providers[i].clients
+          var upticks = null;
+          var clientsList = providers[i].clients;
+          
           if(clientsList){
-            const aa = clientsList.indexOf(user)
-            if(aa>-1){
-              uptickStatus = 2;
-            }
-            else uptickStatus = 1;
-          } else { uptickStatus = 1;}
+            upticks = JSON.parse(clientsList).length;
+          } else { upticks = 0;}
 
           const ranking = await API
             .graphql(graphqlOperation(queries.listUserBs, { filter: {
@@ -138,16 +135,71 @@ function PostContent(props) {
             images: imageObject,
             ranking:rankingStarNum,
             providerId:providers[i].id,
-            uptick:uptickStatus,
+            upticks: upticks,
+            provEmail:providers[i].provider,
           })
           
         }
-        console.log(providerArray)
         setProviders(providerArray)
       })
     }
-    fetchUser();
-    fetchBids();
+    fetchEvent();
+    async function fetchEvent(){
+      await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}})).then(async(response)=>{
+        const eStatus = response.data.listEventss.items[0].status;
+        if(eStatus == 1){
+          fetchUser();
+          fetchBids();
+          setAwardFlag(1)
+        } else {
+          setAwardFlag(2)
+          fetchUser();
+          const eFinal = response.data.listEventss.items[0].final;
+          const finalData = eFinal.slice(1,eFinal.indexOf("&"))
+          fetchFinal(finalData);
+        }
+      })
+    }
+    async function fetchFinal(finalData){
+      await API.graphql(graphqlOperation(queries.listProviderss, { filter: {id:{eq:finalData}}})).then(async(respnse)=>{
+        const providers = respnse.data.listProviderss.items[0];
+        setProEmail(providers.provider);
+        var upticks = [];
+        var clientsList = providers.clients;
+        if(clientsList){
+          upticks.push({"capacity":providers.capacity, "upticks":JSON.parse(clientsList).length});
+        } else { upticks.push({"capacity":providers.capacity, "upticks": 0 })}
+
+        setUptick(upticks)
+          
+        var rankingArr = [];
+        const ranking = await API
+            .graphql(graphqlOperation(queries.listUserBs, { filter: {
+              email: {eq:providers.provider} 
+            }})).then((res)=>{
+                var rankingStarNum = 0;
+                const rankingNum = res.data.listUserBs.items[0].token*1;
+                if(rankingNum==0) rankingStarNum = 0;
+                else if(0<rankingNum&&rankingNum<100)rankingStarNum = 1;
+                else if(100<=rankingNum&&rankingNum<1000)rankingStarNum = 2;
+                else if(1000<=rankingNum&&rankingNum<3000)rankingStarNum = 3;
+                else if(3000<=rankingNum&&rankingNum<10000)rankingStarNum = 4;
+                else if(10000<=rankingNum)rankingStarNum = 5;
+                rankingArr.push([rankingStarNum])
+            });
+            setRanking(rankingArr)
+            var imageObject = []
+            var imageArray = providers.images.split(",");
+
+            for(let j = 0; j<imageArray.length-1; j++){
+            await Storage.get(imageArray[j], { expires: 300 }).then(res=>{
+                imageObject.push(res);
+            })
+          }
+          setImages(imageObject)
+      })
+    }
+    
   }, []);
   const responsive = {
     desktop: {
@@ -167,69 +219,35 @@ function PostContent(props) {
       slidesToSlide: 1 // optional, default to 1.
     }
   };
-  async function handleUptick(e, id, ios){
-    if(userToken<e){
-      alert("You have no token enough to uptick. ")
-    } else {
-      await API.graphql(graphqlOperation(queries.listProviderss,{filter:{id:{eq:id}}})).then(async(response)=>{
-        const clientsList = response.data.listProviderss.items[0].clients;
-        if(!clientsList){
-          var clientsData = [{"email":user}];
-          clientsData = JSON.stringify(clientsData)
-        } else {
-          var list = JSON.parse(clientsList);
 
-          await list.map((item, index)=>{
-            if(item.email == user) {
-              alert("Upticked already.");
-              return false;
-            }
-          });
-          list.push({"email":user});
-          clientsData = JSON.stringify(list);
-        }
-        await API.graphql(graphqlOperation(mutations.updateProviders,{input: {id:id, clients:clientsData}}))
-        const newProv = [...providers];
-        const providerArray = {
-          capacity:providers[ios].capacity,
-          token:providers[ios].token,
-          description:providers[ios].description,
-          location:providers[ios].location,
-          images: providers[ios].images,
-          ranking:providers[ios].ranking,
-          providerId:providers[ios].providerId,
-          uptick:2,
-        }
-        newProv[ios] = providerArray;
-        setProviders(newProv)
-      })
-      
-    }
-    
+  async function preFinish(provider, pEmail){
+    console.log(props.id, provider, pEmail)
+    history.push("/m/finalize?event="+props.id+"&provider="+provider+"&e="+pEmail)
   }
   return (
     <div>
       <Paper>
-        <img src = {imageSrc} style = {{width:"100%", marginTop:-50, height:500,objectFit:"cover"}} alt = "Loading"></img>
+        <img src = {imageSrc} style = {{width:"100%", marginTop:-30, height:500,objectFit:"cover"}} alt = "Loading"></img>
       </Paper>
       <Grid container spacing={3} style = {{width:"80%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
-        <Grid item xs = {12} md={4} >
-        <Typography>Details</Typography>
+        <Grid item xs = {12} md={3} >
+          <Typography>Details</Typography>
         </Grid>
-        <Grid item xs = {12} md={8} >
-        <Typography>{title}</Typography>
-        <Typography>{location}</Typography>
-        <Typography>{description}</Typography>
+        <Grid item xs = {12} md={9} >
+          <Typography>{title}</Typography>
+          <Typography>{location}</Typography>
+          <Typography>{description}</Typography>
+          
+        </Grid>
         
-        </Grid>
-        <Typography variant="h3" align="center" >
-          Provider's bid
+        <Typography variant="h4" align="center" >
+          {awardFlag==1?"Provider's bid":awardFlag==2?"Awarded Provider":""}
         </Typography>
-        <Grid item xs = {12} md = {12}>
+        {awardFlag == 1?<Grid item xs = {12} md = {12}>
           
           {providers.map((items, index)=>{
-            return <Card key = {index} style = {{marginTop:20,}}>
-              <Grid container spacing = {5}>
+            return <Card key = {index} style = {{marginTop:20, cursor:"pointer"}}>
+              <Grid container spacing = {4}>
                 <Grid item xs = {12} md = {4}>
                 <Carousel  
                     swipeable={false}
@@ -241,6 +259,7 @@ function PostContent(props) {
                     keyBoardControl={true}
                     
                     transitionDuration={500}
+                    
                     containerClass="carousel-container">
                     {items.images.map((imageUrl, i)=>{
                       return <div key = {i}>
@@ -252,7 +271,7 @@ function PostContent(props) {
                 </Carousel>
                   
                 </Grid>
-                <Grid item xs = {12} md = {8}>
+                <Grid item xs = {12} md = {6}  onClick = {()=>preFinish(items.providerId, items.provEmail)}>
                   <div style = {{display:"flex", flexDirection:"row"}}>
                     <Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>
                     <Rating
@@ -263,48 +282,89 @@ function PostContent(props) {
                       readOnly 
                       style = {{marginTop:30,marginLeft:20}}
                     />
-                    <Box  display="flex" justifyContent="flex-end" width = "80%">
-                      <IconButton
-                        aria-label="More"
-                        aria-haspopup="true"
-                        disabled = {items.uptick == 1?false:true}
-                        aria-label="add to shopping cart"
-                        onClick={() => handleUptick(items.token, items.providerId, index)}
-                      >
-                        <CheckIcon  color = {items.uptick==1?"primary":"secondary"}/>
-                        <Typography variant = "body1">{items.uptick==1?"Uptick":"Upticked"}</Typography>
-                        
-                      </IconButton>
-                    </Box>
+                    
                   </div>
                   <Grid container spacing = {3} style = {{margin:3}}>
                     
                     <Grid item xs = {12} md = {4}>
                       <Typography variant="body2" >
-                        Location : {items.location}
+                        Capacity : {items.capacity}
                       </Typography>
                     </Grid>
                 
-                    <Grid item xs = {12} md = {4}>
+                    {/* <Grid item xs = {12} md = {4}>
                       <Typography variant="body2" >
                         Suggested Token : {items.token}
                       </Typography>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                    {items.description.length > 300 ? <Typography variant="body2" >{items.description.slice(0, 400)+"..."}<ExpandMoreIcon style = {{float:"right", marginRight:20}}/></Typography>:<Typography variant="body2" >{items.description}</Typography>}
                   
+                </Grid>
+                <Grid item xs = {12} md = {2}>
+                  <Typography variant="body2" >
+                    Upticks : {items.upticks}
+                  </Typography>
+                  <Box display="flex" alignItems="center" marginLeft = {1}>
+                    <Box width="90%" mr={1}>
+                      <LinearProgress variant="determinate" value = {items.upticks/items.capacity*100} />
+                    </Box>
+                    <Box minWidth={35}>
+                      <Typography variant="body2" color="textSecondary">{items.upticks/items.capacity*100}%</Typography>
+                    </Box>
+                  </Box>
                 </Grid>
               </Grid>
               
             </Card>
           })}
-          
-
-
-        </Grid>
+        </Grid>:<Grid item xs= {12} md = {12}>
+        <Grid container spacing={3} style = {{marginTop:10, padding:10,}}>
+                <Grid item xs={12} md = {9}>
+                    <div style = {{display:"flex", flexDirection:"row",}}>
+                        <Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>
+                        <div style = {{flexDirection:"column", display:"flex", marginTop:5,marginLeft:10}}>
+                            <Typography variant="body2">
+                                {proEmail}
+                            </Typography> 
+                            {ranking.map((item, index)=>{
+                                return <Rating
+                                name="customized-empty"
+                                defaultValue={item}
+                                precision={0.1}
+                                key = {index}
+                                size="large"
+                                readOnly 
+                                // style = {{marginTop:30,marginLeft:20}}
+                                />
+                            })}
+                            
+                        </div>
+                    
+                  </div>
+                </Grid>
+                <Grid item xs = {12} md = {3}>
+                  {uptick.map((item, index)=>{
+                    return <div>
+                      <Typography variant="body2" >
+                      Upticks : {item.upticks}
+                    </Typography>
+                    <Box display="flex" alignItem="center" marginLeft = {1}>
+                      <Box width="90%" mr={1}>
+                        <LinearProgress variant="determinate" value = {item.upticks/item.capacity*100} />
+                      </Box>
+                      <Box minWidth={35}>
+                        <Typography variant="body2" color="textSecondary">{item.upticks/item.capacity*100}%</Typography>
+                      </Box>
+                    </Box>
+                    </div>
+                  })}
+                  
+                </Grid>
+            </Grid>
+          </Grid>}
         
       </Grid>
-      
     </div>
     
   );

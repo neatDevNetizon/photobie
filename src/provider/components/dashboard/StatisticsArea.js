@@ -38,7 +38,7 @@ function StatisticsArea(props) {
       } else{
         const email = user.attributes.email;
         
-        const eventlist = await API.graphql(graphqlOperation(queries.listEventss));
+        const eventlist = await API.graphql(graphqlOperation(queries.listEventss,{ filter: {status:{eq:1}}}));
           const data = eventlist.data.listEventss.items;
           let array = [];
           for(let i=0; i<data.length; i++){

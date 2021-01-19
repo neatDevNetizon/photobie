@@ -18,6 +18,7 @@ export const createEvents = /* GraphQL */ `
       user
       status
       image
+      final
       createdAt
       updatedAt
     }
@@ -40,6 +41,7 @@ export const updateEvents = /* GraphQL */ `
       user
       status
       image
+      final
       createdAt
       updatedAt
     }
@@ -62,6 +64,7 @@ export const deleteEvents = /* GraphQL */ `
       user
       status
       image
+      final
       createdAt
       updatedAt
     }
@@ -138,9 +141,10 @@ export const createProviders = /* GraphQL */ `
       eventid
       description
       token
-      location
       images
       clients
+      capacity
+      status
       createdAt
       updatedAt
     }
@@ -157,9 +161,10 @@ export const updateProviders = /* GraphQL */ `
       eventid
       description
       token
-      location
       images
       clients
+      capacity
+      status
       createdAt
       updatedAt
     }
@@ -176,9 +181,10 @@ export const deleteProviders = /* GraphQL */ `
       eventid
       description
       token
-      location
       images
       clients
+      capacity
+      status
       createdAt
       updatedAt
     }

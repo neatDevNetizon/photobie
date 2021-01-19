@@ -7,7 +7,8 @@ import Posts from "./posts/Posts";
 import Subscription from "./subscription/Subscription";
 import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"
-import Detail from "./detail/Posts"
+import Detail from "./detail/Posts";
+import Finalize from "./detail/Final";
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -75,6 +76,18 @@ function Routing(props) {
           <PropsRoute
           path="/m/detail"
           component={Detail}
+          EmojiTextArea={EmojiTextArea}
+          ImageCropper={ImageCropper}
+          Dropzone={Dropzone}
+          DateTimePicker={DateTimePicker}
+          pushMessageToSnackbar={pushMessageToSnackbar}
+          posts={posts}
+          setPosts={setPosts}
+          selectPosts={selectPosts}
+        />
+        <PropsRoute
+          path="/m/finalize"
+          component={Finalize}
           EmojiTextArea={EmojiTextArea}
           ImageCropper={ImageCropper}
           Dropzone={Dropzone}

@@ -10,6 +10,7 @@ type Events @model {
   user:String!
   status:Int!
   image:String
+  final:String
 }
 type Users @model {
   id:ID!
@@ -28,9 +29,10 @@ type Providers @model {
   eventid:String!
   description:String!
   token:Int!
-  location:String!
   images:String
   clients:String
+  capacity:Int!
+  status:Int
 }
 type Message
   @model

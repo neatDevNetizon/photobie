@@ -28,6 +28,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Rating from '@material-ui/lab/Rating';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import CheckIcon from '@material-ui/icons/Check';
+import LinearProgress from '@material-ui/core/LinearProgress';
 const styles = {
   dBlock: { display: "block" },
   dNone: { display: "none" },
@@ -65,23 +66,35 @@ function PostContent(props) {
   const [userToken, setUserToken] = useState("");
   const [onDisable, setOnDisable] = useState(false);
   const [checked, setChecked] = useState("primary");
+  const [uptickState, setUptickStatus] = useState("Uptick");
   const [user, setUser] = useState("");
-  const [uptickState, setUptickStatus] = useState("Uptick")
+  const [eventCapacity, setEventCapacity] = useState(null);
+  const [userId, setUserId] = useState("");
+
+
+  const [awardFlag, setAwardFlag] = useState(null)
+  const [images, setImages] = useState([])
+  const [ranking, setRanking]= useState([]);
+  const [uptick, setUptick] = useState([]);
+  const [proEmail,setProEmail] = useState("")
+
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
   useEffect(() => {
-    async function fetchUser() {
+    async function fetchUser(a,b) {
       const user =await Auth.currentUserInfo();
       if(!user){
         window.location.href = "/"
       } else if (user.attributes["custom:type"]){
-       setUser(user.attributes.email)
+       var userEmail = user.attributes.email;
+       setUser(userEmail)
       }
       // setUser(user.data.listUserAs.items[0].email);
 
       const userToken = await API.graphql(graphqlOperation(queries.listUserAs, { filter: {email:{eq:user.attributes.email}}}));
       setUserToken(userToken.data.listUserAs.items[0].token);
+      setUserId(userToken.data.listUserAs.items[0].id)
       
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
       const selEvent = eventlist.data.listEventss.items[0];
@@ -91,24 +104,27 @@ function PostContent(props) {
         setLocation(selEvent.location);
         setDescription(selEvent.description);
       })
-     
-      
+      if(a==1)fetchBids(userEmail);
+      else fetchFinal(b);
     }
-    async function fetchBids(){
+    async function fetchBids(userEmail){
       await API.graphql(graphqlOperation(queries.listProviderss, { filter: {eventid:{eq:props.id}}})).then(async(respnse)=>{
         const providers = respnse.data.listProviderss.items;
+        
         var providerArray = [];
         for(let i = 0; i<providers.length;i++){
           var uptickStatus = null;
-          var clientsList = providers[i].clients
+          var clientsList = providers[i].clients;
+          
           if(clientsList){
-            const aa = clientsList.indexOf(user)
-            if(aa>-1){
+            if(JSON.parse(clientsList).length>=providers[i].capacity && clientsList.indexOf(userEmail)<0){
+              uptickStatus = 3;
+            }
+            else if(clientsList.indexOf(userEmail)>=0){
               uptickStatus = 2;
             }
             else uptickStatus = 1;
           } else { uptickStatus = 1;}
-
           const ranking = await API
             .graphql(graphqlOperation(queries.listUserBs, { filter: {
               email: {eq:providers[i].provider} 
@@ -136,7 +152,7 @@ function PostContent(props) {
             capacity:providers[i].capacity,
             token:providers[i].token,
             description:providers[i].description,
-            location:providers[i].location,
+            // location:providers[i].location,
             images: imageObject,
             ranking:rankingStarNum,
             providerId:providers[i].id,
@@ -144,12 +160,65 @@ function PostContent(props) {
           })
           
         }
-        console.log(providerArray)
         setProviders(providerArray)
       })
     }
-    fetchUser();
-    fetchBids();
+    fetchEvent();
+    async function fetchEvent(){
+      await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}})).then(async(response)=>{
+        const eStatus = response.data.listEventss.items[0].status;
+        if(eStatus == 1){
+          fetchUser(1);
+          fetchBids();
+          setAwardFlag(1)
+        } else {
+          setAwardFlag(2)
+          
+          const eFinal = response.data.listEventss.items[0].final;
+          const finalData = eFinal.slice(1,eFinal.indexOf("&"))
+          fetchUser(2,finalData);
+        }
+      })
+    }
+    async function fetchFinal(finalData){
+      await API.graphql(graphqlOperation(queries.listProviderss, { filter: {id:{eq:finalData}}})).then(async(respnse)=>{
+        const providers = respnse.data.listProviderss.items[0];
+        setProEmail(providers.provider);
+        var upticks = [];
+        var clientsList = providers.clients;
+        if(clientsList){
+          upticks.push({"capacity":providers.capacity, "upticks":JSON.parse(clientsList).length});
+        } else { upticks.push({"capacity":providers.capacity, "upticks": 0 })}
+
+        setUptick(upticks)
+          
+        var rankingArr = [];
+        const ranking = await API
+            .graphql(graphqlOperation(queries.listUserBs, { filter: {
+              email: {eq:providers.provider} 
+            }})).then((res)=>{
+                var rankingStarNum = 0;
+                const rankingNum = res.data.listUserBs.items[0].token*1;
+                if(rankingNum==0) rankingStarNum = 0;
+                else if(0<rankingNum&&rankingNum<100)rankingStarNum = 1;
+                else if(100<=rankingNum&&rankingNum<1000)rankingStarNum = 2;
+                else if(1000<=rankingNum&&rankingNum<3000)rankingStarNum = 3;
+                else if(3000<=rankingNum&&rankingNum<10000)rankingStarNum = 4;
+                else if(10000<=rankingNum)rankingStarNum = 5;
+                rankingArr.push([rankingStarNum])
+            });
+            setRanking(rankingArr)
+            var imageObject = []
+            var imageArray = providers.images.split(",");
+
+            for(let j = 0; j<imageArray.length-1; j++){
+            await Storage.get(imageArray[j], { expires: 300 }).then(res=>{
+                imageObject.push(res);
+            })
+          }
+          setImages(imageObject)
+      })
+    }
   }, []);
   const responsive = {
     desktop: {
@@ -173,6 +242,9 @@ function PostContent(props) {
     if(userToken<e){
       alert("You have no token enough to uptick. ")
     } else {
+
+      console.log(userToken, e)
+      const upToken = userToken - e;
       await API.graphql(graphqlOperation(queries.listProviderss,{filter:{id:{eq:id}}})).then(async(response)=>{
         const clientsList = response.data.listProviderss.items[0].clients;
         if(!clientsList){
@@ -183,6 +255,7 @@ function PostContent(props) {
 
           await list.map((item, index)=>{
             if(item.email == user) {
+              console.log(user)
               alert("Upticked already.");
               return false;
             }
@@ -190,13 +263,14 @@ function PostContent(props) {
           list.push({"email":user});
           clientsData = JSON.stringify(list);
         }
-        await API.graphql(graphqlOperation(mutations.updateProviders,{input: {id:id, clients:clientsData}}))
+        await API.graphql(graphqlOperation(mutations.updateProviders,{input: {id:id, clients:clientsData}}));
+        await API.graphql(graphqlOperation(mutations.updateUserA, {input:{id:userId, token : upToken}}));
         const newProv = [...providers];
         const providerArray = {
           capacity:providers[ios].capacity,
           token:providers[ios].token,
           description:providers[ios].description,
-          location:providers[ios].location,
+          // location:providers[ios].location,
           images: providers[ios].images,
           ranking:providers[ios].ranking,
           providerId:providers[ios].providerId,
@@ -219,15 +293,15 @@ function PostContent(props) {
         <Typography>Details</Typography>
         </Grid>
         <Grid item xs = {12} md={8} >
-        <Typography>{title}</Typography>
-        <Typography>{location}</Typography>
+        <Typography>Title : {title}</Typography>
+        <Typography>Location : {location}</Typography>
         <Typography>{description}</Typography>
         
         </Grid>
-        <Typography variant="h3" align="center" >
-          Provider's bid
+        <Typography variant="h4" align="center" >
+          {awardFlag==1?"Provider's bid":awardFlag==2?"Awarded Provider":""}
         </Typography>
-        <Grid item xs = {12} md = {12}>
+        {awardFlag == 1?<Grid item xs = {12} md = {12}>
           
           {providers.map((items, index)=>{
             return <Card key = {index} style = {{marginTop:20,}}>
@@ -274,18 +348,13 @@ function PostContent(props) {
                         onClick={() => handleUptick(items.token, items.providerId, index)}
                       >
                         <CheckIcon  color = {items.uptick==1?"primary":"secondary"}/>
-                        <Typography variant = "body1">{items.uptick==1?"Uptick":"Upticked"}</Typography>
+                        <Typography variant = "body1">{items.uptick==1?"Uptick":items.uptick == 2?"Upticked":"Capacity is Full"}</Typography>
                         
                       </IconButton>
                     </Box>
                   </div>
                   <Grid container spacing = {3} style = {{margin:3}}>
                     
-                    <Grid item xs = {12} md = {4}>
-                      <Typography variant="body2" >
-                        Location : {items.location}
-                      </Typography>
-                    </Grid>
                 
                     <Grid item xs = {12} md = {4}>
                       <Typography variant="body2" >
@@ -303,7 +372,51 @@ function PostContent(props) {
           
 
 
-        </Grid>
+        </Grid>:<Grid item xs= {12} md = {12}>
+        <Grid container spacing={3} style = {{marginTop:10, padding:10,}}>
+                <Grid item xs={12} md = {9}>
+                    <div style = {{display:"flex", flexDirection:"row",}}>
+                    {awardFlag==1?"Provider's bid":awardFlag==2?<Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>:""}
+                        <div style = {{flexDirection:"column", display:"flex", marginTop:5,marginLeft:10}}>
+                            <Typography variant="body2">
+                                {proEmail}
+                            </Typography> 
+                            {ranking.map((item, index)=>{
+                                return <Rating
+                                name="customized-empty"
+                                defaultValue={item}
+                                precision={0.1}
+                                key = {index}
+                                size="large"
+                                readOnly 
+                                // style = {{marginTop:30,marginLeft:20}}
+                                />
+                            })}
+                            
+                        </div>
+                    
+                  </div>
+                </Grid>
+                <Grid item xs = {12} md = {3}>
+                  {uptick.map((item, index)=>{
+                    return <div>
+                      <Typography variant="body2" >
+                      Upticks : {item.upticks}
+                    </Typography>
+                    <Box display="flex" alignItem="center" marginLeft = {1}>
+                      <Box width="90%" mr={1}>
+                        <LinearProgress variant="determinate" value = {item.upticks/item.capacity*100} />
+                      </Box>
+                      <Box minWidth={35}>
+                        <Typography variant="body2" color="textSecondary">{item.upticks/item.capacity*100}%</Typography>
+                      </Box>
+                    </Box>
+                    </div>
+                  })}
+                  
+                </Grid>
+            </Grid>
+          </Grid>}
         
       </Grid>
       
