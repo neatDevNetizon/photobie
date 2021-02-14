@@ -7,7 +7,7 @@ import NavBar from "./navigation/NavBar";
 import ConsecutiveSnackbarMessages from "../../shared/components/ConsecutiveSnackbarMessages";
 import smoothScrollTop from "../../shared/functions/smoothScrollTop";
 import persons from "../dummy_data/persons";
-import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
+// import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
 import {Auth} from "aws-amplify"
 
 const styles = (theme) => ({
@@ -343,11 +343,11 @@ function Main(props) {
 
   return (
     <Fragment>
-      <LazyLoadAddBalanceDialog
+      {/* <LazyLoadAddBalanceDialog
         open={isAddBalanceDialogOpen}
         onClose={closeAddBalanceDialog}
         onSuccess={onPaymentSuccess}
-      />
+      /> */}
       <NavBar
         selectedTab={selectedTab}
         messages={messages}
@@ -372,7 +372,7 @@ function Main(props) {
           targets={targets}
           selectDashboard={selectDashboard}
           selectPosts={selectPosts}
-          selectSubscription={selectSubscription}
+          // selectSubscription={selectSubscription}
           openAddBalanceDialog={openAddBalanceDialog}
           setTargets={setTargets}
           setPosts={setPosts}

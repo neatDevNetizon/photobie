@@ -16,6 +16,7 @@ export const getEvents = /* GraphQL */ `
       status
       image
       final
+      upticktoken
       createdAt
       updatedAt
     }
@@ -41,6 +42,7 @@ export const listEventss = /* GraphQL */ `
         status
         image
         final
+        upticktoken
         createdAt
         updatedAt
       }
@@ -234,6 +236,7 @@ export const getUserC = /* GraphQL */ `
     getUserC(id: $id) {
       id
       email
+      token
       createdAt
       updatedAt
     }
@@ -249,6 +252,7 @@ export const listUserCs = /* GraphQL */ `
       items {
         id
         email
+        token
         createdAt
         updatedAt
       }

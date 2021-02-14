@@ -1,6 +1,7 @@
-import React, { Fragment, useRef, useCallback, useState } from "react";
+import React, { Fragment, useRef, useCallback, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
+import { useHistory } from "react-router-dom";
+import PropTypes, { resetWarningCache } from "prop-types";
 import classNames from "classnames";
 import {
   AppBar,
@@ -19,6 +20,7 @@ import {
   withStyles,
   isWidthUp,
   withWidth,
+  Popover,
 } from "@material-ui/core";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ImageIcon from "@material-ui/icons/Image";
@@ -30,8 +32,23 @@ import MessagePopperButton from "./MessagePopperButton";
 import SideDrawer from "./SideDrawer";
 import Balance from "./Balance";
 import NavigationDrawer from "../../../shared/components/NavigationDrawer";
+import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
+import 'bootstrap/dist/css/bootstrap.css';
+import MessageListItem from "./MessageListItem";
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import * as queries from '../../../graphql/queries';
+import MessageIcon from "@material-ui/icons/Message";
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
 
+
+const drawerWidth = 240;
 const styles = (theme) => ({
+  
   appBar: {
     boxShadow: theme.shadows[6],
     backgroundColor: theme.palette.common.white,
@@ -66,24 +83,39 @@ const styles = (theme) => ({
     backgroundColor: theme.palette.secondary.main,
     height: 24,
     width: 24,
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
+    cursor:"pointer",
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     [theme.breakpoints.down("xs")]: {
       marginLeft: theme.spacing(1.5),
       marginRight: theme.spacing(1.5),
     },
+    marginTop:5,
+  },
+  messageIcon:{
+    width:24,
+    height:24,
+    cursor:"pointer",
+    marginLeft: 10,
+    marginRight: 10,
+
   },
   drawerPaper: {
     height: "100%vh",
     whiteSpace: "nowrap",
     border: 0,
-    width: theme.spacing(7),
+    borderRight:"1px solid rgba(20, 20, 20, 0.5)",
     overflowX: "hidden",
     marginTop: theme.spacing(8),
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9),
-    },
-    backgroundColor: theme.palette.common.black,
+   
+    // backgroundColor: theme.palette.common.black,
+    
+    width: drawerWidth,
+  },
+
+  drawerPaper1:{
+    paddingTop: theme.spacing(7),
+    width:drawerWidth,
   },
   smBordered: {
     [theme.breakpoints.down("xs")]: {
@@ -111,6 +143,7 @@ const styles = (theme) => ({
   brandText: {
     fontFamily: "'Baloo Bhaijaan', cursive",
     fontWeight: 400,
+    cursor:"pointer"
   },
   username: {
     paddingLeft: 0,
@@ -124,93 +157,109 @@ const styles = (theme) => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
-});
+  dropdown:{
+    position: "relative",
+    display: "inline-block",
+    
+  },
 
+  drawer: {
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
+  },
+  // necessary for content to be below app bar
+  toolbar: theme.mixins.toolbar,
+
+  // drawerPaper: {
+  //   width: drawerWidth,
+  // },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+});
 function NavBar(props) {
   const { selectedTab, messages, classes, width, openAddBalanceDialog } = props;
   // Will be use to make website more accessible by screen readers
   const links = useRef([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [rankingImage, setRankingImage] = useState("")
+  const [showAndHide, setShowAndHide] = useState("classes.hideImage")
   const openMobileDrawer = useCallback(() => {
     setIsMobileOpen(true);
+    setMobileOpen(!mobileOpen);
   }, [setIsMobileOpen]);
 
-  const closeMobileDrawer = useCallback(() => {
-    setIsMobileOpen(false);
-  }, [setIsMobileOpen]);
+  async function logOut(){
+    try {
+        await Auth.signOut();
+        window.location.href = "/"
+    } catch (error) {
+        console.log('error signing out: ', error);
+    }
+  }
+ 
+  const history = useHistory();
+  const goListPage = () => history.push('/a/dashboard')
+  const goLandingPage = () => history.push("/");
+  const viewList = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  const openDrawer = useCallback(() => {
-    setIsSideDrawerOpen(true);
-  }, [setIsSideDrawerOpen]);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
-  const closeDrawer = useCallback(() => {
-    setIsSideDrawerOpen(false);
-  }, [setIsSideDrawerOpen]);
+  useEffect(()=>{
+    
+  },[]);
 
-  const menuItems = [
-    {
-      link: "/c/dashboard",
-      name: "Dashboard",
-      onClick: closeMobileDrawer,
-      icon: {
-        desktop: (
-          <DashboardIcon
-            className={
-              selectedTab === "Dashboard" ? classes.textPrimary : "text-white"
-            }
-            fontSize="small"
-          />
-        ),
-        mobile: <DashboardIcon className="text-white" />,
-      },
-    },
-    {
-      link: "/c/posts",
-      name: "Posts",
-      onClick: closeMobileDrawer,
-      icon: {
-        desktop: (
-          <ImageIcon
-            className={
-              selectedTab === "Posts" ? classes.textPrimary : "text-white"
-            }
-            fontSize="small"
-          />
-        ),
-        mobile: <ImageIcon className="text-white" />,
-      },
-    },
-    {
-      link: "/c/subscription",
-      name: "Subscription",
-      onClick: closeMobileDrawer,
-      icon: {
-        desktop: (
-          <AccountBalanceIcon
-            className={
-              selectedTab === "Subscription"
-                ? classes.textPrimary
-                : "text-white"
-            }
-            fontSize="small"
-          />
-        ),
-        mobile: <AccountBalanceIcon className="text-white" />,
-      },
-    },
-    {
-      link: "/",
-      name: "Logout",
-      icon: {
-        desktop: (
-          <PowerSettingsNewIcon className="text-white" fontSize="small" />
-        ),
-        mobile: <PowerSettingsNewIcon className="text-white" />,
-      },
-    },
-  ];
+  async function handleMessage(){
+    history.push("/a/message");
+  }
+  async function goGetToken(){
+    history.push("/a/getoken");
+  }
+
+
+
+  const { window } = props;
+  const theme = useTheme();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+  const drawer = (
+    <div>
+      {/* <div className={classes.toolbar} style = {{borderRight:"none",alignItems:"center"}}>photobie</div> */}
+      <Divider />
+      <List>
+        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
   return (
     <Fragment>
       <AppBar position="sticky" className={classes.appBar}>
@@ -228,21 +277,22 @@ function NavBar(props) {
               </Box>
             </Hidden>
             <Hidden xsDown>
+              
               <Typography
                 variant="h4"
                 className={classes.brandText}
                 display="inline"
                 color="primary"
+                onClick = {goLandingPage}
               >
-                Photo
-              </Typography>
-              <Typography
-                variant="h4"
-                className={classes.brandText}
-                display="inline"
-                color="secondary"
-              >
-                Bie
+                Photobie
+                {/* <Button
+                  color="secondary"
+                  size="large"
+                  onClick={goListPage}
+                >
+                  View List
+                </Button> */}
               </Typography>
             </Hidden>
           </Box>
@@ -251,105 +301,90 @@ function NavBar(props) {
             justifyContent="flex-end"
             alignItems="center"
             width="100%"
+            openAddBalanceDialog={openAddBalanceDialog}
           >
-            {isWidthUp("sm", width) && (
-              <Box mr={3}>
-                <Balance
-                  balance={2573}
-                  openAddBalanceDialog={openAddBalanceDialog}
-                />
-              </Box>
-            )}
-            <MessagePopperButton messages={messages} />
+            {/* <img src = {rankingImage} className = {showAndHide} style = {{width:40,height:40}}/> */}
+            {/* <Button
+              color="secondary"
+              size="large"
+              onClick={goGetToken}
+            >
+              Get token
+            </Button>
+
+            <Button
+              color="secondary"
+              size="large"
+              onClick={goListPage}
+            >
+              View List
+            </Button> */}
+            <MessageIcon onClick = {handleMessage} color=  "primary" style = {{marginRight:10,marginLeft:10}}/>
+            {/* <MessagePopperButton messages={messages} /> */}
             <ListItem
               disableGutters
               className={classNames(classes.iconListItem, classes.smBordered)}
             >
+              
               <Avatar
                 alt="profile picture"
                 src={`${process.env.PUBLIC_URL}/images/logged_in/profilePicture.jpg`}
                 className={classNames(classes.accountAvatar)}
+                onClick = {viewList}
               />
-              {isWidthUp("sm", width) && (
-                <ListItemText
-                  className={classes.username}
-                  primary={
-                    <Typography color="textPrimary">Admin</Typography>
-                  }
-                />
-              )}
             </ListItem>
+            <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                style = {{marginTop:30,width:300}}
+              >
+                <MenuItem onClick={handleClose}>Setting</MenuItem>
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={logOut}>Logout</MenuItem>
+              </Menu>
           </Box>
-          <IconButton
-            onClick={openDrawer}
-            color="primary"
-            aria-label="Open Sidedrawer"
-          >
-            <SupervisorAccountIcon />
-          </IconButton>
-          <SideDrawer open={isSideDrawerOpen} onClose={closeDrawer} />
+          
         </Toolbar>
       </AppBar>
-      <Hidden xsDown>
-        <Drawer //  both drawers can be combined into one for performance
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-          open={false}
-        >
-          <List>
-            {menuItems.map((element, index) => (
-              <Link
-                to={element.link}
-                className={classes.menuLink}
-                onClick={element.onClick}
-                key={index}
-                ref={(node) => {
-                  links.current[index] = node;
-                }}
-              >
-                <Tooltip
-                  title={element.name}
-                  placement="right"
-                  key={element.name}
-                >
-                  <ListItem
-                    selected={selectedTab === element.name}
-                    button
-                    divider={index !== menuItems.length - 1}
-                    className={classes.permanentDrawerListItem}
-                    onClick={() => {
-                      links.current[index].click();
-                    }}
-                    aria-label={
-                      element.name === "Logout"
-                        ? "Logout"
-                        : `Go to ${element.name}`
-                    }
-                  >
-                    <ListItemIcon className={classes.justifyCenter}>
-                      {element.icon.desktop}
-                    </ListItemIcon>
-                  </ListItem>
-                </Tooltip>
-              </Link>
-            ))}
-          </List>
-        </Drawer>
-      </Hidden>
-      <NavigationDrawer
-        menuItems={menuItems.map((element) => ({
-          link: element.link,
-          name: element.name,
-          icon: element.icon.mobile,
-          onClick: element.onClick,
-        }))}
-        anchor="left"
-        open={isMobileOpen}
-        selectedItem={selectedTab}
-        onClose={closeMobileDrawer}
-      />
+      <Hidden smUp implementation="css">
+          <Drawer
+            // container={container}
+            variant="temporary"
+            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper1,
+            }}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+        <Hidden xsDown implementation="css">
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
     </Fragment>
   );
 }

@@ -244,6 +244,9 @@ function NavBar(props) {
   async function handleMessage(){
     history.push("/c/message");
   }
+  async function goGetToken(){
+    history.push("/c/getoken");
+  }
   return (
     <Fragment>
       <AppBar position="sticky" className={classes.appBar}>
@@ -287,7 +290,13 @@ function NavBar(props) {
             openAddBalanceDialog={openAddBalanceDialog}
           >
             {/* <img src = {rankingImage} className = {showAndHide} style = {{width:40,height:40}}/> */}
-
+            <Button
+              color="secondary"
+              size="large"
+              onClick={goGetToken}
+            >
+              Get token
+            </Button>
 
             <Button
               color="secondary"

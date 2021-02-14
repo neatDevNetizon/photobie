@@ -227,7 +227,7 @@ function PostContent(props) {
   return (
     <div>
       <Paper>
-        <img src = {imageSrc} style = {{width:"100%", marginTop:-30, height:500,objectFit:"cover"}} alt = "Loading"></img>
+        <img src = {imageSrc} style = {{width:"100%", marginTop:-30, height:500,objectFit:"cover"}} alt = ""></img>
       </Paper>
       <Grid container spacing={3} style = {{width:"80%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
         <Grid item xs = {12} md={3} >
@@ -354,7 +354,7 @@ function PostContent(props) {
                         <LinearProgress variant="determinate" value = {item.upticks/item.capacity*100} />
                       </Box>
                       <Box minWidth={35}>
-                        <Typography variant="body2" color="textSecondary">{item.upticks/item.capacity*100}%</Typography>
+                        <Typography variant="body2" color="textSecondary">{Number(item.upticks/item.capacity*100).toFixed(2)}%</Typography>
                       </Box>
                     </Box>
                     </div>

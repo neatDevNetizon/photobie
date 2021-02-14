@@ -4,9 +4,10 @@ import { Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
 import Dashboard from "./dashboard/Dashboard";
 import Posts from "./posts/Posts";
-import Subscription from "./subscription/Subscription";
+// import Subscription from "./subscription/Subscription";
 import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"
+import GetToken from "./pricing/Price"
 
 const styles = (theme) => ({
   wrapper: {
@@ -85,13 +86,17 @@ function Routing(props) {
           component={Message}
         />
         <PropsRoute
+          path="/c/getoken"
+          component={GetToken}
+        />
+        {/* <PropsRoute
           path="/c/details"
           component={Subscription}
           transactions={transactions}
           pushMessageToSnackbar={pushMessageToSnackbar}
           selectSubscription={selectSubscription}
           openAddBalanceDialog={openAddBalanceDialog}
-        />
+        /> */}
         <PropsRoute
           path=""
           component={Dashboard}

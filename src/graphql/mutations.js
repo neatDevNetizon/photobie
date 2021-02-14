@@ -19,6 +19,7 @@ export const createEvents = /* GraphQL */ `
       status
       image
       final
+      upticktoken
       createdAt
       updatedAt
     }
@@ -42,6 +43,7 @@ export const updateEvents = /* GraphQL */ `
       status
       image
       final
+      upticktoken
       createdAt
       updatedAt
     }
@@ -65,6 +67,7 @@ export const deleteEvents = /* GraphQL */ `
       status
       image
       final
+      upticktoken
       createdAt
       updatedAt
     }
@@ -342,6 +345,7 @@ export const createUserC = /* GraphQL */ `
     createUserC(input: $input, condition: $condition) {
       id
       email
+      token
       createdAt
       updatedAt
     }
@@ -355,6 +359,7 @@ export const updateUserC = /* GraphQL */ `
     updateUserC(input: $input, condition: $condition) {
       id
       email
+      token
       createdAt
       updatedAt
     }
@@ -368,6 +373,7 @@ export const deleteUserC = /* GraphQL */ `
     deleteUserC(input: $input, condition: $condition) {
       id
       email
+      token
       createdAt
       updatedAt
     }

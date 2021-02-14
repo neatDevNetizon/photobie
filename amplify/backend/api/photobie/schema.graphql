@@ -11,6 +11,7 @@ type Events @model {
   status:Int!
   image:String
   final:String
+  upticktoken:Int
 }
 type Users @model {
   id:ID!
@@ -62,5 +63,6 @@ type UserB @model{
 type UserC @model {
   id:ID!
   email:String!
+  token:Int
 }
 

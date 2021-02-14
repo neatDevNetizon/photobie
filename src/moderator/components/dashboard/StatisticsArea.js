@@ -75,7 +75,7 @@ function StatisticsArea(props) {
     fetchUser();
 
   },[])
-  async function handleUpdate(){
+  async function handleUpdate(e){
     console.log("adfadfadf11")
   }
   async function handleFinish(){
@@ -101,7 +101,7 @@ function StatisticsArea(props) {
                   </Typography>
                   
                 </div>
-                <div>
+                {/* <div>
                   <IconButton
                       aria-label="More"
                       aria-owns={isOpen ? "long-menu" : undefined}
@@ -111,7 +111,7 @@ function StatisticsArea(props) {
                       <UpdateIcon />
                     </IconButton>
                     
-                </div>
+                </div> */}
               </Box>
             </Box >
             

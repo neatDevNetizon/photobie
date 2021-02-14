@@ -16,6 +16,7 @@ export const onCreateEvents = /* GraphQL */ `
       status
       image
       final
+      upticktoken
       createdAt
       updatedAt
     }
@@ -36,6 +37,7 @@ export const onUpdateEvents = /* GraphQL */ `
       status
       image
       final
+      upticktoken
       createdAt
       updatedAt
     }
@@ -56,6 +58,7 @@ export const onDeleteEvents = /* GraphQL */ `
       status
       image
       final
+      upticktoken
       createdAt
       updatedAt
     }
@@ -285,6 +288,7 @@ export const onCreateUserC = /* GraphQL */ `
     onCreateUserC {
       id
       email
+      token
       createdAt
       updatedAt
     }
@@ -295,6 +299,7 @@ export const onUpdateUserC = /* GraphQL */ `
     onUpdateUserC {
       id
       email
+      token
       createdAt
       updatedAt
     }
@@ -305,6 +310,7 @@ export const onDeleteUserC = /* GraphQL */ `
     onDeleteUserC {
       id
       email
+      token
       createdAt
       updatedAt
     }

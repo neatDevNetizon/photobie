@@ -73,6 +73,7 @@ function RegisterDialog(props) {
               "custom:type":userTypeFlag.toString()
           }
       });
+      console.log(username, password,userTypeFlag)
       console.log(user)
       const data = {
         email:username,

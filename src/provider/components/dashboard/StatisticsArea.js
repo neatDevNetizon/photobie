@@ -22,13 +22,18 @@ import * as queries from '../../../graphql/queries';
 function StatisticsArea(props) {
   const { theme, CardChart, data,classes, viewMode, width} = props;
   const [events, setEvents] = useState(['']);
-  const[pageNum, setPageNum] = useState(1)
+  const[pageNum, setPageNum] = useState(1);
+  const [user, setUser] = useState("")
   function handleClick(){
     setPageNum(2)
   }
   const history = useHistory();
-  const viewEvent = async(event)=>{
-    history.push("/p/detail?id="+event);
+  const viewEvent = async(event)=>{ 
+    const evalBid = await API.graphql(graphqlOperation(queries.listProviderss, {filter:{eventid:{eq:event}, provider:{eq:user}}}));
+    if(evalBid?.data?.listProviderss?.items[0]?.provider){
+       alert("You have already bid in this event.")
+    } else history.push("/p/detail?id="+event);
+    
   }
   useEffect(()=>{
     async function fetchUser() {
@@ -37,7 +42,7 @@ function StatisticsArea(props) {
         window.location.href = "/"
       } else{
         const email = user.attributes.email;
-        
+        setUser(email)
         const eventlist = await API.graphql(graphqlOperation(queries.listEventss,{ filter: {status:{eq:1}}}));
           const data = eventlist.data.listEventss.items;
           let array = [];

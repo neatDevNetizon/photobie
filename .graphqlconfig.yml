@@ -1,15 +1,4 @@
-projects:
-  photobie:
-    schemaPath: amplify/backend/api/photobie/build/schema.graphql
-    includes:
-      - src/graphql/**/*.js
-    excludes:
-      - ./amplify/**
-    extensions:
-      amplify:
-        codeGenTarget: javascript
-        generatedFileName: ''
-        docsFilePath: src/graphql
+projects: {}
 extensions:
   amplify:
     version: 3

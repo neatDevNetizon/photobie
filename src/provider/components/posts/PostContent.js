@@ -202,10 +202,10 @@ function PostContent(props) {
         <img src = {imageSrc} style = {{width:"100%", marginTop:-50, height:400,objectFit:"cover"}}></img>
       </Paper>
       <Grid container spacing={3} style = {{width:"70%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
-        <Grid item xs = {12} md={3} >
+        <Grid item xs = {12} md={1} >
         <Typography>Details</Typography>
         </Grid>
-        <Grid item xs = {12} md={6} >
+        <Grid item xs = {12} md={8} >
           <Typography>Title : {title}</Typography>
           <Typography>Location : {location}</Typography>
           <Typography>{description}</Typography>

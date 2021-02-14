@@ -70,6 +70,11 @@ function PostContent(props) {
   const [ranking, setRanking]= useState([]);
   const [uptick, setUptick] = useState([]);
   const [final, setFinal] = useState("");
+  const [totalToken, setTotalToken] = useState(0);
+  const [userBsId, setUserBsId] = useState("")
+  const [userCsToken,setUserCsToken] = useState(0);
+  const [userBsToken,setUserBsToken] = useState(0);
+
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -93,11 +98,16 @@ function PostContent(props) {
       if(!user){
         window.location.href = "/"
       } else if (user.attributes["custom:type"]){
-       setUser(user.attributes.email)
+      //  setUser(user.attributes.email);
+       const cId = await API.graphql(graphqlOperation(queries.listUserCs, {filter:{email:{eq:user.attributes.email}}})).then((res)=>{
+         setUser(res.data.listUserCs.items[0].id)
+         setUserCsToken(res?.data?.listUserCs?.items[0]?.token)
+       })
       }
       
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:event}}}));
       const selEvent = eventlist.data.listEventss.items[0];
+      setTotalToken(selEvent.upticktoken);
       await Storage.get(selEvent.image, { expires: 300 }).then(res=>{
         setImageSrc(res)
       })
@@ -131,6 +141,8 @@ function PostContent(props) {
                 else if(3000<=rankingNum&&rankingNum<10000)rankingStarNum = 4;
                 else if(10000<=rankingNum)rankingStarNum = 5;
                 rankingArr.push([rankingStarNum])
+                setUserBsId(res.data.listUserBs.items[0].id)
+                setUserBsToken(res.data.listUserBs.items[0].token)
             });
             setRanking(rankingArr)
             var imageObject = []
@@ -152,9 +164,14 @@ function PostContent(props) {
   async function handleFinish(){
     
     if(window.confirm("Will you finish this event?")){
+      const tokenB = Math.floor(totalToken*0.8)+userBsToken*1;
+      const tokenC = Math.floor(totalToken*0.2)+userCsToken*1;
       const updateEvent = await API.graphql(graphqlOperation(mutations.updateEvents, {input:{id:event, status:3, final:final}}));
       const updateProv = await API.graphql(graphqlOperation(mutations.updateProviders, {input:{id:providerId, status:3}}));
-      if(updateEvent&&updateProv){
+
+      const updateB = await API.graphql(graphqlOperation(mutations.updateUserB, {input:{id:userBsId, token : tokenB}}));
+      const updateC = await API.graphql(graphqlOperation(mutations.updateUserC, {input:{id:user, token : tokenC}}));
+      if(updateEvent && updateProv && updateB && updateC){
         history.push("/m/detail?id="+event);
       }
 
@@ -229,7 +246,7 @@ function PostContent(props) {
                         <LinearProgress variant="determinate" value = {item.upticks/item.capacity*100} />
                       </Box>
                       <Box minWidth={35}>
-                        <Typography variant="body2" color="textSecondary">{item.upticks/item.capacity*100}%</Typography>
+                        <Typography variant="body2" color="textSecondary">{Number(item.upticks/item.capacity*100).toFixed(2)}%</Typography>
                       </Box>
                     </Box>
                     </div>

@@ -29,6 +29,8 @@ import Rating from '@material-ui/lab/Rating';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import CheckIcon from '@material-ui/icons/Check';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import {useHistory} from "react-router-dom"
+
 const styles = {
   dBlock: { display: "block" },
   dNone: { display: "none" },
@@ -70,7 +72,7 @@ function PostContent(props) {
   const [user, setUser] = useState("");
   const [eventCapacity, setEventCapacity] = useState(null);
   const [userId, setUserId] = useState("");
-
+  const [uptickedToken, setUptickedToken] = useState(0)
 
   const [awardFlag, setAwardFlag] = useState(null)
   const [images, setImages] = useState([])
@@ -81,6 +83,7 @@ function PostContent(props) {
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
+  const history = useHistory();
   useEffect(() => {
     async function fetchUser(a,b) {
       const user =await Auth.currentUserInfo();
@@ -167,6 +170,9 @@ function PostContent(props) {
     async function fetchEvent(){
       await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}})).then(async(response)=>{
         const eStatus = response.data.listEventss.items[0].status;
+        const upticked = response.data.listEventss.items[0].upticktoken;
+        console.log(upticked)
+        setUptickedToken(upticked);
         if(eStatus == 1){
           fetchUser(1);
           fetchBids();
@@ -241,10 +247,13 @@ function PostContent(props) {
   async function handleUptick(e, id, ios){
     if(userToken<e){
       alert("You have no token enough to uptick. ")
+      history.push("/c/getoken")
     } else {
 
       console.log(userToken, e)
       const upToken = userToken - e;
+      const totalToken = e + uptickedToken*1;
+      console.log(totalToken)
       await API.graphql(graphqlOperation(queries.listProviderss,{filter:{id:{eq:id}}})).then(async(response)=>{
         const clientsList = response.data.listProviderss.items[0].clients;
         if(!clientsList){
@@ -265,6 +274,7 @@ function PostContent(props) {
         }
         await API.graphql(graphqlOperation(mutations.updateProviders,{input: {id:id, clients:clientsData}}));
         await API.graphql(graphqlOperation(mutations.updateUserA, {input:{id:userId, token : upToken}}));
+        await API.graphql(graphqlOperation(mutations.updateEvents, {input:{id:props.id, upticktoken : totalToken}}));
         const newProv = [...providers];
         const providerArray = {
           capacity:providers[ios].capacity,
