@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useCallback, useState } from "react";
+import React, { Fragment, useRef, useCallback, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -32,13 +32,18 @@ import MessagePopperButton from "./MessagePopperButton";
 import SideDrawer from "./SideDrawer";
 import Balance from "./Balance";
 import NavigationDrawer from "../../../shared/components/NavigationDrawer";
-import {Auth} from 'aws-amplify';
 import 'bootstrap/dist/css/bootstrap.css';
 import MessageListItem from "./MessageListItem";
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MessageIcon from "@material-ui/icons/Message";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { addTodoAction } from '../../../actions/addTodoAction';
+import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
+import * as queries from '../../../graphql/queries';
+
 const styles = (theme) => ({
   
   appBar: {
@@ -73,8 +78,8 @@ const styles = (theme) => ({
   },
   accountAvatar: {
     backgroundColor: theme.palette.secondary.main,
-    height: 24,
-    width: 24,
+    height: 35,
+    width: 35,
     cursor:"pointer",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
@@ -167,6 +172,7 @@ function NavBar(props) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [userAvatar, setUserAvatar] = useState();
   const openMobileDrawer = useCallback(() => {
     setIsMobileOpen(true);
   }, [setIsMobileOpen]);
@@ -182,6 +188,30 @@ function NavBar(props) {
   const closeDrawer = useCallback(() => {
     setIsSideDrawerOpen(false);
   }, [setIsSideDrawerOpen]);
+
+  useEffect(()=>{
+    if(props.items){
+      setUserAvatar(props.items);
+    }
+    
+  })
+  useEffect(()=>{
+    async function fetchUser() {
+      const user = await Auth.currentUserInfo()
+      if(!user){
+        window.location.href = "/"
+      }
+      else {
+        const id = user.attributes.email;
+        const userToken = await API.graphql(graphqlOperation(queries.listUserss, { filter: {email:{eq:id}}}));
+        await Storage.get(userToken.data.listUserss.items[0].photo, { expires: 300 }).then(res=>{
+          setUserAvatar(res)
+        })
+      }
+    }
+    
+    fetchUser();
+  },[]);
   async function logOut(){
     try {
         await Auth.signOut();
@@ -209,6 +239,14 @@ function NavBar(props) {
 
   async function handleMessage(){
     history.push("/m/message");
+  }
+
+  async function goGetToken(){
+    history.push("/m/getoken");
+  }
+  async function editProfile(){
+    history.push("/m/editprofile")
+    handleClose();
   }
   return (
     <Fragment>
@@ -247,6 +285,14 @@ function NavBar(props) {
             <Button
               color="secondary"
               size="large"
+              onClick={goGetToken}
+            >
+              Get token
+            </Button>
+
+            <Button
+              color="secondary"
+              size="large"
               onClick={goListPage}
             >
               View List
@@ -267,8 +313,7 @@ function NavBar(props) {
               
             >
               <Avatar
-                alt="profile picture"
-                src={`${process.env.PUBLIC_URL}/images/logged_in/profilePicture.jpg`}
+                src={userAvatar}
                 className={classNames(classes.accountAvatar)}
                 onClick = {viewList}
               />
@@ -290,7 +335,7 @@ function NavBar(props) {
                 style = {{marginTop:30, width:300}}
               >
                 <MenuItem onClick={handleClose}>Setting</MenuItem>
-                <MenuItem onClick={handleClose}>Manage your Profile</MenuItem>
+                <MenuItem onClick={editProfile}>Profile</MenuItem>
                 <MenuItem onClick={logOut}>Logout</MenuItem>
               </Menu>
           </Box>
@@ -308,5 +353,14 @@ NavBar.propTypes = {
   classes: PropTypes.object.isRequired,
   openAddBalanceDialog: PropTypes.func.isRequired,
 };
+const mapStateToProps = () => state => {
+  return {
+      items: state.userEmail
+  };
+};
+const mapDistachToProps = () => dispatch => {
+  return bindActionCreators({ addTodo: addTodoAction }, dispatch);
+};
 
-export default withWidth()(withStyles(styles, { withTheme: true })(NavBar));
+export default withWidth()(withStyles(styles, { withTheme: true })(connect(mapStateToProps,mapDistachToProps)(NavBar)));
+

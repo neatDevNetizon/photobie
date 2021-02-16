@@ -94,6 +94,7 @@ function Dashboard(props) {
   } = props;
 
   useEffect(()=>{
+    console.log(props)
   }, []);
   const classes = useStyles();
   return (

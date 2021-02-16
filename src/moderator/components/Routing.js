@@ -9,6 +9,9 @@ import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"
 import Detail from "./detail/Posts";
 import Finalize from "./detail/Final";
+import GetToken from "./pricing/Price"
+import Profile from "./profile/main"
+
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -74,6 +77,10 @@ function Routing(props) {
             component={Message}
           />
           <PropsRoute
+          path="/m/editprofile"
+          component={Profile}
+        />
+          <PropsRoute
           path="/m/detail"
           component={Detail}
           EmojiTextArea={EmojiTextArea}
@@ -84,6 +91,10 @@ function Routing(props) {
           posts={posts}
           setPosts={setPosts}
           selectPosts={selectPosts}
+        />
+        <PropsRoute
+          path="/m/getoken"
+          component={GetToken}
         />
         <PropsRoute
           path="/m/finalize"
@@ -129,6 +140,7 @@ function Routing(props) {
           isAccountActivated={isAccountActivated}
           selectDashboard={selectDashboard}
         />
+        
       </Switch>
     </div>
   );

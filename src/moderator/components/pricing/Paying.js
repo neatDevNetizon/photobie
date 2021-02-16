@@ -42,7 +42,7 @@ const AddBalanceDialog = withTheme(function (props) {
   const [userEmail, setUserEmail] = useState("")
   const [userToken, setUserToken] = useState("");
   const [userId, setUserId] = useState("");
-  
+
   const onAmountChange = amount => {
     if (amount < 0) {
       return;
@@ -62,9 +62,9 @@ const AddBalanceDialog = withTheme(function (props) {
         const email = user.attributes.email;
         setUserEmail(email);
 
-        const userToken = await API.graphql(graphqlOperation(queries.listUserAs, { filter: {email:{eq:email}}}));
-        setUserToken(userToken.data.listUserAs.items[0].token);
-        setUserId(userToken.data.listUserAs.items[0].id)
+        const userToken = await API.graphql(graphqlOperation(queries.listUserCs, { filter: {email:{eq:email}}}));
+        setUserToken(userToken.data.listUserCs.items[0].token);
+        setUserId(userToken.data.listUserCs.items[0].id)
       }
       return ;
     }
@@ -184,7 +184,7 @@ const AddBalanceDialog = withTheme(function (props) {
             console.log(response)
             if(response.err==null){
 
-                await API.graphql(graphqlOperation(mutations.updateUserA, {input:{id:userId, token : tokenNum+userToken}})).then((res)=>{
+                await API.graphql(graphqlOperation(mutations.updateUserC, {input:{id:userId, token : tokenNum+userToken}})).then((res)=>{
                   // console.log(res)
                   setLoading(false);
                   onClose();

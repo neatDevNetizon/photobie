@@ -119,6 +119,8 @@ function PostContent(props) {
     if(e.target.files[0]&&file.length<=8){
       setFile([...file, URL.createObjectURL(e.target.files[0])]);
       setToUpload([...toUpload, e.target.files[0]]);
+
+      console.log(e.target.files[0])
       if(file.length==7) setPlusFade("hidePlus")
     } 
     return ;

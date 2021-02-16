@@ -195,6 +195,7 @@ function SubscriptionInfo(props) {
   }
   async function handleImageChange(e){
     if(e.target.files[0]){
+      console.log(e.target.files[0])
       e.preventDefault();
       let file = e.target.files[0];
       let reader = URL.createObjectURL(e.target.files[0])

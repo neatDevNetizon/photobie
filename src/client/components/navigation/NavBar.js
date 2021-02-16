@@ -40,6 +40,10 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import * as queries from '../../../graphql/queries';
 import MessageIcon from "@material-ui/icons/Message";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { addTodoAction } from '../../../actions/addTodoAction';
+
 const styles = (theme) => ({
   
   appBar: {
@@ -74,8 +78,8 @@ const styles = (theme) => ({
   },
   accountAvatar: {
     backgroundColor: theme.palette.secondary.main,
-    height: 24,
-    width: 24,
+    height: 35,
+    width: 35,
     cursor:"pointer",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
@@ -83,6 +87,7 @@ const styles = (theme) => ({
       marginLeft: theme.spacing(1.5),
       marginRight: theme.spacing(1.5),
     },
+    border:"none"
   },
   messageIcon:{
     width:24,
@@ -179,7 +184,6 @@ const styles = (theme) => ({
 });
 function NavBar(props) {
   const { selectedTab, messages, classes, width, openAddBalanceDialog } = props;
-  // Will be use to make website more accessible by screen readers
   const links = useRef([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
@@ -189,7 +193,7 @@ function NavBar(props) {
   const openMobileDrawer = useCallback(() => {
     setIsMobileOpen(true);
   }, [setIsMobileOpen]);
-
+  const [userAvatar, setUserAvatar] = useState()
   async function logOut(){
     try {
         await Auth.signOut();
@@ -212,8 +216,14 @@ function NavBar(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
-
   useEffect(()=>{
+    if(props.items){
+      console.log(props.items)
+      setUserAvatar(props.items);
+    }
+  })
+  useEffect(()=>{
+    
     async function fetchUser() {
       const user = await Auth.currentUserInfo()
       if(!user){
@@ -221,6 +231,11 @@ function NavBar(props) {
       }
       else {
         const id = user.attributes.email;
+        const userToken = await API.graphql(graphqlOperation(queries.listUserss, { filter: {email:{eq:id}}}));
+        await Storage.get(userToken.data.listUserss.items[0].photo, { expires: 300 }).then(res=>{
+          setUserAvatar(res)
+        })
+
         fetchToken(id)
       }
     }
@@ -247,6 +262,11 @@ function NavBar(props) {
   async function goGetToken(){
     history.push("/c/getoken");
   }
+  async function editProfile(){
+    history.push("/c/editprofile")
+    handleClose();
+  }
+
   return (
     <Fragment>
       <AppBar position="sticky" className={classes.appBar}>
@@ -313,8 +333,7 @@ function NavBar(props) {
             >
               
               <Avatar
-                alt="profile picture"
-                src={`${process.env.PUBLIC_URL}/images/logged_in/profilePicture.jpg`}
+                src={userAvatar}
                 className={classNames(classes.accountAvatar)}
                 onClick = {viewList}
               />
@@ -336,7 +355,7 @@ function NavBar(props) {
                 style = {{marginTop:30,width:300}}
               >
                 <MenuItem onClick={handleClose}>Setting</MenuItem>
-                <MenuItem onClick={handleClose}>Profile<img src = {rankingImage} style = {{width:40, height:40}} /></MenuItem>
+                <MenuItem onClick={editProfile}>Profile<img src = {rankingImage} style = {{width:40, height:40}} /></MenuItem>
                 <MenuItem onClick={logOut}>Logout</MenuItem>
               </Menu>
           </Box>
@@ -354,5 +373,13 @@ NavBar.propTypes = {
   classes: PropTypes.object.isRequired,
   openAddBalanceDialog: PropTypes.func.isRequired,
 };
+const mapStateToProps = () => state => {
+  return {
+      items: state.userEmail
+  };
+};
+const mapDistachToProps = () => dispatch => {
+  return bindActionCreators({ addTodo: addTodoAction }, dispatch);
+};
 
-export default withWidth()(withStyles(styles, { withTheme: true })(NavBar));
+export default withWidth()(withStyles(styles, { withTheme: true })(connect(mapStateToProps,mapDistachToProps)(NavBar)));

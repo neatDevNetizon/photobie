@@ -83,11 +83,14 @@ export const createUsers = /* GraphQL */ `
       email
       type
       name
-      address
+      city
+      zipcode
+      country
       age
       photo
       payment
       verified
+      favortype
       createdAt
       updatedAt
     }
@@ -103,11 +106,14 @@ export const updateUsers = /* GraphQL */ `
       email
       type
       name
-      address
+      city
+      zipcode
+      country
       age
       photo
       payment
       verified
+      favortype
       createdAt
       updatedAt
     }
@@ -123,11 +129,14 @@ export const deleteUsers = /* GraphQL */ `
       email
       type
       name
-      address
+      city
+      zipcode
+      country
       age
       photo
       payment
       verified
+      favortype
       createdAt
       updatedAt
     }

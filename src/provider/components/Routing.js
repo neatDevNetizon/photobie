@@ -7,6 +7,8 @@ import Posts from "./posts/Posts";
 import Subscription from "./subscription/Subscription";
 import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"
+import GetToken from "./pricing/Price";
+import Profile from "./profile/main"
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -80,6 +82,10 @@ function Routing(props) {
           selectPosts={selectPosts}
         />
         <PropsRoute
+          path="/p/editprofile"
+          component={Profile}
+        />
+        <PropsRoute
           path="/p/subscription"
           component={Subscription}
           transactions={transactions}
@@ -90,6 +96,10 @@ function Routing(props) {
         <PropsRoute
           path="/p/message"
           component={Message}
+        />
+        <PropsRoute
+          path="/p/getoken"
+          component={GetToken}
         />
         <PropsRoute
           path=""

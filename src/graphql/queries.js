@@ -57,11 +57,14 @@ export const getUsers = /* GraphQL */ `
       email
       type
       name
-      address
+      city
+      zipcode
+      country
       age
       photo
       payment
       verified
+      favortype
       createdAt
       updatedAt
     }
@@ -79,11 +82,14 @@ export const listUserss = /* GraphQL */ `
         email
         type
         name
-        address
+        city
+        zipcode
+        country
         age
         photo
         payment
         verified
+        favortype
         createdAt
         updatedAt
       }

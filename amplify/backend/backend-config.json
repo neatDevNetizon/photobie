@@ -8,21 +8,21 @@
           "defaultAuthentication": {
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
-              "apiKeyExpirationDays": 7,
-              "description": "dev"
+              "apiKeyExpirationDays": 360,
+              "description": "demo"
             }
           },
           "additionalAuthenticationProviders": []
         }
       }
     },
-    "paymentapi": {
+    "restapi": {
       "service": "API Gateway",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "photobieef29cb9d",
+          "resourceName": "photobiee8e4a865",
           "attributes": [
             "Name",
             "Arn"
@@ -31,8 +31,15 @@
       ]
     }
   },
+  "function": {
+    "photobiee8e4a865": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
   "auth": {
-    "photobieec85dba1": {
+    "photobieaf12b8a2": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -40,7 +47,7 @@
     }
   },
   "storage": {
-    "s386cddb77": {
+    "s3dd0ef723": {
       "service": "S3",
       "providerPlugin": "awscloudformation"
     }
@@ -50,13 +57,6 @@
       "service": "amplifyhosting",
       "providerPlugin": "awscloudformation",
       "type": "manual"
-    }
-  },
-  "function": {
-    "photobieef29cb9d": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
     }
   }
 }

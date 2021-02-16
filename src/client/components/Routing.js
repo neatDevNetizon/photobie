@@ -8,7 +8,7 @@ import Posts from "./posts/Posts";
 import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"
 import GetToken from "./pricing/Price"
-
+import Profile from "./profile/main"
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -84,6 +84,10 @@ function Routing(props) {
         <PropsRoute
           path="/c/message"
           component={Message}
+        />
+        <PropsRoute
+          path="/c/editprofile"
+          component={Profile}
         />
         <PropsRoute
           path="/c/getoken"

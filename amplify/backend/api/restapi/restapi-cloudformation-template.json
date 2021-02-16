@@ -14,15 +14,15 @@
         },
     
     
-          "functionphotobieef29cb9dName": {
+          "functionphotobiee8e4a865Name": {
             "Type": "String",
-            "Default": "functionphotobieef29cb9dName"
+            "Default": "functionphotobiee8e4a865Name"
           },
         
           
-          "functionphotobieef29cb9dArn": {
+          "functionphotobiee8e4a865Arn": {
             "Type": "String",
-            "Default": "functionphotobieef29cb9dArn"
+            "Default": "functionphotobiee8e4a865Arn"
           }
         
           
@@ -45,16 +45,16 @@
         
         
         
-      "paymentapi": {
+      "restapi": {
         "Type": "AWS::ApiGateway::RestApi",
         "Properties": {
           "Description": "",
-          "Name": "paymentapi",
+          "Name": "restapi",
           "Body": {
             "swagger": "2.0",
             "info": {
               "version": "2018-05-24T17:52:00Z",
-              "title": "paymentapi"
+              "title": "restapi"
             },
             "host": {
                 "Fn::Join": [
@@ -90,7 +90,7 @@
             ],
             "paths": {
               
-              "/payment": {
+              "/paying": {
                 "options": {
                   "consumes": [
                     "application/json"
@@ -176,7 +176,7 @@
                             
                             {
                                 
-                                "Ref": "functionphotobieef29cb9dArn"
+                                "Ref": "functionphotobiee8e4a865Arn"
                             },
                             
                             "/invocations"
@@ -189,7 +189,7 @@
                   }
                 }
               },
-              "/payment/{proxy+}": {
+              "/paying/{proxy+}": {
                 "options": {
                   "consumes": [
                     "application/json"
@@ -275,7 +275,7 @@
                           
                           {
                             
-                            "Ref": "functionphotobieef29cb9dArn"
+                            "Ref": "functionphotobiee8e4a865Arn"
                           },
                           
                           "/invocations"
@@ -332,12 +332,12 @@
                   
         
         
-        "functionphotobieef29cb9dPermissionpaymentapi": {
+        "functionphotobiee8e4a865Permissionrestapi": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": 
                     {
-                        "Ref":  "functionphotobieef29cb9dName"
+                        "Ref":  "functionphotobiee8e4a865Name"
                     },
                     
                     "Action": "lambda:InvokeFunction",
@@ -356,7 +356,7 @@
                             },
                             ":",
                             {
-                                "Ref": "paymentapi"
+                                "Ref": "restapi"
                             },
                             "/*/*/*"
                         ]
@@ -367,7 +367,7 @@
         
         
         
-      "DeploymentAPIGWpaymentapi": {
+      "DeploymentAPIGWrestapi": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "Description": "The Development stage deployment of your API.",
@@ -381,7 +381,7 @@
             ]
           },
           "RestApiId": {
-            "Ref": "paymentapi"
+            "Ref": "restapi"
           }
         }
       }
@@ -389,15 +389,15 @@
     "Outputs": {
         "RootUrl": {
             "Description": "Root URL of the API gateway",
-            "Value": {"Fn::Join": ["", ["https://", {"Ref": "paymentapi"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
+            "Value": {"Fn::Join": ["", ["https://", {"Ref": "restapi"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
         },
         "ApiName": {
           "Description": "API Friendly name",
-          "Value": "paymentapi"
+          "Value": "restapi"
         },
         "ApiId": {
           "Description": "API ID (prefix of API URL)",
-          "Value": {"Ref": "paymentapi"}
+          "Value": {"Ref": "restapi"}
         }
     }
   }

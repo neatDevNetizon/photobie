@@ -60,7 +60,7 @@ function LoginDialog(props) {
       setIsLoading(true);
       setStatus(null);
       const user = await Auth.signIn(loginEmail.current.value, loginPassword.current.value);
-      props.addTodo(loginEmail.current.value);
+      // props.addTodo(loginEmail.current.value);
       localStorage.setItem('userEmail', loginEmail.current.value);
       onClose();
 

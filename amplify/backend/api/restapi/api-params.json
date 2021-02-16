@@ -1,0 +1,35 @@
+{
+    "paths": [
+        {
+            "name": "/paying",
+            "lambdaFunction": "photobiee8e4a865",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/paying"
+        }
+    ],
+    "resourceName": "restapi",
+    "apiName": "restapi",
+    "functionArns": [
+        {
+            "lambdaFunction": "photobiee8e4a865"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-photobie-dev-213745-authRole",
+        "unAuthRoleName": "amplify-photobie-dev-213745-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "photobiee8e4a865",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

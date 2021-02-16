@@ -7,7 +7,13 @@
       "Default": "NONE",
       "Description": " Schedule Expression"
     },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
     "env": {
+      "Type": "String"
+    },
+    "s3Key": {
       "Type": "String"
     }
   },
@@ -29,16 +35,24 @@
         "aws:asset:property": "Code"
       },
       "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
+        },
         "Handler": "index.handler",
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "photobieef29cb9d",
+            "photobiee8e4a865",
             {
               "Fn::Join": [
                 "",
                 [
-                  "photobieef29cb9d",
+                  "photobiee8e4a865",
                   "-",
                   {
                     "Ref": "env"
@@ -66,11 +80,7 @@
         },
         "Runtime": "nodejs12.x",
         "Layers": [],
-        "Timeout": "25",
-        "Code": {
-          "S3Bucket": "amplify-photobie-dev-72158-deployment",
-          "S3Key": "amplify-builds/photobieef29cb9d-696f68357369316d5447-build.zip"
-        }
+        "Timeout": "25"
       }
     },
     "LambdaExecutionRole": {
@@ -79,12 +89,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "photobieLambdaRole3c5456ef",
+            "photobieLambdaRolefa44ca46",
             {
               "Fn::Join": [
                 "",
                 [
-                  "photobieLambdaRole3c5456ef",
+                  "photobieLambdaRolefa44ca46",
                   "-",
                   {
                     "Ref": "env"
