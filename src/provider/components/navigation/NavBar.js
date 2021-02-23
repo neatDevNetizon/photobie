@@ -43,6 +43,10 @@ import { bindActionCreators } from 'redux';
 import { addTodoAction } from '../../../actions/addTodoAction';
 import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import * as queries from '../../../graphql/queries';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import PersonIcon from '@material-ui/icons/Person';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 const styles = (theme) => ({
   
   appBar: {
@@ -161,12 +165,38 @@ const styles = (theme) => ({
   },
   dropdown: {
     display: "block"
+  },
+  toolbar: {
+    display: "flex",
+    justifyContent: "space-between"
+  },
+  menuButtonText: {
+    fontSize: theme.typography.body1.fontSize,
+    fontWeight: theme.typography.h6.fontWeight
+  },
+  brandText: {
+    fontFamily: "'Baloo Bhaijaan', cursive",
+    fontWeight: 400,
+    cursor:"pointer",
+  },
+  noDecoration: {
+    textDecoration: "none !important"
   }
 
 });
 function NavBar(props) {
-  const { selectedTab, messages, classes, width, openAddBalanceDialog } = props;
-  // Will be use to make website more accessible by screen readers
+  const {
+    classes,
+    openRegisterDialog,
+    openLoginDialog,
+    handleMobileDrawerOpen,
+    handleMobileDrawerClose,
+    mobileDrawerOpen,
+    selectedTab,
+    messages,
+    width,
+    openAddBalanceDialog
+  } = props;
   const links = useRef([]);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
@@ -220,11 +250,17 @@ function NavBar(props) {
     }
   }
   const history = useHistory();
-  const goLandingPage = () => history.push("/");
+  const goLandingPage = () => {
+    history.push("/");
+    handleMobileDrawerClose();
+  }
   const viewList = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const goListPage = () => history.push('/p/dashboard')
+  const goListPage = () => {
+    history.push('/p/dashboard');
+    handleMobileDrawerClose();
+  }
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -233,49 +269,92 @@ function NavBar(props) {
   const id = open ? 'simple-popover' : undefined;
   async function handleMessage(){
     history.push("/p/message");
+    handleMobileDrawerClose();
   }
   async function goGetToken(){
     history.push("/p/getoken");
+    handleMobileDrawerClose();
   }
   async function editProfile(){
     history.push("/p/editprofile")
     handleClose();
+    handleMobileDrawerClose();
   }
+ 
+  const menuItems = [
+    {
+      name: "Get Token",
+      onClick: goGetToken,
+      icon: <ShoppingCartIcon className="text-white" />
+    },
+    {
+      name: "Message",
+      onClick: handleMessage,
+      icon: <MessageIcon className="text-white" />
+    },
+    {
+      name: "View List",
+      onClick: goListPage,
+      icon: <FilterListIcon className="text-white" />
+    },
+    // {
+    //   name: "Setting",
+    //   onClick: handleClose,
+    //   icon: <LockOpenIcon className="text-white" />
+    // },
+    {
+      name: "Profile",
+      onClick: editProfile,
+      icon: <PersonIcon className="text-white" />
+    },
+    {
+      name: "Logout",
+      onClick: logOut,
+      icon: <ExitToAppIcon className="text-white" />
+    },
+  ];
   return (
-    <Fragment>
-      <AppBar position="sticky" className={classes.appBar}>
-        <Toolbar className={classes.appBarToolbar}>
-          <Box display="flex" alignItems="center" onClick = {goLandingPage}>
+    <div className = {classes.root}>
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar className={classes.toolbar}>
+          <div>
+            <Typography
+              variant="h4"
+              className={classes.brandText}
+              display="inline"
+              color="primary"
+            >
+              Photo
+            </Typography>
+            <Typography
+              variant="h4"
+              className={classes.brandText}
+              display="inline"
+              color="secondary"
+            >
+              Bie
+            </Typography>
+          </div>
+          <div>
             <Hidden smUp>
-              <Box mr={1}>
-                <IconButton
-                  aria-label="Open Navigation"
-                  onClick={openMobileDrawer}
-                  color="primary"
-                >
-                  <MenuIcon />
-                </IconButton>
-              </Box>
+              <IconButton
+                className={classes.menuButton}
+                onClick={handleMobileDrawerOpen}
+                aria-label="Open Navigation"
+              >
+                <MenuIcon color="primary" />
+              </IconButton>
             </Hidden>
             <Hidden xsDown>
-              <Typography
-                variant="h4"
-                className={classes.brandText}
-                display="inline"
-                color="primary"
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                alignItems="center"
+                width="100%"
+                openAddBalanceDialog={openAddBalanceDialog}
               >
-                Photobie
-              </Typography>
-            </Hidden>
-          </Box>
-          <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            width="100%"
-            openAddBalanceDialog={openAddBalanceDialog}
-          >
-            <Button
+                {/* <img src = {rankingImage} className = {showAndHide} style = {{width:40,height:40}}/> */}
+                <Button
               color="secondary"
               size="large"
               onClick={goGetToken}
@@ -289,47 +368,127 @@ function NavBar(props) {
             >
               View List
             </Button>
-            {/* <MessagePopperButton messages={messages} /> */}
-            <MessageIcon onClick = {handleMessage} color=  "primary" style = {{marginRight:10,marginLeft:10}}/>
-            <ListItem
-              disableGutters
-              className={classNames(classes.iconListItem, classes.smBordered)}
-              
-            >
-              <Avatar
-                
-                src={userAvatar}
-                className={classNames(classes.accountAvatar)}
-                onClick = {viewList}
-              />
-              
-            </ListItem>
-            <Menu
-                
-                id="simple-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                style = {{marginTop:30, width:300}}
-              >
-                <MenuItem onClick={handleClose}>Setting</MenuItem>
-                <MenuItem onClick={editProfile}>Profile</MenuItem>
-                <MenuItem onClick={logOut}>Logout</MenuItem>
-              </Menu>
-          </Box>
-          
+                <MessageIcon onClick = {handleMessage} color=  "primary" style = {{marginRight:10,marginLeft:10}}/>
+                {/* <MessagePopperButton messages={messages} /> */}
+                <ListItem
+                  disableGutters
+                  className={classNames(classes.iconListItem, classes.smBordered)}
+                >
+                  
+                  <Avatar
+                    src={userAvatar}
+                    className={classNames(classes.accountAvatar)}
+                    onClick = {viewList}
+                  />
+                </ListItem>
+                <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    style = {{marginTop:30,width:300}}
+                  >
+                    <MenuItem onClick={handleClose}>Setting</MenuItem>
+                    <MenuItem onClick={editProfile}>Profile</MenuItem>
+                    <MenuItem onClick={logOut}>Logout</MenuItem>
+                  </Menu>
+              </Box>
+            </Hidden>
+          </div>
         </Toolbar>
       </AppBar>
-    </Fragment>
+      <NavigationDrawer
+        menuItems={menuItems}
+        anchor="right"
+        open={mobileDrawerOpen}
+        selectedItem={selectedTab}
+        onClose={handleMobileDrawerClose}
+      />
+    </div>
+    // <Fragment>
+    //   <AppBar position="sticky" className={classes.appBar}>
+    //     <Toolbar className={classes.appBarToolbar}>
+    //       <Box display="flex" alignItems="center" onClick = {goLandingPage}>
+    //         <Hidden smUp>
+    //           <Box mr={1}>
+    //             <IconButton
+    //               aria-label="Open Navigation"
+    //               onClick={openMobileDrawer}
+    //               color="primary"
+    //             >
+    //               <MenuIcon />
+    //             </IconButton>
+    //           </Box>
+    //         </Hidden>
+    //         <Hidden xsDown>
+    //           <Typography
+    //             variant="h4"
+    //             className={classes.brandText}
+    //             display="inline"
+    //             color="primary"
+    //           >
+    //             Photobie
+    //           </Typography>
+    //         </Hidden>
+    //       </Box>
+    //       <Box
+    //         display="flex"
+    //         justifyContent="flex-end"
+    //         alignItems="center"
+    //         width="100%"
+    //         openAddBalanceDialog={openAddBalanceDialog}
+    //       >
+            
+    //         {/* <MessagePopperButton messages={messages} /> */}
+    //         <MessageIcon onClick = {handleMessage} color=  "primary" style = {{marginRight:10,marginLeft:10}}/>
+    //         <ListItem
+    //           disableGutters
+    //           className={classNames(classes.iconListItem, classes.smBordered)}
+              
+    //         >
+    //           <Avatar
+                
+    //             src={userAvatar}
+    //             className={classNames(classes.accountAvatar)}
+    //             onClick = {viewList}
+    //           />
+              
+    //         </ListItem>
+    //         <Menu
+                
+    //             id="simple-menu"
+    //             anchorEl={anchorEl}
+    //             keepMounted
+    //             open={Boolean(anchorEl)}
+    //             onClose={handleClose}
+    //             anchorOrigin={{
+    //               vertical: 'bottom',
+    //               horizontal: 'left',
+    //             }}
+    //             transformOrigin={{
+    //               vertical: 'bottom',
+    //               horizontal: 'right',
+    //             }}
+    //             style = {{marginTop:30, width:300}}
+    //           >
+    //             <MenuItem onClick={handleClose}>Setting</MenuItem>
+    //             <MenuItem onClick={editProfile}>Profile</MenuItem>
+    //             <MenuItem onClick={logOut}>Logout</MenuItem>
+    //           </Menu>
+    //       </Box>
+          
+    //     </Toolbar>
+    //   </AppBar>
+    // </Fragment>
   );
 }
 
@@ -339,6 +498,11 @@ NavBar.propTypes = {
   width: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
   openAddBalanceDialog: PropTypes.func.isRequired,
+  handleMobileDrawerOpen: PropTypes.func,
+  handleMobileDrawerClose: PropTypes.func,
+  mobileDrawerOpen: PropTypes.bool,
+  openRegisterDialog: PropTypes.func.isRequired,
+  openLoginDialog: PropTypes.func.isRequired
 };
 
 const mapStateToProps = () => state => {

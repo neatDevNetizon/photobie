@@ -22,6 +22,7 @@ import { TextField,
   Grid,
   Button,
   Avatar,
+  Drawer
 } from "@material-ui/core";
 import countryList from 'react-select-country-list';
 
@@ -235,6 +236,13 @@ function BadgeAvatars(props) {
   }
   return (
       <div className={classes.root}>
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      ></Drawer>
         <div style = {{position:"absolute", bottom:1}}>
           <FormDialog
             open={open}

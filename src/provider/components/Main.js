@@ -18,6 +18,7 @@ const styles = (theme) => ({
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
     },
+    marginTop:69,
   },
 });
 
@@ -51,6 +52,7 @@ function Main(props) {
   const [isAccountActivated, setIsAccountActivated] = useState(false);
   const [isAddBalanceDialogOpen, setIsAddBalanceDialogOpen] = useState(false);
   const [pushMessageToSnackbar, setPushMessageToSnackbar] = useState(null);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const fetchRandomTargets = useCallback(() => {
     const targets = [];
@@ -338,6 +340,13 @@ function Main(props) {
     fetchRandomMessages,
     fetchRandomPosts,
   ]);
+  const handleMobileDrawerOpen = useCallback(() => {
+    setIsMobileDrawerOpen(true);
+  }, [setIsMobileDrawerOpen]);
+
+  const handleMobileDrawerClose = useCallback(() => {
+    setIsMobileDrawerOpen(false);
+  }, [setIsMobileDrawerOpen]);
 
   return (
     <Fragment>
@@ -348,8 +357,12 @@ function Main(props) {
       />
       <NavBar
         selectedTab={selectedTab}
-        messages={messages}
+        selectTab={setSelectedTab}
+        mobileDrawerOpen={isMobileDrawerOpen}
+        handleMobileDrawerOpen={handleMobileDrawerOpen}
+        handleMobileDrawerClose={handleMobileDrawerClose}
         openAddBalanceDialog={openAddBalanceDialog}
+        messages={messages}
       />
       <ConsecutiveSnackbarMessages
         getPushMessageFromChild={getPushMessageFromChild}

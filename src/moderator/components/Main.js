@@ -19,6 +19,7 @@ const styles = (theme) => ({
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
     },
+    marginTop:68,
   },
 });
 
@@ -52,7 +53,8 @@ function Main(props) {
   const [isAccountActivated, setIsAccountActivated] = useState(false);
   const [isAddBalanceDialogOpen, setIsAddBalanceDialogOpen] = useState(false);
   const [pushMessageToSnackbar, setPushMessageToSnackbar] = useState(null);
-
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  
   const fetchRandomTargets = useCallback(() => {
     const targets = [];
     for (let i = 0; i < 35; i += 1) {
@@ -339,6 +341,14 @@ function Main(props) {
     fetchRandomMessages,
     fetchRandomPosts,
   ]);
+  const handleMobileDrawerOpen = useCallback(() => {
+    setIsMobileDrawerOpen(true);
+  }, [setIsMobileDrawerOpen]);
+
+  const handleMobileDrawerClose = useCallback(() => {
+    setIsMobileDrawerOpen(false);
+  }, [setIsMobileDrawerOpen]);
+
   return (
     <Fragment>
       <LazyLoadAddBalanceDialog
@@ -346,10 +356,14 @@ function Main(props) {
         onClose={closeAddBalanceDialog}
         onSuccess={onPaymentSuccess}
       />
-      <NavBar
+       <NavBar
         selectedTab={selectedTab}
-        messages={messages}
+        selectTab={setSelectedTab}
+        mobileDrawerOpen={isMobileDrawerOpen}
+        handleMobileDrawerOpen={handleMobileDrawerOpen}
+        handleMobileDrawerClose={handleMobileDrawerClose}
         openAddBalanceDialog={openAddBalanceDialog}
+        messages={messages}
       />
       <ConsecutiveSnackbarMessages
         getPushMessageFromChild={getPushMessageFromChild}

@@ -20,7 +20,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 
 const styles = {
   toolbar: {
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   txtFiled: {
     justifyContent: "space-between",

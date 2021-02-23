@@ -46,6 +46,7 @@ function Posts(props) {
     setPosts={setPosts}
     id = {id}
     pushMessageToSnackbar={pushMessageToSnackbar}
+    
   />
 }
 

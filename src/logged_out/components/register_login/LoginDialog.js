@@ -61,6 +61,7 @@ function LoginDialog(props) {
       setStatus(null);
       const user = await Auth.signIn(loginEmail.current.value, loginPassword.current.value);
       // props.addTodo(loginEmail.current.value);
+      console.log(user)
       localStorage.setItem('userEmail', loginEmail.current.value);
       onClose();
 
@@ -84,7 +85,9 @@ function LoginDialog(props) {
           }, 1500);
         }
     } catch (error) {
+      console.log(error)
       if(error.message == "User is not confirmed."){
+
         setConfirmStatus(2)
       } else {
         setConfirmStatus(1)

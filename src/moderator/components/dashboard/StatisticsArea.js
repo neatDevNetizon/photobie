@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 import { Grid, withTheme } from "@material-ui/core";
 import * as queries from '../../../graphql/queries';
@@ -35,7 +35,22 @@ function StatisticsArea(props) {
   const viewEvent = async(event)=>{
     history.push("/m/detail?id="+event);
   }
+  const [mode, setMode] = useState("")
+  useLayoutEffect(() => {
+    function updateSize() {
+      if(window.innerWidth<=650){
+        setMode("column")
+      }
+      else setMode("row")
+      return () => window.removeEventListener('resize', updateSize);
+    }
+    window.addEventListener('resize', updateSize);
+    // if(mode!="right") updateSize();
+    return () => window.removeEventListener('resize', updateSize);
+    
+  },[]);
   useEffect(()=>{
+   
     async function fetchUser() {
       const user = await Auth.currentUserInfo()
       if(!user){
@@ -64,16 +79,14 @@ function StatisticsArea(props) {
             });
           }
           setEvents(array)
-          // eventlist.data.listEventss.items.map(async(item,i)=>{
-            
-            
-          // });
-        
+          if(window.innerWidth<=650){
+            setMode("column")
+          }
+          else setMode("row")
         }
-        
     }
     fetchUser();
-
+    
   },[])
   async function handleUpdate(e){
     console.log("adfadfadf11")
@@ -83,7 +96,7 @@ function StatisticsArea(props) {
   }
   return (
     events.map((item, index)=>{
-      return <Grid item xs={12} md={12} style = {{marginTop:15,marginRight:"2%",marginLeft:"2%", cursor:"pointer"}}>
+      return mode=="row"?<Grid item xs={12} md={12} style = {{marginTop:15,marginRight:"2%",marginLeft:"2%", cursor:"pointer"}}>
       <Card >
         <div style = {{display:"flex", flexDirection:"row",}} onClick = {()=>viewEvent(item.id)}>
         <Box style = {{display:"inline-block"}}>
@@ -123,7 +136,32 @@ function StatisticsArea(props) {
           </div>
         </div>
       </Card>
-  </Grid>
+  </Grid>:mode=="column"?<Grid item xs={12} md={12} style = {{marginTop:15}}>
+        <Card onClick = {()=>viewEvent(item.id)}>
+          <div style = {{display:"flex", flexDirection:"column",}}>
+          <Box style = {{display:"inline-block"}}>
+            <img src = {item.image} style = {{width:"100%", height:"45vw",objectFit:"cover"}}></img>
+          </Box>
+            <div style = {{display:"flex", flexDirection:"column",}}>
+              <Box pt={2} px={2} pb={4} style = {{display:"block"}}>
+                <Box display="flex" justifyContent="space-between">
+                  <div>
+                    <Typography variant="subtitle1">{item.title}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {item.location}
+                    </Typography>
+                  </div>
+                </Box>
+              </Box >
+              <CardContent style = {{display:"block"}}>
+                <Box  boxShadow={0.2} height="300">
+                  {item.description}
+                </Box>
+              </CardContent>
+            </div>
+          </div>
+        </Card>
+    </Grid>:null
     })
   )
     

@@ -195,7 +195,7 @@ function PostContent(props) {
     document.getElementById("fileForm").click()
   }
   return (
-    <div>
+    <div >
       <Paper>
         <img src = {imageSrc} style = {{width:"100%", marginTop:-50, height:400,objectFit:"cover"}}></img>
       </Paper>

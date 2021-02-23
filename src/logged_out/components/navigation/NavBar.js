@@ -50,6 +50,7 @@ function NavBar(props) {
     mobileDrawerOpen,
     selectedTab
   } = props;
+  console.log(props)
   const menuItems = [
     // {
     //   link: "/",

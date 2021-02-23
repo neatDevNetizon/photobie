@@ -29,9 +29,20 @@ function Dashboard(props) {
   function changeModeGrid(){
     setTargetValue("right")
   }
+  useEffect(()=>{
+    changeModeList();
+  },[])
+  function changeModeList(){
+    if(window.innerWidth<700){
+      setTargetValue("middle")
+    }
+    else {
+      setTargetValue("left")
+    }
+  }
   return (
     <Fragment>
-       <ButtonGroup size="large" color="secondary" aria-label="large outlined primary button group" style = {{marginLeft:"75%",marginBottom:30,}}>
+       <ButtonGroup size="large" color="secondary" aria-label="large outlined primary button group" style = {{marginLeft:"5%",marginTop:30,marginBottom:30,position:"relative"}}>
         <Button onClick = {changeModeList}><FormatListBulletedIcon/></Button>
         <Button onClick = {changeModeGrid}><AppsIcon/></Button>
       </ButtonGroup>

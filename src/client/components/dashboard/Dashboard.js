@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect , useState} from "react";
+import React, { Fragment, useEffect , useState, useLayoutEffect} from "react";
 import PropTypes from "prop-types";
 import StatisticsArea from "./StatisticsArea";
 import Switch from '@material-ui/core/Switch';
@@ -23,9 +23,20 @@ function Dashboard(props) {
   } = props;
   const[targetValue, setTargetValue]=useState("left")
   useEffect(selectDashboard, [selectDashboard]);
- 
+
+  // useLayoutEffect(()=>{
+  //   changeModeList();
+  // },[])
+  useEffect(()=>{
+    changeModeList();
+  },[])
   function changeModeList(){
-    setTargetValue("left")
+    if(window.innerWidth<700){
+      setTargetValue("middle")
+    }
+    else {
+      setTargetValue("left")
+    }
   }
   function changeModeGrid(){
     setTargetValue("right")
@@ -33,7 +44,7 @@ function Dashboard(props) {
   return (
     <Fragment>
        
-       <ButtonGroup size="large" color="secondary" aria-label="large outlined primary button group" style = {{marginLeft:"75%",marginBottom:30,}}>
+       <ButtonGroup size="large" color="secondary" aria-label="large outlined primary button group" style = {{marginLeft:"5%",marginTop:30, marginBottom:30,}}>
         <Button onClick = {changeModeList}><FormatListBulletedIcon/></Button>
         <Button onClick = {changeModeGrid}><AppsIcon/></Button>
       </ButtonGroup>

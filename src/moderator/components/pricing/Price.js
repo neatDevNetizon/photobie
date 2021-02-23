@@ -134,10 +134,10 @@ export default function Pricing() {
                 You can get tokens to uptick
             </Typography>
         </Container>
-        <Container maxWidth="md" component="main">
+        <Container maxWidth = 'lg' component="main">
             <Grid container spacing={5} alignItems="flex-end">
             {tiers.map((tier) => (
-                <Grid item key={tier.title} xs={12} sm={tier.title === 'Enterprise' ? 12 : 6} md={3}>
+                <Grid item key={tier.title} sm={6} md={3} xs = {12}>
                 <Card>
                     <CardHeader
                     title={tier.title}

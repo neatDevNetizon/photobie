@@ -7,7 +7,6 @@ import NavBar from "./navigation/NavBar";
 import ConsecutiveSnackbarMessages from "../../shared/components/ConsecutiveSnackbarMessages";
 import smoothScrollTop from "../../shared/functions/smoothScrollTop";
 import persons from "../dummy_data/persons";
-// import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
 import {Auth} from "aws-amplify"
 
 const styles = (theme) => ({
@@ -19,6 +18,7 @@ const styles = (theme) => ({
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
     },
+    marginTop:68,
   },
 });
 
@@ -52,6 +52,7 @@ function Main(props) {
   const [isAccountActivated, setIsAccountActivated] = useState(false);
   const [isAddBalanceDialogOpen, setIsAddBalanceDialogOpen] = useState(false);
   const [pushMessageToSnackbar, setPushMessageToSnackbar] = useState(null);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const fetchRandomTargets = useCallback(() => {
     const targets = [];
@@ -324,7 +325,6 @@ function Main(props) {
             window.location.href = "/a/dashboard"
             break;
         }
-        
       }
     }
     fetchData();
@@ -340,18 +340,25 @@ function Main(props) {
     fetchRandomMessages,
     fetchRandomPosts,
   ]);
+  
+  const handleMobileDrawerOpen = useCallback(() => {
+    setIsMobileDrawerOpen(true);
+  }, [setIsMobileDrawerOpen]);
+
+  const handleMobileDrawerClose = useCallback(() => {
+    setIsMobileDrawerOpen(false);
+  }, [setIsMobileDrawerOpen]);
 
   return (
     <Fragment>
-      {/* <LazyLoadAddBalanceDialog
-        open={isAddBalanceDialogOpen}
-        onClose={closeAddBalanceDialog}
-        onSuccess={onPaymentSuccess}
-      /> */}
-      <NavBar
+       <NavBar
         selectedTab={selectedTab}
-        messages={messages}
+        selectTab={setSelectedTab}
+        mobileDrawerOpen={isMobileDrawerOpen}
+        handleMobileDrawerOpen={handleMobileDrawerOpen}
+        handleMobileDrawerClose={handleMobileDrawerClose}
         openAddBalanceDialog={openAddBalanceDialog}
+        messages={messages}
       />
       <ConsecutiveSnackbarMessages
         getPushMessageFromChild={getPushMessageFromChild}
