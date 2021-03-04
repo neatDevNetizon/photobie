@@ -18,6 +18,7 @@ import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import { connect } from 'react-redux';
 import UpdateIcon from '@material-ui/icons/Update';
 import * as queries from '../../../graphql/queries';
+import * as subscriptions from "../../../graphql/subscriptions"
 
 function StatisticsArea(props) {
   const { theme, CardChart, data,classes, viewMode, width} = props;
@@ -99,7 +100,37 @@ function StatisticsArea(props) {
     }
     fetchUser();
 
-  },[])
+  },[]);
+  useEffect(()=>{
+    refreshEvent(events);
+    async function refreshEvent(eventlist){
+      const subscription = API
+      .graphql(graphqlOperation(subscriptions.onCreateEvents))
+      .subscribe({
+        next: async(event) => {
+          var imageUrl;
+          await Storage.get(event.value.data.onCreateEvents.image, { expires: 300 }).then(res=>{
+            imageUrl = res;
+          })
+          setEvents([...eventlist, {
+            id:event.value.data.onCreateEvents.id,
+            user:event.value.data.onCreateEvents.user,
+            token:event.value.data.onCreateEvents.token,
+            location:event.value.data.onCreateEvents.location,
+            title:event.value.data.onCreateEvents.title,
+            secure:event.value.data.onCreateEvents.secure,
+            capacity:event.value.data.onCreateEvents.capacity,
+            description:event.value.data.onCreateEvents.description,
+            type:event.value.data.onCreateEvents.type,
+            status:event.value.data.onCreateEvents.status,
+            image:imageUrl,
+          }]);
+          console.log("eventlist", eventlist)
+          console.log("subscritpins", event.value.data.onCreateEvents)
+        }
+      });
+    }
+  },[events]);
   return (
     <Grid container spacing={3} style = {{width:"80%",marginRight:"auto", marginLeft:"auto",cursor:"pointer"}}>
     {events.map((item,i)=>{

@@ -9,6 +9,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import FormDialog from "../../../shared/components/FormDialog";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import { Auth } from 'aws-amplify';
+import { useSnackbar } from 'notistack';
+import CloseIcon from '@material-ui/icons/Close';
+
 const styles = (theme) => ({
   link: {
     transition: theme.transitions.create(["background-color"], {
@@ -30,7 +33,7 @@ function RegisterDialog(props) {
   const { setStatus, theme, onClose, openTermsDialog, status, username } = props;
   const [isLoading, setIsLoading] = useState(false);
   const loginEmail = useRef();
-
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   async function verifying() {
     const code = loginEmail.current.value;
     try {
@@ -39,7 +42,13 @@ function RegisterDialog(props) {
         setTimeout(() => {
             setIsLoading(false);
             onClose();
-         }, 1500);   
+         }, 1500); 
+         enqueueSnackbar('Confirm success', {
+          variant: 'success',
+          action: key => (
+              <CloseIcon onClick={() => closeSnackbar(key)}/>
+          )
+        });  
     } catch (error) {
         console.log('error confirming sign up', error);
     }

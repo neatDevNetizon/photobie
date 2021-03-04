@@ -47,12 +47,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "photobiee8e4a865",
+            "paying",
             {
               "Fn::Join": [
                 "",
                 [
-                  "photobiee8e4a865",
+                  "paying",
                   "-",
                   {
                     "Ref": "env"
@@ -89,12 +89,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "photobieLambdaRolefa44ca46",
+            "photobieLambdaRole42acffe5",
             {
               "Fn::Join": [
                 "",
                 [
-                  "photobieLambdaRolefa44ca46",
+                  "photobieLambdaRole42acffe5",
                   "-",
                   {
                     "Ref": "env"

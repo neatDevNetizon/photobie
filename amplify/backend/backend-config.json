@@ -8,8 +8,8 @@
           "defaultAuthentication": {
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
-              "apiKeyExpirationDays": 360,
-              "description": "demo"
+              "apiKeyExpirationDays": 365,
+              "description": "photobie"
             }
           },
           "additionalAuthenticationProviders": []
@@ -22,7 +22,7 @@
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "photobiee8e4a865",
+          "resourceName": "paying",
           "attributes": [
             "Name",
             "Arn"
@@ -31,23 +31,23 @@
       ]
     }
   },
-  "function": {
-    "photobiee8e4a865": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  },
   "auth": {
-    "photobieaf12b8a2": {
+    "photobie4bc4f1d4": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "customAuth": false
     }
   },
+  "function": {
+    "paying": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
   "storage": {
-    "s3dd0ef723": {
+    "s31f6676f1": {
       "service": "S3",
       "providerPlugin": "awscloudformation"
     }

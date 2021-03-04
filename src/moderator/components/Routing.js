@@ -11,6 +11,7 @@ import Detail from "./detail/Posts";
 import Finalize from "./detail/Final";
 import GetToken from "./pricing/Price"
 import Profile from "./profile/main"
+import History from "./history";
 
 const styles = (theme) => ({
   wrapper: {
@@ -79,6 +80,10 @@ function Routing(props) {
           <PropsRoute
           path="/m/editprofile"
           component={Profile}
+        />
+        <PropsRoute
+          path="/m/history"
+          component={History}
         />
           <PropsRoute
           path="/m/detail"

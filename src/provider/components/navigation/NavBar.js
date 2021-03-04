@@ -47,6 +47,8 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import HistoryIcon from '@material-ui/icons/History';
+
 const styles = (theme) => ({
   
   appBar: {
@@ -280,8 +282,18 @@ function NavBar(props) {
     handleClose();
     handleMobileDrawerClose();
   }
+  async function viewToken(){
+    history.push("/p/history");
+    handleClose();
+    handleMobileDrawerClose();
+  }
  
   const menuItems = [
+    {
+      name: "Transaction",
+      onClick: viewToken,
+      icon: <HistoryIcon className="text-white" />
+    },
     {
       name: "Get Token",
       onClick: goGetToken,
@@ -353,6 +365,13 @@ function NavBar(props) {
                 width="100%"
                 openAddBalanceDialog={openAddBalanceDialog}
               >
+                <Button
+                  color="secondary"
+                  size="large"
+                  onClick={viewToken}
+                >
+                  Transaction
+                </Button>
                 {/* <img src = {rankingImage} className = {showAndHide} style = {{width:40,height:40}}/> */}
                 <Button
               color="secondary"

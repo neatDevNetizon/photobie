@@ -12,11 +12,16 @@ import SecurityIcon from '@material-ui/icons/Security';
 import PublicIcon from '@material-ui/icons/Public';
 import Button from '@material-ui/core/Button';
 import Amplify, {API, graphqlOperation, Auth, Storage } from "aws-amplify";
-import { createEvents } from '../../../graphql/mutations';
+import * as mutations from '../../../graphql/mutations';
 import Grid from '@material-ui/core/Grid';
 import ImageSearchIcon from '@material-ui/icons/ImageSearch';
 import Typography from '@material-ui/core/Typography';
 import CancelIcon from '@material-ui/icons/Cancel';
+import * as queries from "../../../graphql/queries";
+import { useSnackbar } from 'notistack';
+import CloseIcon from '@material-ui/icons/Close';
+import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
+import * as subscriptions from "../../../graphql/subscriptions";
 
 const styles = {
   toolbar: {
@@ -155,13 +160,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 function SubscriptionInfo(props) {
   const [moderator, setModerator] = useState("");
+  const [userToken, setUserToken] = useState();
+  const [userId, setUserId] = useState();
   useEffect(() => {
     async function fetchData() {
       const user =await Auth.currentUserInfo()
       if(!user){
         window.location.href = "/"
       } else{
-        setModerator(user.attributes.email)
+        setModerator(user.attributes.email);
+        const hasToken = await API.graphql(graphqlOperation(queries.listUserCs, {filter:{email:{eq:user.attributes.email}}}));
+        if(hasToken.data.listUserCs.items[0].token){
+          setUserToken(hasToken.data.listUserCs.items[0].token);
+        } else setUserToken(0);
+        setUserId(hasToken.data.listUserCs.items[0].id)
       }
     }
     fetchData();
@@ -254,9 +266,13 @@ function SubscriptionInfo(props) {
   const [imageLetter, setImageLetter] = useState("toppadding2");
   const [imageSection, setImageSection] = useState("hideImageSection");
   const [image, setImage] = useState("imageLetterHidden");
-  const [pictureUrl, setPictureUrl] = useState("")
+  const [pictureUrl, setPictureUrl] = useState("");
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [isLoading, setIsLoading] = useState(false)
   const wholePage = useRef();
+  const [events, setEvents] = useState();
   const test = async() => {
+    
     if(count == 0){
       if(title.length < 3){
         setTitleRequired("txtrequired");
@@ -311,22 +327,69 @@ function SubscriptionInfo(props) {
     }
     else
     {
-      const data = {
-        user:moderator,
-        token:token*1,
-        location:location,
-        title:title,
-        secure:value*1,
-        capacity:capacity*1,
-        description:description,
-        type:type,
-        status:1,
-        image:pictureUrl,
+      if(userToken<token*0.2){
+        enqueueSnackbar('Token is not enough.', {
+          variant: 'info',
+          action: key => (
+              <CloseIcon onClick={() => closeSnackbar(key)}/>
+          )
+        });
+        history.push("/m/getoken");
+        return false;
+      } else {
+        setIsLoading(true)
+        const upToken = userToken - token*0.2;
+        await API.graphql(graphqlOperation(mutations.updateUserC, {input:{id:userId, token : upToken}}));
+        const data = {
+          user:moderator,
+          token:token*1,
+          location:location,
+          title:title,
+          secure:value*1,
+          capacity:capacity*1,
+          description:description,
+          type:type,
+          status:1,
+          image:pictureUrl,
+        }
+        const event = await API.graphql(graphqlOperation(mutations.createEvents, {input: data}));
+        console.log(event);
+
+        const transData = {
+          userid:userId,
+          eventid:event.data.createEvents.id,
+          amount:-token*0.2,
+          date:new Date(),
+          status:1
+        }
+        console.log(transData)
+        await API.graphql(graphqlOperation(mutations.createTransaction,{input:transData}));
+        
+        setIsLoading(false);
+        history.push('/m/dashboard');
       }
-      await API.graphql(graphqlOperation(createEvents, {input: data}));
-      history.push('/m/dashboard');
+      
     }
   };
+  useEffect(()=>{
+    const events = API.graphql(graphqlOperation(queries.listEventss));
+    console.log(events);
+
+  },[])
+  useEffect(() => {
+    const subscription = API
+      .graphql(graphqlOperation(subscriptions.onCreateEvents))
+      .subscribe({
+        next: (event) => {
+          console.log(event.value.data.onCreateEvents)
+          // setEvents([...events, event.value.data.onCreateEvents]);
+        }
+      });
+
+    return () => {
+      subscription.unsubscribe();
+    }
+  }, [events]);
   
   return (
     
@@ -446,9 +509,10 @@ function SubscriptionInfo(props) {
           test();
         }}
         className={classes.button}
+        disabled={isLoading} 
         >
-          {postbtn}
-      </Button> 
+          {postbtn} {isLoading && <ButtonCircularProgress />}
+      </Button>
     </div>
         
     </form>

@@ -1,32 +1,32 @@
 {
-    "dev": {
-        "awscloudformation": {
-            "AuthRoleName": "amplify-photobie-dev-213745-authRole",
-            "UnauthRoleArn": "arn:aws:iam::570535372475:role/amplify-photobie-dev-213745-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::570535372475:role/amplify-photobie-dev-213745-authRole",
-            "Region": "us-east-1",
-            "DeploymentBucketName": "amplify-photobie-dev-213745-deployment",
-            "UnauthRoleName": "amplify-photobie-dev-213745-unauthRole",
-            "StackName": "amplify-photobie-dev-213745",
-            "StackId": "arn:aws:cloudformation:us-east-1:570535372475:stack/amplify-photobie-dev-213745/6b40a8c0-6ef3-11eb-9d87-0a54954134e7",
-            "AmplifyAppId": "d2ycrh37vrw8pj"
-        },
-        "categories": {
-            "function": {
-                "photobiee8e4a865": {
-                    "deploymentBucketName": "amplify-photobie-dev-213745-deployment",
-                    "s3Key": "amplify-builds/photobiee8e4a865-686a59516c454c6f4975-build.zip"
-                }
-            },
-            "auth": {
-                "photobieaf12b8a2": {}
-            },
-            "hosting": {
-                "amplifyhosting": {
-                    "appId": "d2ycrh37vrw8pj",
-                    "type": "manual"
-                }
-            }
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-photobie-dev-65123-authRole",
+      "UnauthRoleArn": "arn:aws:iam::570535372475:role/amplify-photobie-dev-65123-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::570535372475:role/amplify-photobie-dev-65123-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-photobie-dev-65123-deployment",
+      "UnauthRoleName": "amplify-photobie-dev-65123-unauthRole",
+      "StackName": "amplify-photobie-dev-65123",
+      "StackId": "arn:aws:cloudformation:us-east-1:570535372475:stack/amplify-photobie-dev-65123/1a99dd40-758a-11eb-900a-0a254e00bc9f",
+      "AmplifyAppId": "d39ezdthpej05x"
+    },
+    "categories": {
+      "auth": {
+        "photobie4bc4f1d4": {}
+      },
+      "function": {
+        "paying": {
+          "deploymentBucketName": "amplify-photobie-dev-65123-deployment",
+          "s3Key": "amplify-builds/paying-37477137343557415468-build.zip"
         }
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d39ezdthpej05x",
+          "type": "manual"
+        }
+      }
     }
+  }
 }

@@ -266,6 +266,41 @@ export const listUserCs = /* GraphQL */ `
     }
   }
 `;
+export const getTransaction = /* GraphQL */ `
+  query GetTransaction($id: ID!) {
+    getTransaction(id: $id) {
+      id
+      userid
+      eventid
+      amount
+      date
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listTransactions = /* GraphQL */ `
+  query ListTransactions(
+    $filter: ModelTransactionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listTransactions(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        userid
+        eventid
+        amount
+        date
+        status
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const messagesByChannelId = /* GraphQL */ `
   query MessagesByChannelId(
     $channelID: ID

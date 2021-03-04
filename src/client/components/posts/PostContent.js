@@ -256,6 +256,7 @@ function PostContent(props) {
       console.log(totalToken)
       await API.graphql(graphqlOperation(queries.listProviderss,{filter:{id:{eq:id}}})).then(async(response)=>{
         const clientsList = response.data.listProviderss.items[0].clients;
+        
         if(!clientsList){
           var clientsData = [{"email":user}];
           clientsData = JSON.stringify(clientsData)
@@ -275,6 +276,14 @@ function PostContent(props) {
         await API.graphql(graphqlOperation(mutations.updateProviders,{input: {id:id, clients:clientsData}}));
         await API.graphql(graphqlOperation(mutations.updateUserA, {input:{id:userId, token : upToken}}));
         await API.graphql(graphqlOperation(mutations.updateEvents, {input:{id:props.id, upticktoken : totalToken}}));
+        const transData = {
+          userid:userId,
+          eventid:props.id,
+          amount:-e*1,
+          date:new Date(),
+          status:1
+        }
+        await API.graphql(graphqlOperation(mutations.createTransaction,{input:transData}))
         const newProv = [...providers];
         const providerArray = {
           capacity:providers[ios].capacity,

@@ -23,6 +23,8 @@ import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import CancelIcon from '@material-ui/icons/Cancel';
 import { useHistory } from "react-router-dom";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
+import { useSnackbar } from 'notistack';
+import CloseIcon from '@material-ui/icons/Close';
 
 const styles = {
   dBlock: { display: "block" },
@@ -86,6 +88,7 @@ function PostContent(props) {
   const [plusFade, setPlusFade] = useState("showPlus")
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   useEffect(() => {
     async function fetchUser() {
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
@@ -103,7 +106,9 @@ function PostContent(props) {
       if(!user){
         window.location.href = "/"
       } else {
-        setUser(user.attributes.email)
+        setUser(user.attributes.email);
+        const hasToken = await API.graphql(graphqlOperation(queries.listUserCs, {filter:{email:{eq:user.attributes.email}}}));
+        console.log(hasToken);
       }
     }
     fetchUser();
@@ -130,6 +135,14 @@ function PostContent(props) {
   async function upload(e) {
     e.preventDefault();
     setIsLoading(true);
+    if(!proToken){
+      enqueueSnackbar('Login success', {
+        variant: 'success',
+        action: key => (
+            <CloseIcon onClick={() => closeSnackbar(key)}/>
+        )
+      });
+    }
     if(toUpload.length>0){
       var d = new Date();
       var n = d.getTime();
@@ -149,6 +162,7 @@ function PostContent(props) {
     return;
   }
   async function handleAddBid(e){
+    
     var data = {}
     if(e){
       data = {

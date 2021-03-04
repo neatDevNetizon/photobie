@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 import { Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
 import Dashboard from "./dashboard/Dashboard";
-import Posts from "./posts/Posts";
 import Subscription from "./subscription/Subscription";
 import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"
 import GetToken from "./pricing/Price";
-import Profile from "./profile/main"
+import Profile from "./profile/main";
+import History from "./history"
+import Posts from "./detail/Posts";
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -80,6 +81,10 @@ function Routing(props) {
           posts={posts}
           setPosts={setPosts}
           selectPosts={selectPosts}
+        />
+        <PropsRoute
+          path="/p/history"
+          component={History}
         />
         <PropsRoute
           path="/p/editprofile"

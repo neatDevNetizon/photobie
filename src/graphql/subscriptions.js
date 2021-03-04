@@ -325,3 +325,45 @@ export const onDeleteUserC = /* GraphQL */ `
     }
   }
 `;
+export const onCreateTransaction = /* GraphQL */ `
+  subscription OnCreateTransaction {
+    onCreateTransaction {
+      id
+      userid
+      eventid
+      amount
+      date
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateTransaction = /* GraphQL */ `
+  subscription OnUpdateTransaction {
+    onUpdateTransaction {
+      id
+      userid
+      eventid
+      amount
+      date
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteTransaction = /* GraphQL */ `
+  subscription OnDeleteTransaction {
+    onDeleteTransaction {
+      id
+      userid
+      eventid
+      amount
+      date
+      status
+      createdAt
+      updatedAt
+    }
+  }
+`;

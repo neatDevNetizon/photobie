@@ -6,6 +6,8 @@ import GlobalStyles from "./GlobalStyles";
 // import * as serviceWorker from "./serviceWorker";
 import Pace from "./shared/components/Pace";
 import "./app.css"
+import NotistackProvider from './shared/components/NotistackProvider';
+import { SnackbarProvider } from "notistack";
 const AdminComponent = lazy(() => import("./admin/components/Main"));
 const ClientComponent = lazy(() => import("./client/components/Main"));
 const ProviderComponent = lazy(() => import("./provider/components/Main"));
@@ -15,7 +17,14 @@ const LoggedOutComponent = lazy(() => import("./logged_out/components/Main"));
 function App() {
  
   return (
+
     <BrowserRouter>
+    <SnackbarProvider 
+      dense
+      maxSnack={5}
+      preventDuplicate
+      autoHideDuration={2000}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalStyles />
@@ -40,6 +49,7 @@ function App() {
           </Switch>
         </Suspense>
       </MuiThemeProvider>
+      </SnackbarProvider>
     </BrowserRouter>
   );
 }

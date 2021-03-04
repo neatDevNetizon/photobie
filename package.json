@@ -20,6 +20,7 @@
     "date-fns": "^2.16.1",
     "emoji-mart": "^3.0.0",
     "js-cookie": "^2.2.0",
+    "notistack": "^1.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
     "react-avatar-edit": "^0.9.0",

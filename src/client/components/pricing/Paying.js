@@ -180,6 +180,7 @@ const AddBalanceDialog = withTheme(function (props) {
                 success_url:'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url:'https://example.com/cancel'
             }
+            console.log(body)
             const response = await API.post("restapi", "/paying", {body} )
             console.log(response)
             if(response.err==null){

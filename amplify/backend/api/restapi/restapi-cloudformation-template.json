@@ -14,15 +14,15 @@
         },
     
     
-          "functionphotobiee8e4a865Name": {
+          "functionpayingName": {
             "Type": "String",
-            "Default": "functionphotobiee8e4a865Name"
+            "Default": "functionpayingName"
           },
         
           
-          "functionphotobiee8e4a865Arn": {
+          "functionpayingArn": {
             "Type": "String",
-            "Default": "functionphotobiee8e4a865Arn"
+            "Default": "functionpayingArn"
           }
         
           
@@ -176,7 +176,7 @@
                             
                             {
                                 
-                                "Ref": "functionphotobiee8e4a865Arn"
+                                "Ref": "functionpayingArn"
                             },
                             
                             "/invocations"
@@ -275,7 +275,7 @@
                           
                           {
                             
-                            "Ref": "functionphotobiee8e4a865Arn"
+                            "Ref": "functionpayingArn"
                           },
                           
                           "/invocations"
@@ -332,12 +332,12 @@
                   
         
         
-        "functionphotobiee8e4a865Permissionrestapi": {
+        "functionpayingPermissionrestapi": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": 
                     {
-                        "Ref":  "functionphotobiee8e4a865Name"
+                        "Ref":  "functionpayingName"
                     },
                     
                     "Action": "lambda:InvokeFunction",

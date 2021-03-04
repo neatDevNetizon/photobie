@@ -47,6 +47,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import HistoryIcon from '@material-ui/icons/History';
 
 const styles = (theme) => ({
   
@@ -290,11 +291,26 @@ function NavBar(props) {
     handleClose();
     handleMobileDrawerClose();
   }
+  async function viewToken(){
+    history.push("/m/history");
+    handleClose();
+    handleMobileDrawerClose();
+  }
   const menuItems = [
+    {
+      name: "Transaction",
+      onClick: viewToken,
+      icon: <HistoryIcon className="text-white" />
+    },
     {
       name: "Get Token",
       onClick: goGetToken,
       icon: <ShoppingCartIcon className="text-white" />
+    },
+    {
+      name: "View List",
+      onClick: goListPage,
+      icon: <FilterListIcon className="text-white" />
     },
     {
       name: "Message",
@@ -303,9 +319,10 @@ function NavBar(props) {
     },
     {
       name: "Post Event",
-      onClick: goListPage,
+      onClick: navigateTo,
       icon: <FilterListIcon className="text-white" />
     },
+    
     {
       name: "Profile",
       onClick: editProfile,
@@ -340,7 +357,7 @@ function NavBar(props) {
           </Typography>
         </div>
         <div>
-          <Hidden smUp>
+          <Hidden mdUp>
             <IconButton
               className={classes.menuButton}
               onClick={handleMobileDrawerOpen}
@@ -349,7 +366,7 @@ function NavBar(props) {
               <MenuIcon color="primary" />
             </IconButton>
           </Hidden>
-          <Hidden xsDown>
+          <Hidden smDown>
           <Box
             display="flex"
             justifyContent="flex-end"
@@ -357,6 +374,13 @@ function NavBar(props) {
             width="100%"
             openAddBalanceDialog={openAddBalanceDialog}
           >
+            <Button
+                  color="secondary"
+                  size="large"
+                  onClick={viewToken}
+                >
+                  Transaction
+                </Button>
             <Button
               color="secondary"
               size="large"

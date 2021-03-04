@@ -22,7 +22,8 @@ import { TextField,
   Grid,
   Button,
   Avatar,
-  Drawer
+  Drawer,
+  Typography,
 } from "@material-ui/core";
 import countryList from 'react-select-country-list';
 
@@ -40,8 +41,9 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    // minWidth: ,
     marginTop:30,
+    width:"80%"
   },
   previewImage:{
     width:150,
@@ -70,13 +72,17 @@ const useStyles = makeStyles((theme) => ({
   },
   avatarImageSelecter:{
     
+    overflowX:"scroll",
   },
   selecterContainer:{
-  
-
+   maxWidth:"-webkit-fill-available"
+   
   },
   chip:{
     margin:2,
+  },
+  chips:{
+    whiteSpace:"normal"
   }
 }));
 const names = [
@@ -106,7 +112,7 @@ function BadgeAvatars(props) {
   const [open, setOpen] = useState(false)
   const [profileName, setProfileName] = useState("")
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
+  const [personName, setPersonName] = useState([]);
   const [value, setValue] = useState('')
   const options = useMemo(() => countryList().getData(), [])
   const [userEmail, setUserEmail] = useState("");
@@ -115,7 +121,9 @@ function BadgeAvatars(props) {
   const [cityName, setCityName] = useState("")
   const [countryName, setCountryName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-
+  const [current, setCurrent] = useState();
+  const [onhold, setOnhold] = useState();
+  const [past, setPast] = useState();
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -136,14 +144,32 @@ function BadgeAvatars(props) {
       } else{
         const email = user.attributes.email;
         setUserEmail(email);
-        const userToken = await API.graphql(graphqlOperation(queries.listUserss, { filter: {email:{eq:email}}}));
-        const userData = userToken.data.listUserss.items[0]
+        const userToken = await API.graphql(graphqlOperation(queries.listUserAs, {filter:{email:{eq:email}}}))
+        setCurrent(userToken.data.listUserAs?.items[0]?.token);
+        const userId = userToken.data.listUserAs?.items[0]?.id;
+
+        const userTrans = await API.graphql(graphqlOperation(queries.listTransactions,{filter:{userid:{eq:userId}}}));
+        const transdata = userTrans.data.listTransactions?.items;
+        console.log(transdata)
+
+        var onholdValue=0;
+        var pastValue=0;
+        for(let i in transdata){
+          if(transdata[i].status===1) onholdValue += transdata[i].amount;
+          else if(transdata[i].status===2)  pastValue += transdata[i].amount;
+        }
+        setOnhold(Math.abs(onholdValue)); 
+        setPast(Math.abs(pastValue))
+
+        const userProfile = await API.graphql(graphqlOperation(queries.listUserss, { filter: {email:{eq:email}}}));
+        const userData = userProfile.data.listUserss.items[0];
+        
         setUserId(userData.id);
         setCountryName(userData.country);
         setProfileName(userData.name);
         setZipCode(userData.zipcode);
         setCityName(userData.city);
-        setPersonName(userData.favortype.split(","));
+        if(userData.favortype)setPersonName(userData?.favortype?.split(","));
         setAvatarUrl(userData.photo)
         await Storage.get(userData.photo, { expires: 300 }).then(res=>{
           setPreview(res);
@@ -159,7 +185,9 @@ function BadgeAvatars(props) {
     setValue(value)
   }
   function getStyles(name, personName, theme) {
+    if(!personName) return ;
     return {
+      // whiteSpace:"none",
       fontWeight:
         personName.indexOf(name) === -1
           ? theme.typography.fontWeightRegular
@@ -236,29 +264,25 @@ function BadgeAvatars(props) {
   }
   return (
       <div className={classes.root}>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      ></Drawer>
+      
         <div style = {{position:"absolute", bottom:1}}>
           <FormDialog
             open={open}
             className = {classes.selecterContainer}
-            
             content={
-              <AvatarEdit
+              <Grid container xs = {12}>
+                <AvatarEdit
                 width={390}
-                height={295}
+                height={260}
                 onCrop={onCrop}
                 onClose={onClose}
                 onBeforeFileLoad={onBeforeFileLoad}
                 src={src}
-                width = {550}
+
                 className = {classes.avatarImageSelecter}
-              /> 
+              />
+              </Grid>
+               
             }
             onClose = {handleModalClose}
           />
@@ -277,100 +301,114 @@ function BadgeAvatars(props) {
             </div>
           </div>
         </div>
-        <TextField
-          variant="outlined"
-          margin="none"
-          required
-          label="Your Full Name"
-          value={profileName}
-          onChange={event => {
-            setProfileName(event.target.value);
-          }}
-          style = {{width:400}}
-          // autoFocus
-          autoComplete="off"
-          type="text"
-        />
-        <FormControl className={classes.formControl} variant="outlined" >
-          <InputLabel htmlFor="outlined-age-native-simple" id="demo-mutiple-chip-label">Favourite Event Types</InputLabel>
-          <Select
-            labelId="demo-mutiple-chip-label"
-            id="demo-mutiple-chip"
-            multiple
-            style = {{minWidth:300}}
-            value={personName}
-            size = {5}
-            onChange={handleChange}
-            input={<Input id="select-multiple-chip" />}
-            renderValue={(selected) => (
-              <div className={classes.chips}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} className={classes.chip} />
-                ))}
-              </div>
-            )}
-            MenuProps={MenuProps}
-          >
-            {names.map((name, index) => (
-              <MenuItem key={name} name = {name} value={name} style={getStyles(name, personName, theme)}>
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        
-        <Grid container xs = {8} style = {{textAlign:"center", marginTop:20}}>
-          <Grid item xs = {8} sm = {6}>
+        <Typography variant="body2" color="textSecondary">
+        CURRENT : {current?current/100:0}&nbsp;&nbsp;ON HOLD : {onhold?onhold/100:0}&nbsp;&nbsp;PAST : {past?past/100:0} &nbsp;(USD)
+        </Typography>
+        <Grid container xs = {12} style = {{textAlign:"center"}}>
+          <Grid item xs={1} md={3} sm = {2} ></Grid>
+          <Grid item xs={10} md={6} sm = {8}>
             <TextField
               variant="outlined"
               margin="none"
               required
-              label="City Name"
+              label="Your Full Name"
+              value={profileName}
+              onChange={event => {
+                setProfileName(event.target.value);
+              }}
+              style = {{width:"80%"}}
+              // autoFocus
               autoComplete="off"
               type="text"
-              value = {cityName}
-              onChange={event => {
-                setCityName(event.target.value);
-              }}
             />
+
+            <FormControl className={classes.formControl} variant="outlined" >
+              <InputLabel htmlFor="outlined-age-native-simple" id="demo-mutiple-chip-label">Favourite Event Types</InputLabel>
+              <Select
+                labelId="demo-mutiple-chip-label"
+                id="demo-mutiple-chip"
+                multiple
+                // style = {{minWidth:300, }}
+                style={{whiteSpace:"none"}}
+                value={personName}
+                size = {5}
+                onChange={handleChange}
+                input={<Input id="select-multiple-chip"  />}
+                renderValue={(selected) => (
+                  <div className={classes.chips}>
+                    {selected.map((value) => (
+                      <Chip key={value}  label={value} className={classes.chip} />
+                    ))}
+                  </div>
+                )}
+                MenuProps={MenuProps}
+              >
+                {names.map((name, index) => (
+                  <MenuItem key={name} name = {name} value={name} style={getStyles(name, personName, theme)}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            
+            
+            <Grid container xs = {12} style = {{textAlign:"center", marginTop:10}}>
+              <Grid item xs = {12} sm = {6}>
+                <TextField
+                  variant="outlined"
+                  margin="none"
+                  required
+                  label="City Name"
+                  autoComplete="off"
+                  type="text"
+                  value = {cityName}
+                  style = {{marginTop:20,}}
+                  onChange={event => {
+                    setCityName(event.target.value);
+                  }}
+                />
+              </Grid>
+              <Grid item xs = {12} sm = {6}>
+                <TextField
+                  id="outlined-number"
+                  label="Zipcode"
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value ={zipCode}
+                  style = {{marginTop:20,}}
+                  onChange={event => {
+                    setZipCode(event.target.value);
+                  }}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel htmlFor="outlined-age-native-simple">Country Name</InputLabel>
+              <Select
+                native
+                label="Country Name"
+                value = {countryName}
+                style = {{height:50, backgroundColor:"none", }}
+                inputProps={{
+                    name: 'Country Name',
+                    id: 'outlined-age-native-simple',
+                }}
+                onChange={event => {
+                  setCountryName(event.target.value);
+                }}
+                >
+                {listCountry.map((item, index)=>{
+                    return <option key = {index} value={item.value}>{item.label}</option>
+                })}
+            </Select>
+          </FormControl>
           </Grid>
-          <Grid item xs = {8} sm = {6}>
-             <TextField
-              id="outlined-number"
-              label="Zipcode"
-              type="number"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value ={zipCode}
-              onChange={event => {
-                setZipCode(event.target.value);
-              }}
-              variant="outlined"
-            />
+              <Grid item xs={1} md={3} sm = {2}></Grid>
           </Grid>
-        </Grid>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel htmlFor="outlined-age-native-simple">Country Name</InputLabel>
-          <Select
-            native
-            label="Country Name"
-            value = {countryName}
-            style = {{width:350, height:50, backgroundColor:"none"}}
-            inputProps={{
-                name: 'Country Name',
-                id: 'outlined-age-native-simple',
-            }}
-            onChange={event => {
-              setCountryName(event.target.value);
-            }}
-            >
-            {listCountry.map((item, index)=>{
-                return <option key = {index} value={item.value}>{item.label}</option>
-            })}
-        </Select>
-      </FormControl>
-        <Button variant="contained" color="secondary" disabled={loading} onClick = {saveAvatar}>
+        <Button variant="contained" color="secondary" style = {{marginTop:30}} disabled={loading} onClick = {saveAvatar}>
           Save Change {loading && <ButtonCircularProgress />}
         </Button>
       </div>

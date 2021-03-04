@@ -20,6 +20,9 @@ import VisibilityPasswordTextField from "../../../shared/components/VisibilityPa
 import Amplify, {API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import VerifyCode from "./verifyCode"
 import * as mutations from '../../../graphql/mutations';
+import { useSnackbar } from 'notistack';
+import CloseIcon from '@material-ui/icons/Close';
+
 const styles = (theme) => ({
   link: {
     transition: theme.transitions.create(["background-color"], {
@@ -50,6 +53,7 @@ function RegisterDialog(props) {
   const registerPasswordRepeat = useRef();
   const loginEmail = useRef();
   const [code, setCode] = useState(1);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   async function register() {
     const username = loginEmail.current.value;
     const password = registerPassword.current.value;
@@ -107,7 +111,12 @@ function RegisterDialog(props) {
         //   break;
       }
 
-
+      enqueueSnackbar('Register success. Please check your email.', {
+        variant: 'success',
+        action: key => (
+            <CloseIcon onClick={() => closeSnackbar(key)}/>
+        )
+      });
       setStatus(null);
       setIsLoading(true);
       setTimeout(() => {
@@ -116,6 +125,14 @@ function RegisterDialog(props) {
       }, 1500);
       
     } catch (error) {
+      if(error.message == "An account with the given email already exists."){
+        enqueueSnackbar('An account with the given email already exists.', {
+          variant: 'warning',
+          action: key => (
+              <CloseIcon onClick={() => closeSnackbar(key)}/>
+          )
+        });
+      }
         console.log('error signing up:', error);
     }
   }

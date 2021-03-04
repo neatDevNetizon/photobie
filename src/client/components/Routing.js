@@ -9,6 +9,7 @@ import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"
 import GetToken from "./pricing/Price"
 import Profile from "./profile/main"
+import History from "./history"
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -80,6 +81,10 @@ function Routing(props) {
           posts={posts}
           setPosts={setPosts}
           selectPosts={selectPosts}
+        />
+        <PropsRoute
+          path="/c/history"
+          component={History}
         />
         <PropsRoute
           path="/c/message"

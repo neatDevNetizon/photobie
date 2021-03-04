@@ -8,7 +8,8 @@ import ConsecutiveSnackbarMessages from "../../shared/components/ConsecutiveSnac
 import smoothScrollTop from "../../shared/functions/smoothScrollTop";
 import persons from "../dummy_data/persons";
 import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
-import {Auth} from "aws-amplify"
+import {Auth} from "aws-amplify";
+
 const styles = (theme) => ({
   main: {
     transition: theme.transitions.create(["width", "margin"], {
@@ -364,6 +365,7 @@ function Main(props) {
         openAddBalanceDialog={openAddBalanceDialog}
         messages={messages}
       />
+      
       <ConsecutiveSnackbarMessages
         getPushMessageFromChild={getPushMessageFromChild}
       />

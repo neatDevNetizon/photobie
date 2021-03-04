@@ -19,6 +19,8 @@ import VerifyCode from "./verifyCode"
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { addTodoAction } from '../../../actions/addTodoAction';
+import { useSnackbar } from 'notistack';
+import CloseIcon from '@material-ui/icons/Close';
  
 const styles = (theme) => ({
   forgotPassword: {
@@ -54,7 +56,8 @@ function LoginDialog(props) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const loginEmail = useRef();
   const loginPassword = useRef();
-  const [confirmStatus, setConfirmStatus] = useState(1)
+  const [confirmStatus, setConfirmStatus] = useState(1);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   async function  login(){
     try {
       setIsLoading(true);
@@ -64,7 +67,12 @@ function LoginDialog(props) {
       console.log(user)
       localStorage.setItem('userEmail', loginEmail.current.value);
       onClose();
-
+      enqueueSnackbar('Login success', {
+        variant: 'success',
+        action: key => (
+            <CloseIcon onClick={() => closeSnackbar(key)}/>
+        )
+      });
       switch(user.attributes['custom:type']){
         case "4":
           history.push("/a/dashboard");
@@ -87,11 +95,22 @@ function LoginDialog(props) {
     } catch (error) {
       console.log(error)
       if(error.message == "User is not confirmed."){
-
         setConfirmStatus(2)
-      } else {
+      } 
+      else if(error.message == "User does not exist."){
+        enqueueSnackbar('User does not exist.', {
+          variant: 'info',
+          action: key => (
+              <CloseIcon onClick={() => closeSnackbar(key)}/>
+          )
+        });
+        setIsLoading(false);
+      }
+      else {
         setConfirmStatus(1)
-        window.location.href = "/"
+        // window.location.href = "/"
+        setIsLoading(false);
+        
       }
       
     }

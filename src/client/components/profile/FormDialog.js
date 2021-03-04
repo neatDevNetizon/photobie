@@ -14,7 +14,8 @@ const styles = theme => ({
     marginTop: theme.spacing(2)
   },
   dialogPaperScrollPaper: {
-    maxHeight: "none",
+    maxHeight: "50vh",
+    width:"-webkit-fill-available",
     position:"absolute",
     bottom:20,
   },

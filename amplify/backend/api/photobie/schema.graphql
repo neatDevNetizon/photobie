@@ -68,4 +68,11 @@ type UserC @model {
   email:String!
   token:Int
 }
-
+type Transaction @model {
+  id:ID!
+  userid:String!
+  eventid:String!
+  amount:Int
+  date:String
+  status:Int
+}

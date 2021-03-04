@@ -2,7 +2,7 @@
     "paths": [
         {
             "name": "/paying",
-            "lambdaFunction": "photobiee8e4a865",
+            "lambdaFunction": "paying",
             "privacy": {
                 "open": true
             },
@@ -13,19 +13,19 @@
     "apiName": "restapi",
     "functionArns": [
         {
-            "lambdaFunction": "photobiee8e4a865"
+            "lambdaFunction": "paying"
         }
     ],
     "privacy": {
         "auth": 0,
         "unauth": 0,
-        "authRoleName": "amplify-photobie-dev-213745-authRole",
-        "unAuthRoleName": "amplify-photobie-dev-213745-unauthRole"
+        "authRoleName": "amplify-photobie-dev-65123-authRole",
+        "unAuthRoleName": "amplify-photobie-dev-65123-unauthRole"
     },
     "dependsOn": [
         {
             "category": "function",
-            "resourceName": "photobiee8e4a865",
+            "resourceName": "paying",
             "attributes": [
                 "Name",
                 "Arn"

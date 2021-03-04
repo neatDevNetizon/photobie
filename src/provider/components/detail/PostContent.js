@@ -23,6 +23,8 @@ import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import CancelIcon from '@material-ui/icons/Cancel';
 import { useHistory } from "react-router-dom";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
+import { useSnackbar } from 'notistack';
+import CloseIcon from '@material-ui/icons/Close';
 
 const styles = {
   dBlock: { display: "block" },
@@ -88,6 +90,9 @@ function PostContent(props) {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [requiredToken, setRequiredToken] = useState(null);
+  const [userToken, setUserToken] = useState();
+  const [userId, setUserId] = useState();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   useEffect(() => {
     async function fetchUser() {
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
@@ -107,7 +112,12 @@ function PostContent(props) {
       if(!user){
         window.location.href = "/"
       } else {
-        setUser(user.attributes.email)
+        setUser(user.attributes.email);
+        const hasToken = await API.graphql(graphqlOperation(queries.listUserBs, {filter:{email:{eq:user.attributes.email}}}));
+        if(hasToken.data.listUserBs.items[0].token){
+          setUserToken(hasToken.data?.listUserBs?.items[0]?.token);
+        } else setUserToken(0);
+        setUserId(hasToken.data?.listUserBs?.items[0]?.id);
       }
     }
     fetchUser();
@@ -132,6 +142,16 @@ function PostContent(props) {
   async function upload(e) {
     e.preventDefault();
     setIsLoading(true);
+    if(userToken<requiredToken){
+      enqueueSnackbar('Token is not enough.', {
+        variant: 'info',
+        action: key => (
+            <CloseIcon onClick={() => closeSnackbar(key)}/>
+        )
+      });
+      history.push("/p/getoken");
+      return false;
+    }
     if(toUpload.length>0){
       var d = new Date();
       var n = d.getTime();
@@ -151,7 +171,8 @@ function PostContent(props) {
     return;
   }
   async function handleAddBid(e){
-    var data = {}
+    var data = {};
+    
     if(e){
       data = {
         provider:user,
@@ -173,7 +194,17 @@ function PostContent(props) {
         images:""
       }
     }
+    const upToken = userToken-requiredToken;
     await API.graphql(graphqlOperation(mutations.createProviders, {input: data}));
+    await API.graphql(graphqlOperation(mutations.updateUserB, {input:{id:userId, token : upToken}}));
+    const transData = {
+      userid:userId,
+      eventid:props.id,
+      amount:-requiredToken,
+      date:new Date(),
+      status:1
+    }
+    await API.graphql(graphqlOperation(mutations.createTransaction,{input:transData}));
     history.push('/p/dashboard');
     setIsLoading(false);
     return;
@@ -202,44 +233,47 @@ function PostContent(props) {
         <img src = {imageSrc} style = {{width:"100%", marginTop:-50, height:400,objectFit:"cover"}}></img>
       </Paper>
       <Grid container spacing={3} style = {{width:"70%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
-        <Grid item xs = {12} md={1} >
+        <Grid item xs = {12} md={1}  sm = {2}>
         <Typography>Details</Typography>
         </Grid>
-        <Grid item xs = {12} md={8} >
+        <Grid item xs = {12} md={8} sm = {10}>
           <Typography>Title : {title}</Typography>
           <Typography>Location : {location}</Typography>
           <Typography>{description}</Typography>
           
         </Grid>
-        <Grid item xs = {12} md={3} >
+        <Grid item xs = {12} md={3} sm={12}>
           <Typography>Capacity:{capacity}</Typography>
           <Typography>Required token : {requiredToken}</Typography>
         </Grid>
         <Grid container spacing = {3} >
-          <Grid item xs = {12} md={3} >
+          <Grid item xs = {12} md={3} sm = {6}>
              <TextField id="outlined-search" label="Capacity" type="number" variant="outlined" onChange = {handleCapacity} />
           </Grid>
-          <Grid item xs = {12} md={3} >
+          <Grid item xs = {12} md={3} sm = {6}>
              <TextField id="outlined-search" label="Token" type="number" variant="outlined" onChange = {handleToken} />
+          </Grid>
+          <Grid item xs = {12} md={6} sm = {12}>
+          {proCapacity&&proToken?<Typography>You will get {(proCapacity*proToken-requiredToken)/100} USD. <br/>(Capacity*Token - Required Token)</Typography>:null}
           </Grid>
           {/* <Grid item xs = {12} md={6} >
              <TextField id="outlined-search" label="Location" type="text" variant="outlined" onChange = {handleLocation} style = {{width:"100%"}} />
-          </Grid> */}
+          </Grid> */} 
         </Grid>
 
         <Grid container spacing = {3} style = {{marginTop:20}}>
-          <Grid item xs = {12} md = {12}>
-              <Grid container >
+          <Grid item xs = {12} md = {12} >
+              <Grid container xs={12}>
               {file.length > 0 &&
                 file.map((item, index) => {
                   return (
-                    <Grid key = {item} xs = {12} md = {3} style = {styles.imageBody}>
+                    <Grid key = {item} xs = {12} lg = {3} md = {4} sm = {6} style = {styles.imageBody}>
                       <img src={item} alt="" style = {styles.images} />
                       <CancelIcon onClick={() => deleteFile(index)} style = {styles.canelIcon}/>
                     </Grid>
                   );
                 })}
-                <Grid  xs = {12} md = {3} className={classes[plusFade]}>
+                <Grid  xs = {12} lg = {3} md = {4} sm = {6} className={classes[plusFade]}>
                   <div style = {styles.imageBody}>
                     <img alt="+" src = "/images/image-plus.png" style = {styles.imagePlus} onClick = {handlePlusImage}/>
                   </div>
