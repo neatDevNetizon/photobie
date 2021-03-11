@@ -21,6 +21,7 @@ export const createEvents = /* GraphQL */ `
       final
       upticktoken
       cdate
+      duration
       createdAt
       updatedAt
     }
@@ -46,6 +47,7 @@ export const updateEvents = /* GraphQL */ `
       final
       upticktoken
       cdate
+      duration
       createdAt
       updatedAt
     }
@@ -71,6 +73,7 @@ export const deleteEvents = /* GraphQL */ `
       final
       upticktoken
       cdate
+      duration
       createdAt
       updatedAt
     }

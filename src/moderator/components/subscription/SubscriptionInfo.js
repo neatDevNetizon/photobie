@@ -1,21 +1,28 @@
 import React, { useState, useEffect,useRef } from "react";
 import PropTypes from "prop-types";
-import { ListItemText, Toolbar, withStyles } from "@material-ui/core";
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import { flexbox, spacing } from '@material-ui/system';
 import { useHistory } from "react-router-dom";
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import SecurityIcon from '@material-ui/icons/Security';
 import PublicIcon from '@material-ui/icons/Public';
 import Button from '@material-ui/core/Button';
 import Amplify, {API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import * as mutations from '../../../graphql/mutations';
-import Grid from '@material-ui/core/Grid';
+import {
+  Grid,
+  FormControl,
+  MenuItem,
+  InputLabel,
+  Select,
+  withStyles,
+  Toolbar,
+  TextField,
+  makeStyles,
+  BottomNavigation,
+  BottomNavigationAction,
+  TextareaAutosize,
+  Typography
+} from '@material-ui/core';
 import ImageSearchIcon from '@material-ui/icons/ImageSearch';
-import Typography from '@material-ui/core/Typography';
 import CancelIcon from '@material-ui/icons/Cancel';
 import * as queries from "../../../graphql/queries";
 import { useSnackbar } from 'notistack';
@@ -151,6 +158,13 @@ const styles = {
     position:"absolute", 
     marginTop:40,
     marginLeft:-60
+  },
+  textField: {
+    width: 300
+  },
+  duration: {
+    width: '100%',
+    marginTop: 14
   }
 };
 const useStyles = makeStyles((theme) => ({
@@ -279,10 +293,11 @@ function SubscriptionInfo(props) {
   const wholePage = useRef();
   const [events, setEvents] = useState();
   const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [duration, setDuration] = useState(15);
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
-
   const test = async() => {
     
     if(count == 0){
@@ -363,7 +378,8 @@ function SubscriptionInfo(props) {
           type:type,
           status:1,
           image:pictureUrl,
-          cdate:selectedDate
+          cdate:selectedDate,
+          duration:duration
         }
         const event = await API.graphql(graphqlOperation(mutations.createEvents, {input: data}));
         console.log(event);
@@ -404,144 +420,190 @@ function SubscriptionInfo(props) {
       subscription.unsubscribe();
     }
   }, [events]);
-  
+  async function handleChangeDuration(event){
+    setDuration(event.target.value)
+  }
   return (
     
-  <Toolbar className={classes.toolbar} >
-    <form className={classess.root} noValidate autoComplete="off" ref={wholePage}>
-    
-    <div className={classes.toppadding}></div> 
-    <div className={classes.txtFiled}>
-        <TextField
-          onChange={titleSet}
-          id="outlined-search"
-          label="Event Title"
-          variant="outlined"
-        />
-    </div>
-    <div className={classes[titleRequired]}>
-    * Please enter at least 3 characters
-    </div>
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-inline"
-            label="Pick event date"
-            value={selectedDate}
-            onChange={handleDateChange}
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
+    <Toolbar className={classes.toolbar} >
+      <form className={classess.root} noValidate autoComplete="off" ref={wholePage}>
+      
+      <div className={classes.toppadding}></div> 
+      <div className={classes.txtFiled}>
+          <TextField
+            onChange={titleSet}
+            id="outlined-search"
+            label="Event Title"
+            variant="outlined"
           />
-    </MuiPickersUtilsProvider>
-    <div className={classes.txtFiled}>
-        <TextField
-              onChange={typeSet}
-              id="outlined-search"
-              label="Event Type"
+      </div>
+      <div className={classes[titleRequired]}>
+      * Please enter at least 3 characters
+      </div>
+      <div className={classes.txtFiled}>
+        <Grid container x={12} spacing={3}>
+          <Grid item sm={12} md={6} xs={12}>
+            <TextField
+              id="datetime-local"
+              label="Start time"
+              type="datetime-local"
               variant="outlined"
+              defaultValue={new Date().toISOString()}
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              style={{width:'100%'}}
+              onChange={(event)=>{
+                const day = new Date(event.target.value);
+                setSelectedDate(day);
+              }}
             />
-    </div>
-    <div className={classes[typeRequired]}>
-    * Please enter at least 3 characters
-    </div>
+          </Grid>
+          <Grid item sm={12} md={6} xs={12}>
+            <FormControl variant="outlined" className={classes.duration}>
+              <InputLabel id="demo-simple-select-outlined-label">Event Duration</InputLabel>
+              <Select
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                value={duration}
+                onChange={handleChangeDuration}
+                label="Event Duration"
+              >
+                <MenuItem value={15}>15 minutes</MenuItem>
+                <MenuItem value={30}>30 minutes</MenuItem>
+                <MenuItem value={45}>45 minutes</MenuItem>
+                <MenuItem value={60}>1 hour</MenuItem>
+                <MenuItem value={90}>1 hour 30 min</MenuItem>
+                <MenuItem value={120}>2 hours</MenuItem>
+                <MenuItem value={180}>3 hours</MenuItem>
+                <MenuItem value={240}>4 hours</MenuItem>
+                <MenuItem value={300}>5 hours</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </div>
+      {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-inline"
+              label="Pick event date"
+              value={selectedDate}
+              onChange={handleDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+      </MuiPickersUtilsProvider> */}
+      <div className={classes.txtFiled}>
+          <TextField
+                onChange={typeSet}
+                id="outlined-search"
+                label="Event Type"
+                variant="outlined"
+              />
+      </div>
+      <div className={classes[typeRequired]}>
+      * Please enter at least 3 characters
+      </div>
 
-    <div className={classes.txtFiled}>
-      <TextField
-          onChange={descriptionSet}
-          id="outlined-search"
-          label="Event Description"
-          multiline
-          rows={4}
-          variant="outlined"
-        />
-    </div>
-    <div className={classes[textrequired]}>
-    * Please enter at least 20 characters
-    </div>
-    {/* hidden items */}
-    <div  className={classes[cart]}>
-      <div className={classes[imageLetter]}>
-        <div className = {classes.previews} onClick = {imageSelect} >
-          <input type="file" id = "image_select" onChange = {handleImageChange} className = {classes.fileModal}/>
-          <ImageSearchIcon fontSize = "large"/>
-          <Typography variant="h6" color="primary" component="h2" style = {{textAlign:"center"}}>
-            Drag and Drop Event image here
-          </Typography>
-        </div>
-      </div>
-      <div className = {classes[imageSection]}>
-        <img src = {imageSource} className = {classes.image} onClick = {imageSelect}></img>
-        <CancelIcon color = "primary" className = {classes.cancelImage} onClick={cancelImageSelect}/>
-      </div>
-      
-    </div>
-     
-    <div  className={classes[cart]}>
+      <div className={classes.txtFiled}>
         <TextField
-                  onChange={locationSet}
-                  id="outlined-search"
-                  label="Location"
-                  variant="outlined"
-            />
-    </div>
-    <div className={classes[locationrequired]}>
-    * Please enter at least 3 characters
-    </div>
-    <div style = {{display:"flex", flexDirection:"row", width:"100%"}}>
-      <div className={classes[twocart]}>
-            <TextField
-                    onChange={capacitySet}
-                    id="outlined-search"
-                    label="Capacity"
-                    variant="outlined"
-                    type="number"
-              />
+            onChange={descriptionSet}
+            id="outlined-search"
+            label="Event Description"
+            multiline
+            rows={4}
+            variant="outlined"
+          />
       </div>
-      
-      <div className={classes[twocart]}>
-            <TextField
-                    onChange={tokenSet}
-                    id="outlined-search"
-                    label="Minimun token"
-                    variant="outlined"
-                    type="number"
-              />
-              
+      <div className={classes[textrequired]}>
+      * Please enter at least 20 characters
+      </div>
+      {/* hidden items */}
+      <div  className={classes[cart]}>
+        <div className={classes[imageLetter]}>
+          <div className = {classes.previews} onClick = {imageSelect} >
+            <input type="file" id = "image_select" onChange = {handleImageChange} className = {classes.fileModal}/>
+            <ImageSearchIcon fontSize = "large"/>
+            <Typography variant="h6" color="primary" component="h2" style = {{textAlign:"center"}}>
+              Drag and Drop Event image here
+            </Typography>
           </div>
-      
-    </div>
-    <div className={classes[capacityrequired]}>
-      * Please enter value of capacity to Number.
-      </div>
-    <div className={classes[tokenrequired]}>
-    * Please enter the minimum token value to Number.
-    </div>
-
-    <div className={classes[security]}>
-    <BottomNavigation value={value} showLabels onChange={handleChange} className={classes.root}>
-      <BottomNavigationAction label="Private" selected value="1" icon={<SecurityIcon />} />
-      <BottomNavigationAction label="Public" value="2" icon={<PublicIcon />} />
-    </BottomNavigation>
-    </div>
-    <div className={classes.bottompadding}  ref={wholePage}>
-      <Button variant="contained"
-        color="secondary"
-        onClick={() => {
-          test();
-        }}
-        className={classes.button}
-        disabled={isLoading} 
-        >
-          {postbtn} {isLoading && <ButtonCircularProgress />}
-      </Button>
-    </div>
+        </div>
+        <div className = {classes[imageSection]}>
+          <img src = {imageSource} className = {classes.image} onClick = {imageSelect}></img>
+          <CancelIcon color = "primary" className = {classes.cancelImage} onClick={cancelImageSelect}/>
+        </div>
         
-    </form>
-  </Toolbar>
+      </div>
+      
+      <div  className={classes[cart]}>
+          <TextField
+                    onChange={locationSet}
+                    id="outlined-search"
+                    label="Location"
+                    variant="outlined"
+              />
+      </div>
+      <div className={classes[locationrequired]}>
+      * Please enter at least 3 characters
+      </div>
+      <div style = {{display:"flex", flexDirection:"row", width:"100%"}}>
+        <div className={classes[twocart]}>
+              <TextField
+                      onChange={capacitySet}
+                      id="outlined-search"
+                      label="Capacity"
+                      variant="outlined"
+                      type="number"
+                />
+        </div>
+        
+        <div className={classes[twocart]}>
+              <TextField
+                      onChange={tokenSet}
+                      id="outlined-search"
+                      label="Minimun token"
+                      variant="outlined"
+                      type="number"
+                />
+                
+            </div>
+        
+      </div>
+      <div className={classes[capacityrequired]}>
+        * Please enter value of capacity to Number.
+        </div>
+      <div className={classes[tokenrequired]}>
+      * Please enter the minimum token value to Number.
+      </div>
+
+      <div className={classes[security]}>
+      <BottomNavigation value={value} showLabels onChange={handleChange} className={classes.root}>
+        <BottomNavigationAction label="Private" selected value="1" icon={<SecurityIcon />} />
+        <BottomNavigationAction label="Public" value="2" icon={<PublicIcon />} />
+      </BottomNavigation>
+      </div>
+      <div className={classes.bottompadding}  ref={wholePage}>
+        <Button variant="contained"
+          color="secondary"
+          onClick={() => {
+            test();
+          }}
+          className={classes.button}
+          disabled={isLoading} 
+          >
+            {postbtn} {isLoading && <ButtonCircularProgress />}
+        </Button>
+      </div>
+          
+      </form>
+    </Toolbar>
   );
 }
 

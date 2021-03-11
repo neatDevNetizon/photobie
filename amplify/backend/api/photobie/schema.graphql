@@ -17,6 +17,7 @@ type Events @model @key(
   final:String
   upticktoken:Int
   cdate:String
+  duration:Int
   createdAt:AWSDateTime!
 }
 type Users @model {
