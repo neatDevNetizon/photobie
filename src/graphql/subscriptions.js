@@ -17,6 +17,7 @@ export const onCreateEvents = /* GraphQL */ `
       image
       final
       upticktoken
+      cdate
       createdAt
       updatedAt
     }
@@ -38,6 +39,7 @@ export const onUpdateEvents = /* GraphQL */ `
       image
       final
       upticktoken
+      cdate
       createdAt
       updatedAt
     }
@@ -59,6 +61,7 @@ export const onDeleteEvents = /* GraphQL */ `
       image
       final
       upticktoken
+      cdate
       createdAt
       updatedAt
     }
@@ -330,6 +333,7 @@ export const onCreateTransaction = /* GraphQL */ `
     onCreateTransaction {
       id
       userid
+      detail
       eventid
       amount
       date
@@ -344,6 +348,7 @@ export const onUpdateTransaction = /* GraphQL */ `
     onUpdateTransaction {
       id
       userid
+      detail
       eventid
       amount
       date
@@ -358,6 +363,7 @@ export const onDeleteTransaction = /* GraphQL */ `
     onDeleteTransaction {
       id
       userid
+      detail
       eventid
       amount
       date

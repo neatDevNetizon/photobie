@@ -59,7 +59,7 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'name', numeric: false, disablePadding: false, label: 'Event' },
+  { id: 'name', numeric: false, disablePadding: false, label: 'Transaction detail' },
   { id: 'calories', numeric: true, disablePadding: false, label: 'Date' },
   { id: 'fat', numeric: true, disablePadding: false, label: 'Amount' },
   { id: 'carbs', numeric: true, disablePadding: false, label: 'Currency' },
@@ -208,7 +208,7 @@ export default function EnhancedTable() {
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -228,16 +228,18 @@ export default function EnhancedTable() {
     async function refreshTable(data){
         const rowData = [];
         for(let i=0; i<data.length; i++){
-            const eventName = await API.graphql(graphqlOperation(queries.listEventss, {filter:{id:{eq:data[i].eventid}}}));
+            // const eventName = await API.graphql(graphqlOperation(queries.listEventss, {filter:{id:{eq:data[i].eventid}}}));
             const day = new Date(data[i].date)
             const dateData = day.getFullYear()+"-"+(day.getMonth()+1)+"-"+(day.getDate());
             var stateBadge;
-            if(data[i].status==1) stateBadge = <div>Onhold</div>
-            else stateBadge = <div>Finished</div>
+            if(data[i].status === 1) stateBadge = <div>Onhold</div>
+            else if(data[i].status === 2) stateBadge = <div>Finished</div>
+            else if(data[i].status === 3) stateBadge = <div>Canceled</div>
+            else if(data[i].status === 4) stateBadge = <div>Token buy</div>
             rowData.push({
-                name:eventName.data?.listEventss?.items[0]?.title, 
+                name: data[i].detail,
                 calories:dateData, 
-                fat:Math.abs(data[i].amount)/100,
+                fat: data[i].amount/100,
                 carbs:"USD",
                 protein:stateBadge,
             })

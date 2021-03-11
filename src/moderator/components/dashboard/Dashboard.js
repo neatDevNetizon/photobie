@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { Typography, Box } from "@material-ui/core";
 import SettingsArea from "./SettingsArea";
 import UserDataArea from "./UserDataArea";
-import AccountInformationArea from "./AccountInformationArea";
 import StatisticsArea from "./StatisticsArea";
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';

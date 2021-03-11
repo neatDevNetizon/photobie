@@ -321,7 +321,7 @@ function BadgeAvatars(props) {
                 id="demo-mutiple-chip"
                 multiple
                 // style = {{minWidth:300, }}
-                style={{whiteSpace:"none"}}
+                style={{whiteSpace:"none", minWidth:220}}
                 value={personName}
                 size = {5}
                 onChange={handleChange}

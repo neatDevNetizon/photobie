@@ -19,18 +19,35 @@ import { connect } from 'react-redux';
 import UpdateIcon from '@material-ui/icons/Update';
 import * as queries from '../../../graphql/queries';
 import * as subscriptions from "../../../graphql/subscriptions"
+import { fade, makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  cardGrid:{
+    marginTop:20,
+    cursor:"pointer",
+    transition: "transform .3s ease",
+    '&:hover': {
+      transform: "scale(1.02)"
+    },
+    boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px"
+  }
+}));
 
 function StatisticsArea(props) {
-  const { theme, CardChart, data,classes, viewMode, width} = props;
+  const { theme, CardChart, data,viewMode, width} = props;
   const [events, setEvents] = useState(['']);
   const[pageNum, setPageNum] = useState(1);
-  const [user, setUser] = useState("")
+  const [user, setUser] = useState("");
+  const classes = useStyles();
+  const history = useHistory();
+
   function handleClick(){
     setPageNum(2)
   }
-  const history = useHistory();
+  
   const viewEvent = async(event)=>{ 
     const evalBid = await API.graphql(graphqlOperation(queries.listProviderss, {filter:{eventid:{eq:event}, provider:{eq:user}}}));
+    console.log(evalBid)
     if(evalBid?.data?.listProviderss?.items[0]?.provider){
        alert("You have already bid in this event.")
     } else history.push("/p/detail?id="+event);
@@ -72,7 +89,9 @@ function StatisticsArea(props) {
         window.location.href = "/"
       } else{
         const email = user.attributes.email;
-        setUser(email)
+        await API.graphql(graphqlOperation(queries.listUserBs, {filter:{email:{eq:email}}})).then((res)=>{
+          setUser(res.data.listUserBs.items[0].id)
+        })
         const eventlist = await API.graphql(graphqlOperation(queries.listEventss,{ filter: {status:{eq:1}}}));
           const data = eventlist.data.listEventss.items;
           let array = [];
@@ -134,11 +153,11 @@ function StatisticsArea(props) {
   return (
     <Grid container spacing={3} style = {{width:"80%",marginRight:"auto", marginLeft:"auto",cursor:"pointer"}}>
     {events.map((item,i)=>{
-      return mode=="left"&&loadingState?<Grid item xs={12} key = {i}>
-        <Card onClick = {()=>viewEvent(item.id)}>
+      return mode=="left"&&loadingState?<Grid item xs={12} key = {i} >
+        <Card onClick = {()=>viewEvent(item.id)} className = {classes.cardGrid}>
           <div style = {{display:"flex", flexDirection:"row",}}>
           <Box style = {{display:"inline-block"}}>
-            <img src = {item.image} style = {{width:300, height:200,objectFit:"cover"}}></img>
+            <img src = {item.image} style = {{width:250, height:200,objectFit:"cover"}}></img>
           </Box>
             <div style = {{display:"flex", flexDirection:"column",}}>
               <Box pt={2} px={2} pb={4} style = {{display:"block"}}>

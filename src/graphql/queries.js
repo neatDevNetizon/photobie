@@ -17,6 +17,7 @@ export const getEvents = /* GraphQL */ `
       image
       final
       upticktoken
+      cdate
       createdAt
       updatedAt
     }
@@ -43,6 +44,7 @@ export const listEventss = /* GraphQL */ `
         image
         final
         upticktoken
+        cdate
         createdAt
         updatedAt
       }
@@ -271,6 +273,7 @@ export const getTransaction = /* GraphQL */ `
     getTransaction(id: $id) {
       id
       userid
+      detail
       eventid
       amount
       date
@@ -290,6 +293,7 @@ export const listTransactions = /* GraphQL */ `
       items {
         id
         userid
+        detail
         eventid
         amount
         date

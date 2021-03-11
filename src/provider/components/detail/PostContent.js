@@ -175,7 +175,7 @@ function PostContent(props) {
     
     if(e){
       data = {
-        provider:user,
+        provider:userId,
         eventid:props.id,
         description:bidText,
         capacity:proCapacity,
@@ -185,7 +185,7 @@ function PostContent(props) {
       }
     } else{
       data = {
-        provider:user,
+        provider:userId,
         eventid:props.id,
         description:bidText,
         capacity:proCapacity,
@@ -194,13 +194,15 @@ function PostContent(props) {
         images:""
       }
     }
-    const upToken = userToken-requiredToken;
+    const upToken = userToken-(requiredToken*0.2);
     await API.graphql(graphqlOperation(mutations.createProviders, {input: data}));
     await API.graphql(graphqlOperation(mutations.updateUserB, {input:{id:userId, token : upToken}}));
+
     const transData = {
       userid:userId,
       eventid:props.id,
-      amount:-requiredToken,
+      detail: `Bidded in "${title}" event`,
+      amount:-requiredToken*0.2,
       date:new Date(),
       status:1
     }

@@ -61,7 +61,6 @@ function StatisticsArea(props) {
           }
           setEvents(array)
         }
-        
     }
     fetchUser();
 
@@ -69,7 +68,7 @@ function StatisticsArea(props) {
   return (
     <Grid container spacing={3} style = {{width:"80%",marginRight:"auto", marginLeft:"auto",cursor:"pointer"}}>
     {events.map((item,i)=>{
-      return viewMode=="left"?<Grid item xs={12} md={12}>
+      return viewMode==="left"?<Grid item xs={12} md={12}>
         <Card onClick = {()=>viewEvent(item.id)}>
           <div style = {{display:"flex", flexDirection:"row",}}>
           <Box style = {{display:"inline-block"}}>

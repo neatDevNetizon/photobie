@@ -69,6 +69,7 @@ function RegisterDialog(props) {
       return false;
     }
     try {
+      setIsLoading(true);
       const { user } = await Auth.signUp({
           username,
           password,
@@ -118,7 +119,7 @@ function RegisterDialog(props) {
         )
       });
       setStatus(null);
-      setIsLoading(true);
+      
       setTimeout(() => {
         setIsLoading(false);
         setCode(2)

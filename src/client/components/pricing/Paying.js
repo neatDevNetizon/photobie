@@ -184,25 +184,31 @@ const AddBalanceDialog = withTheme(function (props) {
             const response = await API.post("restapi", "/paying", {body} )
             console.log(response)
             if(response.err==null){
+              await API.graphql(graphqlOperation(mutations.updateUserA, {input:{id:userId, token : tokenNum+userToken}})).then((res)=>{
+                // console.log(res)
+                setLoading(false);
+                onClose();
+                results();
+                // const subscription = API
+                //   .graphql(graphqlOperation(subscriptions.onUpdateUserA))
+                //   .subscribe({
+                //     next: (event) => {
+                //       console.log(event.value.data);
+                //     }
+                //   });
 
-                await API.graphql(graphqlOperation(mutations.updateUserA, {input:{id:userId, token : tokenNum+userToken}})).then((res)=>{
-                  // console.log(res)
-                  setLoading(false);
-                  onClose();
-                  results();
-                  // const subscription = API
-                  //   .graphql(graphqlOperation(subscriptions.onUpdateUserA))
-                  //   .subscribe({
-                  //     next: (event) => {
-                  //       console.log(event.value.data);
-                  //     }
-                  //   });
-
-                  // return () => {
-                  //   subscription.unsubscribe();
-                  // }
-                });
-                
+                // return () => {
+                //   subscription.unsubscribe();
+                // }
+              });
+              const transData = {
+                userid:userId,
+                detail: "Buying " + amount*100 + " tokens",
+                amount: -amount*100,
+                date:new Date(),
+                status:4
+              }
+              await API.graphql(graphqlOperation(mutations.createTransaction, {input: transData}))
             }
             else {
                 setLoading(false);

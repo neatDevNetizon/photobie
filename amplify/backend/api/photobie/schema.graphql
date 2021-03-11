@@ -1,4 +1,8 @@
-type Events @model {
+type Events @model @key(
+  name: "byCreatedAt"
+  fields: ["createdAt", "id"]
+)
+{
   id:ID!
   title:String!
   secure:Int!
@@ -12,6 +16,8 @@ type Events @model {
   image:String
   final:String
   upticktoken:Int
+  cdate:String
+  createdAt:AWSDateTime!
 }
 type Users @model {
   id:ID!
@@ -71,7 +77,8 @@ type UserC @model {
 type Transaction @model {
   id:ID!
   userid:String!
-  eventid:String!
+  detail:String!
+  eventid:String
   amount:Int
   date:String
   status:Int

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
 import Dashboard from "./dashboard/Dashboard";
-import Posts from "./posts/Posts";
+import Posts from "./detail/Posts";
 // import Subscription from "./subscription/Subscription";
 import PropsRoute from "../../shared/components/PropsRoute";
 import Message from "./message/Message"

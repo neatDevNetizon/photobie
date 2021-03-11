@@ -22,6 +22,13 @@ import { useSnackbar } from 'notistack';
 import CloseIcon from '@material-ui/icons/Close';
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import * as subscriptions from "../../../graphql/subscriptions";
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+
 
 const styles = {
   toolbar: {
@@ -271,6 +278,11 @@ function SubscriptionInfo(props) {
   const [isLoading, setIsLoading] = useState(false)
   const wholePage = useRef();
   const [events, setEvents] = useState();
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
   const test = async() => {
     
     if(count == 0){
@@ -351,18 +363,20 @@ function SubscriptionInfo(props) {
           type:type,
           status:1,
           image:pictureUrl,
+          cdate:selectedDate
         }
         const event = await API.graphql(graphqlOperation(mutations.createEvents, {input: data}));
         console.log(event);
 
         const transData = {
           userid:userId,
-          eventid:event.data.createEvents.id,
+          detail:'Post a new event "' + event.data.createEvents.title+'"',
+          eventid: event.data.createEvents.id,
           amount:-token*0.2,
           date:new Date(),
           status:1
         }
-        console.log(transData)
+
         await API.graphql(graphqlOperation(mutations.createTransaction,{input:transData}));
         
         setIsLoading(false);
@@ -408,7 +422,21 @@ function SubscriptionInfo(props) {
     <div className={classes[titleRequired]}>
     * Please enter at least 3 characters
     </div>
-
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <KeyboardDatePicker
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            margin="normal"
+            id="date-picker-inline"
+            label="Pick event date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+          />
+    </MuiPickersUtilsProvider>
     <div className={classes.txtFiled}>
         <TextField
               onChange={typeSet}
@@ -440,10 +468,7 @@ function SubscriptionInfo(props) {
         <div className = {classes.previews} onClick = {imageSelect} >
           <input type="file" id = "image_select" onChange = {handleImageChange} className = {classes.fileModal}/>
           <ImageSearchIcon fontSize = "large"/>
-          <Typography variant="h5" component="h2">
-            Browse and Preview an Image
-          </Typography>
-          <Typography variant="h6" color="primary" component="h2">
+          <Typography variant="h6" color="primary" component="h2" style = {{textAlign:"center"}}>
             Drag and Drop Event image here
           </Typography>
         </div>

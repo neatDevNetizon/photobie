@@ -20,6 +20,7 @@ export const createEvents = /* GraphQL */ `
       image
       final
       upticktoken
+      cdate
       createdAt
       updatedAt
     }
@@ -44,6 +45,7 @@ export const updateEvents = /* GraphQL */ `
       image
       final
       upticktoken
+      cdate
       createdAt
       updatedAt
     }
@@ -68,6 +70,7 @@ export const deleteEvents = /* GraphQL */ `
       image
       final
       upticktoken
+      cdate
       createdAt
       updatedAt
     }
@@ -396,6 +399,7 @@ export const createTransaction = /* GraphQL */ `
     createTransaction(input: $input, condition: $condition) {
       id
       userid
+      detail
       eventid
       amount
       date
@@ -413,6 +417,7 @@ export const updateTransaction = /* GraphQL */ `
     updateTransaction(input: $input, condition: $condition) {
       id
       userid
+      detail
       eventid
       amount
       date
@@ -430,6 +435,7 @@ export const deleteTransaction = /* GraphQL */ `
     deleteTransaction(input: $input, condition: $condition) {
       id
       userid
+      detail
       eventid
       amount
       date

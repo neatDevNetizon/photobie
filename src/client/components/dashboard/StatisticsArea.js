@@ -20,12 +20,27 @@ import { connect } from 'react-redux';
 import UpdateIcon from '@material-ui/icons/Update';
 import * as queries from '../../../graphql/queries';
 import * as subscriptions from "../../../graphql/subscriptions";
+import { fade, makeStyles } from '@material-ui/core/styles';
 
+const useStyles = makeStyles((theme) => ({
+  cardGrid:{
+    marginTop:20,
+    marginRight:"5%",
+    marginLeft:"5%", 
+    cursor:"pointer",
+    transition: "transform .3s ease",
+    '&:hover': {
+      transform: "scale(1.02)"
+    },
+    boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px"
+  }
+}));
 function StatisticsArea(props) {
-  const { theme, CardChart, data,classes, viewMode, width} = props;
+  const { theme, CardChart, data, viewMode, width} = props;
   const [events, setEvents] = useState(['']);
   const[pageNum, setPageNum] = useState(1);
-  
+  const classes = useStyles();
+
   function handleClick(){
     setPageNum(2)
   }
@@ -129,11 +144,11 @@ function StatisticsArea(props) {
   return (
     <Grid container spacing={3} xs = {12} style = {{width:"80%",marginRight:"auto", marginLeft:"auto",cursor:"pointer"}}>
     {events.map((item,i)=>{
-      return mode=="left"&&loadingState?<Grid item xs={12} md={12}>
-        <Card onClick = {()=>viewEvent(item.id)}>
+      return mode==="left"&&loadingState?<Grid item xs={12} md={12}>
+        <Card onClick = {()=>viewEvent(item.id)} className = {classes.cardGrid}>
           <div style = {{display:"flex", flexDirection:"row",}}>
           <Box style = {{display:"inline-block"}}>
-            <img src = {item.image} style = {{width:300, height:200,objectFit:"cover"}}></img>
+            <img src = {item.image} style = {{width:200, height:170,objectFit:"cover"}}></img>
           </Box>
             <div style = {{display:"flex", flexDirection:"column",}}>
               <Box pt={2} px={2}  style = {{display:"block"}}>

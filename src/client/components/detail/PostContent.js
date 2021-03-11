@@ -78,7 +78,8 @@ function PostContent(props) {
   const [images, setImages] = useState([])
   const [ranking, setRanking]= useState([]);
   const [uptick, setUptick] = useState([]);
-  const [proEmail,setProEmail] = useState("")
+  const [proEmail,setProEmail] = useState("");
+  const [eventTitle, setEventTitle] = useState('');
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -134,8 +135,8 @@ function PostContent(props) {
             }}));
           var rankingStarNum = 0;
           if(ranking.data.listUserBs.items.length){
-            const rankingNum = ranking.data.listUserBs.items[0].token*1;
-            if(rankingNum==0) rankingStarNum = 0;
+            const rankingNum = ranking.data?.listUserBs?.items[0]?.token*1;
+            if(rankingNum === 0 || rankingNum === null) rankingStarNum = 0;
             else if(0<rankingNum&&rankingNum<100)rankingStarNum = 1;
             else if(100<=rankingNum&&rankingNum<1000)rankingStarNum = 2;
             else if(1000<=rankingNum&&rankingNum<3000)rankingStarNum = 3;
@@ -171,17 +172,22 @@ function PostContent(props) {
       await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}})).then(async(response)=>{
         const eStatus = response.data.listEventss.items[0].status;
         const upticked = response.data.listEventss.items[0].upticktoken;
+        setEventTitle(response.data.listEventss.items[0].title)
         console.log(upticked)
         setUptickedToken(upticked);
-        if(eStatus == 1){
+        if(eStatus === 1){
           fetchUser(1);
           fetchBids();
           setAwardFlag(1)
-        } else {
+        } else if(eStatus === 2) {
           setAwardFlag(2)
-          
           const eFinal = response.data.listEventss.items[0].final;
-          const finalData = eFinal.slice(1,eFinal.indexOf("&"))
+          const finalData = eFinal?.slice(1,eFinal.indexOf("&"))
+          fetchUser(2,finalData);
+        } else {
+          setAwardFlag(2);
+          const eFinal = response.data.listEventss.items[0].final;
+          const finalData = eFinal?.slice(1,eFinal.indexOf("&"))
           fetchUser(2,finalData);
         }
       })
@@ -204,8 +210,8 @@ function PostContent(props) {
               email: {eq:providers.provider} 
             }})).then((res)=>{
                 var rankingStarNum = 0;
-                const rankingNum = res.data.listUserBs.items[0].token*1;
-                if(rankingNum==0) rankingStarNum = 0;
+                const rankingNum = res.data?.listUserBs?.items[0]?.token*1;
+                if(rankingNum === 0 || rankingNum === null) rankingStarNum = 0;
                 else if(0<rankingNum&&rankingNum<100)rankingStarNum = 1;
                 else if(100<=rankingNum&&rankingNum<1000)rankingStarNum = 2;
                 else if(1000<=rankingNum&&rankingNum<3000)rankingStarNum = 3;
@@ -249,8 +255,6 @@ function PostContent(props) {
       alert("You have no token enough to uptick. ")
       history.push("/c/getoken")
     } else {
-
-      console.log(userToken, e)
       const upToken = userToken - e;
       const totalToken = e + uptickedToken*1;
       console.log(totalToken)
@@ -263,8 +267,8 @@ function PostContent(props) {
         } else {
           var list = JSON.parse(clientsList);
 
-          await list.map((item, index)=>{
-            if(item.email == user) {
+          await list.map((item, index) => {
+            if(item.email === user) {
               console.log(user)
               alert("Upticked already.");
               return false;
@@ -279,6 +283,7 @@ function PostContent(props) {
         const transData = {
           userid:userId,
           eventid:props.id,
+          detail:`Upticked in '${eventTitle}'`,
           amount:-e*1,
           date:new Date(),
           status:1
@@ -318,9 +323,9 @@ function PostContent(props) {
         
         </Grid>
         <Typography variant="h4" align="center" >
-          {awardFlag==1?"Provider's bid":awardFlag==2?"Awarded Provider":""}
+          {awardFlag===1?"Provider's bid":awardFlag===2?"Awarded Provider":""}
         </Typography>
-        {awardFlag == 1?<Grid item xs = {12} md = {12}>
+        {awardFlag === 1?<Grid item xs = {12} md = {12}>
           
           {providers.map((items, index)=>{
             return <Card key = {index} style = {{marginTop:20,}}>
@@ -362,12 +367,12 @@ function PostContent(props) {
                       <IconButton
                         aria-label="More"
                         aria-haspopup="true"
-                        disabled = {items.uptick == 1?false:true}
-                        aria-label="add to shopping cart"
+                        disabled = {items.uptick === 1?false:true}
+                        aria-label = "add to shopping cart"
                         onClick={() => handleUptick(items.token, items.providerId, index)}
                       >
-                        <CheckIcon  color = {items.uptick==1?"primary":"secondary"}/>
-                        <Typography variant = "body1">{items.uptick==1?"Uptick":items.uptick == 2?"Upticked":"Capacity is Full"}</Typography>
+                        <CheckIcon  color = {items.uptick===1?"primary":"secondary"}/>
+                        <Typography variant = "body1">{items.uptick===1?"Uptick":items.uptick === 2?"Upticked":"Capacity is Full"}</Typography>
                         
                       </IconButton>
                     </Box>
@@ -388,14 +393,11 @@ function PostContent(props) {
               
             </Card>
           })}
-          
-
-
         </Grid>:<Grid item xs= {12} md = {12}>
         <Grid container spacing={3} style = {{marginTop:10, padding:10,}}>
                 <Grid item xs={12} md = {9}>
                     <div style = {{display:"flex", flexDirection:"row",}}>
-                    {awardFlag==1?"Provider's bid":awardFlag==2?<Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>:""}
+                    {awardFlag===1?"Provider's bid":awardFlag===2?<Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>:""}
                         <div style = {{flexDirection:"column", display:"flex", marginTop:5,marginLeft:10}}>
                             <Typography variant="body2">
                                 {proEmail}

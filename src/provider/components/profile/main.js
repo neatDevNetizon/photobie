@@ -135,10 +135,12 @@ function BadgeAvatars(props) {
   useEffect(()=>{
     console.log(props)
     async function fetchUser(){
-      const user = await Auth.currentUserInfo()
+      const user = await Auth.currentUserInfo();
+      console.log(user)
       if(!user){
         window.location.href = "/"
       } else{
+
         const email = user.attributes.email;
         setUserEmail(email);
         const userToken = await API.graphql(graphqlOperation(queries.listUserBs, {filter:{email:{eq:email}}}))
@@ -321,7 +323,7 @@ function BadgeAvatars(props) {
                 id="demo-mutiple-chip"
                 multiple
                 // style = {{minWidth:300, }}
-                style={{whiteSpace:"none"}}
+                style={{whiteSpace:"none",minWidth:220}}
                 value={personName}
                 size = {5}
                 onChange={handleChange}
