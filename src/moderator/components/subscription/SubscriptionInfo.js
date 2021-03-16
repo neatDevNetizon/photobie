@@ -159,9 +159,6 @@ const styles = {
     marginTop:40,
     marginLeft:-60
   },
-  textField: {
-    width: 300
-  },
   duration: {
     width: '100%',
     marginTop: 14
@@ -324,7 +321,7 @@ function SubscriptionInfo(props) {
       }
       return
     }
-    else if(count == 1){
+    else if(count === 1){
       setImage("showImageSection")
       if(location.length > 2){
         setLocationrequired('txtrequiredHidden')

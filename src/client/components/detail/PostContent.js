@@ -29,7 +29,9 @@ import Rating from '@material-ui/lab/Rating';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import CheckIcon from '@material-ui/icons/Check';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import {useHistory} from "react-router-dom"
+import {useHistory} from "react-router-dom";
+import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
+import { CellWifi } from "@material-ui/icons";
 
 const styles = {
   dBlock: { display: "block" },
@@ -54,6 +56,11 @@ const styles = {
   secondaryHeading: {
     fontSize: 20,
   },
+  // buttonSec: {
+  //   display: 'flex',
+  //   padding: 20,
+  //   justifyContent: 'flex-end'
+  // }
 };
 
 function PostContent(props) {
@@ -73,14 +80,16 @@ function PostContent(props) {
   const [eventCapacity, setEventCapacity] = useState(null);
   const [userId, setUserId] = useState("");
   const [uptickedToken, setUptickedToken] = useState(0)
-
   const [awardFlag, setAwardFlag] = useState(null)
   const [images, setImages] = useState([])
   const [ranking, setRanking]= useState([]);
   const [uptick, setUptick] = useState([]);
   const [proEmail,setProEmail] = useState("");
   const [eventTitle, setEventTitle] = useState('');
-
+  const [upticking, setUpticking] = useState([]);
+  const [canceling, setCanceling] = useState([]);
+  const [duration, setDuration] = useState('');
+  const [eventStart, setEventStart] = useState(0);
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -107,8 +116,20 @@ function PostContent(props) {
         setTitle(selEvent.title);
         setLocation(selEvent.location);
         setDescription(selEvent.description);
-      })
-      if(a==1)fetchBids(userEmail);
+      });
+      setEventStart(selEvent.cdate);
+      const day = new Date(selEvent.cdate);
+      const fromDate = day.getFullYear()+"/"+(day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+      const date = day.getDate();
+      day.setMinutes(day.getMinutes()+selEvent.duration);
+      var toDates;
+      if(date!==day.getDate()){
+        toDates = (day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+      } else {
+        toDates = day.getHours()+":"+day.getMinutes();
+      }
+      setDuration(fromDate + " ~ " + toDates);
+      if(a===1)fetchBids(userEmail);
       else fetchFinal(b);
     }
     async function fetchBids(userEmail){
@@ -148,7 +169,7 @@ function PostContent(props) {
           var imageArray = providers[i].images.split(",");
 
           for(let j = 0; j<imageArray.length-1; j++){
-            await Storage.get(imageArray[j], { expires: 300 }).then(res=>{
+            await Storage.get(imageArray[j], { expires: 300 }).then(res => {
               imageObject.push(res);
             })
           }
@@ -182,7 +203,7 @@ function PostContent(props) {
         } else if(eStatus === 2) {
           setAwardFlag(2)
           const eFinal = response.data.listEventss.items[0].final;
-          const finalData = eFinal?.slice(1,eFinal.indexOf("&"))
+          const finalData = eFinal?.slice(1,eFinal.indexOf("&"));
           fetchUser(2,finalData);
         } else {
           setAwardFlag(2);
@@ -250,26 +271,79 @@ function PostContent(props) {
       slidesToSlide: 1 // optional, default to 1.
     }
   };
+  async function handleCancel(tokens, provider, ios){
+    const now = new Date().getTime();
+    const start = new Date(eventStart).getTime();
+    const eightHours = 1000*60*60*8;
+    console.log(start-now, eightHours);
+    if(start-now < eightHours){
+      alert("You cannot cancel cause you are too late.");
+      return false;
+    }
+    setCanceling([ios]);
+    console.log(tokens, provider);
+    const transList = await API.graphql(graphqlOperation(queries.listTransactions, {filter: {
+      userid: {eq: userId},
+      eventid: {eq: provider},
+      status: {eq: 1}
+    }}));
+    const transId = transList.data.listTransactions.items[0].id;
+    const proList = await API.graphql(graphqlOperation(queries.listProviderss, {filter:{id: {eq: provider}}}));
+    const event = await API.graphql(graphqlOperation(queries.listEventss, {filter: {id: {eq: props.id}}}));
+    const total = event.data.listEventss.items[0].upticktoken*1;
+    const updateToken = total-tokens;
+    const clientsList = JSON.parse(proList.data.listProviderss.items[0].clients);
+    let newClient = clientsList.filter(function (e) {
+      return e.email !== user;
+    });
+    console.log(clientsList, updateToken, newClient);
+    await API.graphql(graphqlOperation(mutations.updateProviders, {input: {id:provider, clients: JSON.stringify(newClient) }}));
+    await API.graphql(graphqlOperation(mutations.updateEvents, {input: {id: props.id, upticktoken: updateToken}}));
+    await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: transId, status:3}}));
+    const transData = {
+      userid:userId,
+      eventid: provider,
+      detail:`Refund from your cancellation about "${eventTitle}"`,
+      amount: tokens,
+      date:new Date(),
+      status:3
+    }
+    await API.graphql(graphqlOperation(mutations.createTransaction,{input:transData}));
+    setCanceling([]);
+    const newProv = [...providers];
+    const providerArray = {
+      capacity:providers[ios].capacity,
+      token:providers[ios].token,
+      description:providers[ios].description,
+      // location:providers[ios].location,
+      images: providers[ios].images,
+      ranking:providers[ios].ranking,
+      providerId:providers[ios].providerId,
+      uptick:1,
+    }
+    newProv[ios] = providerArray;
+    setProviders(newProv);
+  }
   async function handleUptick(e, id, ios){
     if(userToken<e){
       alert("You have no token enough to uptick. ")
       history.push("/c/getoken")
     } else {
+      setUpticking([ios]);
       const upToken = userToken - e;
       const totalToken = e + uptickedToken*1;
       console.log(totalToken)
       await API.graphql(graphqlOperation(queries.listProviderss,{filter:{id:{eq:id}}})).then(async(response)=>{
         const clientsList = response.data.listProviderss.items[0].clients;
-        
+        var existingClient = 1;
         if(!clientsList){
           var clientsData = [{"email":user}];
           clientsData = JSON.stringify(clientsData)
         } else {
           var list = JSON.parse(clientsList);
-
           await list.map((item, index) => {
             if(item.email === user) {
-              console.log(user)
+              existingClient = 2;
               alert("Upticked already.");
               return false;
             }
@@ -277,12 +351,13 @@ function PostContent(props) {
           list.push({"email":user});
           clientsData = JSON.stringify(list);
         }
+        if(existingClient === 2) return false;
         await API.graphql(graphqlOperation(mutations.updateProviders,{input: {id:id, clients:clientsData}}));
         await API.graphql(graphqlOperation(mutations.updateUserA, {input:{id:userId, token : upToken}}));
         await API.graphql(graphqlOperation(mutations.updateEvents, {input:{id:props.id, upticktoken : totalToken}}));
         const transData = {
           userid:userId,
-          eventid:props.id,
+          eventid:id,
           detail:`Upticked in '${eventTitle}'`,
           amount:-e*1,
           date:new Date(),
@@ -301,7 +376,8 @@ function PostContent(props) {
           uptick:2,
         }
         newProv[ios] = providerArray;
-        setProviders(newProv)
+        setProviders(newProv);
+        setUpticking([]);
       })
       
     }
@@ -319,6 +395,7 @@ function PostContent(props) {
         <Grid item xs = {12} md={8} >
         <Typography>Title : {title}</Typography>
         <Typography>Location : {location}</Typography>
+        <Typography >Date: {duration}</Typography>
         <Typography>{description}</Typography>
         
         </Grid>
@@ -329,8 +406,8 @@ function PostContent(props) {
           
           {providers.map((items, index)=>{
             return <Card key = {index} style = {{marginTop:20,}}>
-              <Grid container spacing = {5}>
-                <Grid item xs = {12} md = {4}>
+              <Grid container spacing = {3}>
+                <Grid item xs = {12} md = {3}>
                 <Carousel  
                     swipeable={false}
                     draggable={false}
@@ -352,7 +429,7 @@ function PostContent(props) {
                 </Carousel>
                   
                 </Grid>
-                <Grid item xs = {12} md = {8}>
+                <Grid item xs = {12} md = {7}>
                   <div style = {{display:"flex", flexDirection:"row"}}>
                     <Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>
                     <Rating
@@ -363,19 +440,6 @@ function PostContent(props) {
                       readOnly 
                       style = {{marginTop:30,marginLeft:20}}
                     />
-                    <Box  display="flex" justifyContent="flex-end" width = "80%">
-                      <IconButton
-                        aria-label="More"
-                        aria-haspopup="true"
-                        disabled = {items.uptick === 1?false:true}
-                        aria-label = "add to shopping cart"
-                        onClick={() => handleUptick(items.token, items.providerId, index)}
-                      >
-                        <CheckIcon  color = {items.uptick===1?"primary":"secondary"}/>
-                        <Typography variant = "body1">{items.uptick===1?"Uptick":items.uptick === 2?"Upticked":"Capacity is Full"}</Typography>
-                        
-                      </IconButton>
-                    </Box>
                   </div>
                   <Grid container spacing = {3} style = {{margin:3}}>
                     
@@ -389,6 +453,23 @@ function PostContent(props) {
                    {items.description.length > 300 ? <Typography variant="body2" >{items.description.slice(0, 400)+"..."}<ExpandMoreIcon style = {{float:"right", marginRight:20}}/></Typography>:<Typography variant="body2" >{items.description}</Typography>}
                   
                 </Grid>
+                <Grid item xs = {12} md = {2} style={{display:'flex', justifyContent:'flex-end'}}>
+                  <div style={{ padding: 10}}>
+                    {items.uptick===1?<Button 
+                      variant = "contained" 
+                      color="secondary"
+                      disabled = {upticking[0]===index}
+                      onClick={() => handleUptick(items.token, items.providerId, index)}>
+                        Uptick{" "}{upticking[0]===index && <ButtonCircularProgress/>}
+                    </Button>:items.uptick===2?<Button 
+                      variant = "contained"
+                      color="primary"
+                      disabled = {canceling[0]===index}
+                      onClick={() => handleCancel(items.token, items.providerId, index)}>
+                        Cancel{' '}{canceling[0]===index && <ButtonCircularProgress />}
+                    </Button>:null}
+                  </div>
+                </Grid>
               </Grid>
               
             </Card>
@@ -396,26 +477,24 @@ function PostContent(props) {
         </Grid>:<Grid item xs= {12} md = {12}>
         <Grid container spacing={3} style = {{marginTop:10, padding:10,}}>
                 <Grid item xs={12} md = {9}>
-                    <div style = {{display:"flex", flexDirection:"row",}}>
-                    {awardFlag===1?"Provider's bid":awardFlag===2?<Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>:""}
-                        <div style = {{flexDirection:"column", display:"flex", marginTop:5,marginLeft:10}}>
-                            <Typography variant="body2">
-                                {proEmail}
-                            </Typography> 
-                            {ranking.map((item, index)=>{
-                                return <Rating
-                                name="customized-empty"
-                                defaultValue={item}
-                                precision={0.1}
-                                key = {index}
-                                size="large"
-                                readOnly 
-                                // style = {{marginTop:30,marginLeft:20}}
-                                />
-                            })}
-                            
-                        </div>
-                    
+                  <div style = {{display:"flex", flexDirection:"row",}}>
+                  {awardFlag===1?"Provider's bid":awardFlag===2?<Avatar alt="Remy Sharp" src="/images/logged_in/image4.jpg" style = {styles.avatar}/>:""}
+                    <div style = {{flexDirection:"column", display:"flex", marginTop:5,marginLeft:10}}>
+                      <Typography variant="body2">
+                          {proEmail}
+                      </Typography> 
+                      {ranking.map((item, index)=>{
+                          return <Rating
+                          name="customized-empty"
+                          defaultValue={item}
+                          precision={0.1}
+                          key = {index}
+                          size="large"
+                          readOnly 
+                          // style = {{marginTop:30,marginLeft:20}}
+                          />
+                      })}
+                    </div>
                   </div>
                 </Grid>
                 <Grid item xs = {12} md = {3}>

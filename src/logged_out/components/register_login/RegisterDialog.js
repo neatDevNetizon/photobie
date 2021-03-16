@@ -134,6 +134,7 @@ function RegisterDialog(props) {
           )
         });
       }
+      setIsLoading(false);
         console.log('error signing up:', error);
     }
   }

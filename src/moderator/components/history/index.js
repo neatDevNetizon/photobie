@@ -222,15 +222,16 @@ export default function EnhancedTable() {
             const user = await Auth.currentUserInfo();
             const userToken = await API.graphql(graphqlOperation(queries.listUserCs, { filter: {email:{eq:user.attributes.email}}}));
             const transaction = await API.graphql(graphqlOperation(queries.listTransactions,{filter:{userid:{eq:userToken.data?.listUserCs?.items[0]?.id}}}));
-            refreshTable(transaction?.data?.listTransactions?.items)
+            refreshTable(transaction?.data?.listTransactions?.items.sort((a, b) => new Date(b.date) > new Date(a.date) ? 1: -1))
         }
     },[]);
     async function refreshTable(data){
         const rowData = [];
+        console.log(data);
         for(let i=0; i<data.length; i++){
             // const eventName = await API.graphql(graphqlOperation(queries.listEventss, {filter:{id:{eq:data[i].eventid}}}));
             const day = new Date(data[i].date)
-            const dateData = day.getFullYear()+"-"+(day.getMonth()+1)+"-"+(day.getDate());
+            const dateData = day.getFullYear()+"-"+(day.getMonth()+1)+"-"+(day.getDate())+ " "+day.getHours()+":"+day.getMinutes();
             var stateBadge;
             if(data[i].status === 1) stateBadge = <div>Onhold</div>
             else if(data[i].status === 2) stateBadge = <div>Finished</div>
@@ -317,8 +318,7 @@ export default function EnhancedTable() {
               rowCount={rows.length}
             />
             <TableBody style = {{textAlign:"center"}}>
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;

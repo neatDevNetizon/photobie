@@ -102,8 +102,6 @@ function StatisticsArea(props) {
   },[]);
   const calculateTimeLeft = (cdate) => {
     let cDate = new Date(cdate);
-    cDate.setHours(24);
-    cDate.setMinutes(-1)
     let difference = +cDate - +new Date();
     let timeLeft = {};
 
@@ -136,7 +134,7 @@ function StatisticsArea(props) {
         const email = user.attributes.email;
         setUserEmail(email);
         const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {user:{eq:email}}},{filter:{createdAt:{orderBy:'ASC'}}}));
-          const data = eventlist.data.listEventss.items;
+        const data = eventlist.data.listEventss.items.sort((a, b) => new Date(b.createdAt) > new Date(a.createdAt) ? 1: -1);
           let array = [];
           for(let i=0; i<data.length; i++){
             const timer = await calculateTimeLeft(data[i].cdate);
@@ -180,7 +178,7 @@ function StatisticsArea(props) {
             imageUrl = res;
           })
           if(event.value.data.onCreateEvents.user==userEmail){
-            setEvents([...eventlist, {
+            setEvents([{
               id:event.value.data.onCreateEvents.id,
               user:event.value.data.onCreateEvents.user,
               token:event.value.data.onCreateEvents.token,
@@ -192,7 +190,7 @@ function StatisticsArea(props) {
               type:event.value.data.onCreateEvents.type,
               status:event.value.data.onCreateEvents.status*1,
               image:imageUrl,
-            }]);
+            }, ...eventlist]);
           }
           console.log("subscritpins", event.value.data.onCreateEvents)
         }
@@ -320,7 +318,7 @@ function StatisticsArea(props) {
               const transDataAs = {
                 userid: userId,
                 eventid:cancelId,
-                detail:'Deducted from an event "' + eventTitle+'"',
+                detail:'Refund from an event "' + eventTitle+'"',
                 amount: transToken?transToken:0,
                 date:new Date(),
                 status:3

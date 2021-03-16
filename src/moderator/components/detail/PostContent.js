@@ -96,7 +96,8 @@ function PostContent(props) {
   const [ranking, setRanking]= useState([]);
   const [uptick, setUptick] = useState([]);
   const [proEmail,setProEmail] = useState("");
-  const [proId, setProId] = useState("")
+  const [proId, setProId] = useState("");
+  const [duration, setDuration] = useState("");
   useEffect(() => {
     
     async function fetchUser() {
@@ -114,6 +115,17 @@ function PostContent(props) {
         setTitle(selEvent.title);
         setLocation(selEvent.location);
         setDescription(selEvent.description);
+        const day = new Date(selEvent.cdate);
+        const fromDate = day.getFullYear()+"/"+(day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+        const date = day.getDate();
+        day.setMinutes(day.getMinutes()+selEvent.duration);
+        var toDates;
+        if(date!==day.getDate()){
+          toDates = (day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+        } else {
+          toDates = day.getHours()+":"+day.getMinutes();
+        }
+        setDuration(fromDate + " ~ " + toDates)
       })
      
       
@@ -277,22 +289,25 @@ function PostContent(props) {
         <img src = {imageSrc} style = {{width:"100%", marginTop:-30, height:500,objectFit:"cover"}} alt = ""></img>
       </Paper>
       <Grid container spacing={1} style = {{width:"80%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
-        <Grid item xs = {12} md={3} >
+        {/* <Grid item xs = {12} md={3} >
           <Typography>Details</Typography>
-        </Grid>
+        </Grid> */}
         <Grid item xs = {12} md={9} >
           <Typography>{title}</Typography>
           <Typography>{location}</Typography>
+          <Typography>Duration : {duration}</Typography>
           <Typography>{description}</Typography>
         </Grid>
-        <Typography variant="h4" align="center" >
-          {awardFlag==1?"Provider's bid":awardFlag==2?"Awarded Provider":""}
-        </Typography>
-        {awardFlag == 1?<Grid item xs = {12} md = {12}>
+        <Grid item xs={12} >
+          <Typography variant="h4" align="center" >
+            {awardFlag==1?"Provider's bid":awardFlag==2?"Awarded Provider":""}
+          </Typography>
+        </Grid>
+        {awardFlag === 1?<Grid item xs = {12} md = {12}>
           {providers.map((items, index)=>{
             return <Card key = {index} className = {classes.cardGrid}>
               <Grid container spacing = {1}>
-                <Grid item xs = {12} md = {4}>
+                <Grid item xs = {12} md = {3}>
                 <Carousel  
                     swipeable={false}
                     draggable={false}
@@ -333,7 +348,7 @@ function PostContent(props) {
                   </Grid>
                    {items.description.length > 300 ? <Typography variant="body2" style ={{paddingLeft:20}}>{items.description.slice(0, 400)+"..."}<ExpandMoreIcon style = {{float:"right", marginRight:20}}/></Typography>:<Typography variant="body2" style ={{paddingLeft:20}}>{items.description}</Typography>}
                 </Grid>
-                <Grid item xs = {12} md = {2} style = {styles.uptickPadding}>
+                <Grid item xs = {12} md = {3} style = {styles.uptickPadding}>
                   <Typography variant="body2" >
                     Clients :{items.capacity} / {items.upticks}
                   </Typography>

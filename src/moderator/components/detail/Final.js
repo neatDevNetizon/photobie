@@ -82,6 +82,7 @@ function PostContent(props) {
   const [eventTitle, setEventTitle] = useState("");
   const [upClients, setUpClients] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [minimumToken, setMinimumToken] = useState(0);
 
   const responsive = {
     desktop: {
@@ -119,6 +120,7 @@ function PostContent(props) {
 
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:event}}}));
       const selEvent = eventlist.data.listEventss.items[0];
+      setMinimumToken(selEvent.token);
       setEventTitle(selEvent.title);
       if(selEvent.upticktoken>selEvent.token) setProfit(false);
       else setProfit(true);
@@ -198,14 +200,14 @@ function PostContent(props) {
   async function handleFinish(){
     if(window.confirm("Will you finish this event?")){
       setLoading(true);
-      const tokenB = Math.floor(totalToken*0.8)+userBsToken*1;
-      const tokenC = Math.floor(totalToken*0.2)+userCsToken*1;
+      const tokenB = Math.floor(totalToken-minimumToken)+userBsToken*1;
+      const tokenC = minimumToken+userCsToken*1;
       
       const updateEvent = await API.graphql(graphqlOperation(mutations.updateEvents, {input:{id:event, status:3, final:final}}));
       const updateProv = await API.graphql(graphqlOperation(mutations.updateProviders, {input:{id:providerId, status:3}}));
       const updateB = await API.graphql(graphqlOperation(mutations.updateUserB, {input:{id:userBsId, token : tokenB}}));
 
-      await API.graphql(graphqlOperation(queries.listTransactions, {filter:{eventid:{eq:event}, userid:{eq:userBsId}}})).then(async (res) => {
+      await API.graphql(graphqlOperation(queries.listTransactions, {filter:{eventid:{eq:providerId}, userid:{eq:userBsId}}})).then(async (res) => {
         await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: res.data.listTransactions.items[0].id, status: 2}}))
       });
       
@@ -221,13 +223,22 @@ function PostContent(props) {
 
       const updateC = await API.graphql(graphqlOperation(mutations.updateUserC, {input:{id:user, token : tokenC}}));
       await API.graphql(graphqlOperation(queries.listTransactions, {filter:{eventid:{eq:event}, userid:{eq:user}}})).then(async (res) => {
-        await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: res.data.listTransactions.items[0].id, status: 2}}))
+        await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: res.data.listTransactions.items[0].id, status: 2}}));
+        const transDataCs = {
+          userid: user,
+          eventid: event,
+          detail:'Refund from event "' + eventTitle+'"',
+          amount: res.data.listTransactions.items[0].amount,
+          date:new Date(),
+          status:2
+        }
+        await API.graphql(graphqlOperation(mutations.createTransaction,{input:transDataCs}));  
       });
       const transDataCs = {
         userid: user,
         eventid: event,
         detail:'Earned with finalize an event "' + eventTitle+'"',
-        amount: totalToken*0.2,
+        amount: minimumToken,
         date:new Date(),
         status:2
       }
@@ -236,7 +247,7 @@ function PostContent(props) {
         console.log(upClients[i].email)
         const userAs = await API.graphql(graphqlOperation(queries.listUserAs, {filter: { email: {eq: upClients[i].email}}})); 
 
-        const transactions = await API.graphql(graphqlOperation(queries.listTransactions, {filter:{eventid:{eq:event}, userid:{eq: userAs.data.listUserAs.items[0].id}}}));
+        const transactions = await API.graphql(graphqlOperation(queries.listTransactions, {filter:{eventid:{eq:providerId}, userid:{eq: userAs.data.listUserAs.items[0].id}}}));
 
         const result = await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: transactions.data.listTransactions.items[0].id, status: 2}}));
         console.log(result);

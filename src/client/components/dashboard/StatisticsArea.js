@@ -21,10 +21,13 @@ import UpdateIcon from '@material-ui/icons/Update';
 import * as queries from '../../../graphql/queries';
 import * as subscriptions from "../../../graphql/subscriptions";
 import { fade, makeStyles } from '@material-ui/core/styles';
+import RoomIcon from '@material-ui/icons/Room';
+import TitleIcon from '@material-ui/icons/Title';
+import TimerIcon from '@material-ui/icons/Timer';
 
 const useStyles = makeStyles((theme) => ({
   cardGrid:{
-    marginTop:20,
+    marginTop:10,
     marginRight:"5%",
     marginLeft:"5%", 
     cursor:"pointer",
@@ -83,12 +86,23 @@ function StatisticsArea(props) {
         window.location.href = "/"
       } else{
         const email = user.attributes.email;
-        
-        const eventlist = await API.graphql(graphqlOperation(queries.listEventss));
-          const data = eventlist.data.listEventss.items;
+        const eventlist = await API.graphql(graphqlOperation(queries.listEventss, {sort: { direction: 'acs', field: 'createdAt'}}));
+        // const eventlist = await API.graphql(graphqlOperation(queries.listEventss, {sortBy:{cretedAt:'asc'}}));
+          const data = eventlist.data.listEventss.items.sort((a, b) => new Date(b.createdAt) > new Date(a.createdAt) ? 1: -1);
           let array = [];
           for(let i=0; i<data.length; i++){
             const downloadUrl = await Storage.get(data[i].image, { expires: 300 }).then(res=>{
+              const day = new Date(data[i].cdate);
+              const fromDate = day.getFullYear()+"/"+(day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+              const date = day.getDate();
+              day.setMinutes(day.getMinutes()+data[i].duration);
+              var toDates;
+              if(date!==day.getDate()){
+                toDates = (day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+              } else {
+                toDates = day.getHours()+":"+day.getMinutes();
+              }
+              const dateData = fromDate + " ~ " + toDates;
               array.push({
                 id:data[i].id,
                 user:data[i].user,
@@ -101,6 +115,7 @@ function StatisticsArea(props) {
                 type:data[i].type,
                 status:data[i].status,
                 image:res,
+                cDate: dateData
               })
             });
           }
@@ -121,8 +136,19 @@ function StatisticsArea(props) {
           var imageUrl;
           await Storage.get(event.value.data.onCreateEvents.image, { expires: 300 }).then(res=>{
             imageUrl = res;
-          })
-          setEvents([...eventlist, {
+          });
+          const day = new Date(event.value.data.onCreateEvents.cdate);
+          const fromDate = day.getFullYear()+"/"+(day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+          const date = day.getDate();
+          day.setMinutes(day.getMinutes()+event.value.data.onCreateEvents.duration);
+          var toDates;
+          if(date!==day.getDate()){
+            toDates = (day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+          } else {
+            toDates = day.getHours()+":"+day.getMinutes();
+          }
+          const dateData = fromDate + " ~ " + toDates;
+          setEvents([{
             id:event.value.data.onCreateEvents.id,
             user:event.value.data.onCreateEvents.user,
             token:event.value.data.onCreateEvents.token,
@@ -134,7 +160,8 @@ function StatisticsArea(props) {
             type:event.value.data.onCreateEvents.type,
             status:event.value.data.onCreateEvents.status,
             image:imageUrl,
-          }]);
+            cDate: dateData
+          }, ...eventlist]);
           console.log("eventlist", eventlist)
           console.log("subscritpins", event.value.data.onCreateEvents)
         }
@@ -154,9 +181,12 @@ function StatisticsArea(props) {
               <Box pt={2} px={2}  style = {{display:"block"}}>
                 <Box display="flex" justifyContent="space-between">
                   <div>
-                    <Typography variant="subtitle1">{item.title}</Typography>
+                    <Typography variant="body1" color="textSecondary"><TitleIcon/>{' '}{item.title}</Typography>
                     <Typography variant="body2" color="textSecondary">
-                      {item.location}
+                      <RoomIcon/>{' '}{item.location}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      <TimerIcon /> {' '}{item.cDate}
                     </Typography>
                   </div>
                 </Box>

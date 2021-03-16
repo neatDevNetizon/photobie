@@ -204,7 +204,7 @@ const AddBalanceDialog = withTheme(function (props) {
               const transData = {
                 userid:userId,
                 detail: "Buying " + amount*100 + " tokens",
-                amount: -amount*100,
+                amount: amount*100,
                 date:new Date(),
                 status:4
               }
