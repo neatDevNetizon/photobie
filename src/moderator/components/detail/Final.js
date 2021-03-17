@@ -215,7 +215,7 @@ function PostContent(props) {
         userid: userBsId,
         eventid: event,
         detail:'Earned with finalize an event "' + eventTitle+'"',
-        amount: totalToken*0.8,
+        amount: totalToken-minimumToken,
         date:new Date(),
         status:2
       }
@@ -251,7 +251,6 @@ function PostContent(props) {
 
         const result = await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: transactions.data.listTransactions.items[0].id, status: 2}}));
         console.log(result);
-
       }
 
       if(updateEvent && updateProv){
