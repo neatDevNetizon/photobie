@@ -287,8 +287,18 @@ function NavBar(props) {
     handleClose();
     handleMobileDrawerClose();
   }
+  async function viewPast(){
+    history.push("/p/past");
+    handleClose();
+    handleMobileDrawerClose();
+  }
  
   const menuItems = [
+    {
+      name: "Past Event",
+      onClick: viewPast,
+      icon: <FilterListIcon className="text-white" />
+    },
     {
       name: "Transaction",
       onClick: viewToken,
@@ -365,6 +375,13 @@ function NavBar(props) {
                 width="100%"
                 openAddBalanceDialog={openAddBalanceDialog}
               >
+                <Button
+                  color="secondary"
+                  size="large"
+                  onClick={viewPast}
+                >
+                  Past
+                </Button>
                 <Button
                   color="secondary"
                   size="large"

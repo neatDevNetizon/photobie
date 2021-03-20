@@ -208,6 +208,15 @@ function PostContent(props) {
       const updateB = await API.graphql(graphqlOperation(mutations.updateUserB, {input:{id:userBsId, token : tokenB}}));
 
       await API.graphql(graphqlOperation(queries.listTransactions, {filter:{eventid:{eq:providerId}, userid:{eq:userBsId}}})).then(async (res) => {
+        const transDataBs = {
+          userid: userBsId,
+          eventid: event,
+          detail:'Refund from event "' + eventTitle+'"',
+          amount: res.data.listTransactions.items[0].amount,
+          date:new Date(),
+          status:2
+        }
+        await API.graphql(graphqlOperation(mutations.createTransaction,{input:transDataBs}));  
         await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: res.data.listTransactions.items[0].id, status: 2}}))
       });
       

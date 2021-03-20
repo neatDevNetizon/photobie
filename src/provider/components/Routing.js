@@ -10,6 +10,7 @@ import GetToken from "./pricing/Price";
 import Profile from "./profile/main";
 import History from "./history"
 import Posts from "./detail/Posts";
+import PastEvent from "./past";
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -81,6 +82,10 @@ function Routing(props) {
           posts={posts}
           setPosts={setPosts}
           selectPosts={selectPosts}
+        />
+        <PropsRoute
+          path="/p/past"
+          component={PastEvent}
         />
         <PropsRoute
           path="/p/history"
