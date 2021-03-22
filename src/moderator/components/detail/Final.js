@@ -237,7 +237,7 @@ function PostContent(props) {
           userid: user,
           eventid: event,
           detail:'Refund from event "' + eventTitle+'"',
-          amount: res.data.listTransactions.items[0].amount,
+          amount: Math.abs(res.data.listTransactions.items[0].amount),
           date:new Date(),
           status:2
         }

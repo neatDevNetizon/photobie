@@ -11,6 +11,8 @@ import Profile from "./profile/main";
 import History from "./history"
 import Posts from "./detail/Posts";
 import PastEvent from "./past";
+import PastDetail from "./past/Details";
+
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
@@ -86,6 +88,18 @@ function Routing(props) {
         <PropsRoute
           path="/p/past"
           component={PastEvent}
+          toggleAccountActivation={toggleAccountActivation}
+          pushMessageToSnackbar={pushMessageToSnackbar}
+          CardChart={CardChart}
+          statistics={statistics}
+          targets={targets}
+          setTargets={setTargets}
+          isAccountActivated={isAccountActivated}
+          selectDashboard={selectDashboard}
+        />
+        <PropsRoute
+          path="/p/pastdetail"
+          component={PastDetail}
         />
         <PropsRoute
           path="/p/history"
