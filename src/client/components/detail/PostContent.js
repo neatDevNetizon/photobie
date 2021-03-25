@@ -300,6 +300,7 @@ function PostContent(props) {
     await API.graphql(graphqlOperation(mutations.updateProviders, {input: {id:provider, clients: JSON.stringify(newClient) }}));
     await API.graphql(graphqlOperation(mutations.updateEvents, {input: {id: props.id, upticktoken: updateToken}}));
     await API.graphql(graphqlOperation(mutations.updateTransaction, {input: {id: transId, status:3}}));
+    await API.graphql(graphqlOperation(mutations.updateUserA, {input: {id: userId, token: userToken+tokens}}))
     const transData = {
       userid:userId,
       eventid: provider,
@@ -331,7 +332,9 @@ function PostContent(props) {
     } else {
       setUpticking([ios]);
       const upToken = userToken - e;
-      const totalToken = e + uptickedToken*1;
+      const event = await API.graphql(graphqlOperation(queries.listEventss, {filter: {id: {eq: props.id}}}));
+      const total = event.data.listEventss.items[0].upticktoken*1;
+      const totalToken = e + total;
       console.log(totalToken)
       await API.graphql(graphqlOperation(queries.listProviderss,{filter:{id:{eq:id}}})).then(async(response)=>{
         const clientsList = response.data.listProviderss.items[0].clients;

@@ -29,7 +29,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Carousel from "react-multi-carousel";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import "react-multi-carousel/lib/styles.css";
-import Skeleton from 'react-loading-skeleton';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 const styles = {
   dBlock: { display: "block" },
@@ -454,14 +454,16 @@ function PostContent(props) {
         <Typography>Details</Typography>
         </Grid> */}
         <Grid item xs = {12} md={8} sm = {10}>
-          {title === "" ? <Skeleton /> : <Typography>Title : {title}</Typography>}
-          <Typography>Location : {location}</Typography>
-          <Typography>Duration : {duration}</Typography>
-          <Typography>{description}</Typography>
+          <SkeletonTheme color="lightgrey" highlightColor="white">
+            {title === "" ? <Skeleton width="60%" animation="wave"/> : <Typography>Title : {title}</Typography>}
+            {location === "" ? <Skeleton width="60%"/> : <Typography>Location : {location}</Typography>}
+            {duration === "" ? <Skeleton width="60%"/> : <Typography>Duration : {duration}</Typography>}
+            {description === "" ? <Skeleton count={2}/> : <Typography>{description}</Typography>}
+          </SkeletonTheme>
         </Grid>
         <Grid item xs = {12} md={3} sm={12}>
-          <Typography>Capacity:{capacity}</Typography>
-          <Typography>Required token : {requiredToken}</Typography>
+          {capacity === null ? <Skeleton /> : <Typography>Capacity : {capacity}</Typography>}
+          {requiredToken === null ? <Skeleton /> : <Typography>Required token : {requiredToken}</Typography>}
         </Grid>
       </Grid>
 

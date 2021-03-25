@@ -212,7 +212,7 @@ function PostContent(props) {
           userid: userBsId,
           eventid: event,
           detail:'Refund from event "' + eventTitle+'"',
-          amount: res.data.listTransactions.items[0].amount,
+          amount: Math.abs(res.data.listTransactions.items[0].amount*1),
           date:new Date(),
           status:2
         }
@@ -237,7 +237,7 @@ function PostContent(props) {
           userid: user,
           eventid: event,
           detail:'Refund from event "' + eventTitle+'"',
-          amount: Math.abs(res.data.listTransactions.items[0].amount),
+          amount: Math.abs(res.data.listTransactions.items[0].amount*1),
           date:new Date(),
           status:2
         }
@@ -343,7 +343,7 @@ function PostContent(props) {
                 </Grid>
             </Grid>
             <div style = {{display:"flex", justifyContent:"flex-end", paddingBottom:10, marginRight:10}}>
-                {eventStatus==1?<Button variant="contained" color="secondary" disabled = {profit} onClick = {handlePromise}>
+                {eventStatus===1?<Button variant="contained" color="secondary" disabled = {profit} onClick = {handlePromise}>
                 Promise with &nbsp;<span style = {{color:"#15d635",textTransform: "initial"}}> {proEmail}{loading && <ButtonCircularProgress />}</span>
                 </Button>:eventStatus===2?<Button disabled={loading} variant="contained" color="secondary" onClick = {handleFinish}>
                 Finalize with &nbsp;<span style = {{color:"#15d635",textTransform: "initial"}}> {proEmail}{loading && <ButtonCircularProgress />}</span>
