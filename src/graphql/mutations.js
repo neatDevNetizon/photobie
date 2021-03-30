@@ -97,6 +97,7 @@ export const createUsers = /* GraphQL */ `
       payment
       verified
       favortype
+      venues
       createdAt
       updatedAt
     }
@@ -120,6 +121,7 @@ export const updateUsers = /* GraphQL */ `
       payment
       verified
       favortype
+      venues
       createdAt
       updatedAt
     }
@@ -143,6 +145,7 @@ export const deleteUsers = /* GraphQL */ `
       payment
       verified
       favortype
+      venues
       createdAt
       updatedAt
     }
@@ -443,6 +446,90 @@ export const deleteTransaction = /* GraphQL */ `
       amount
       date
       status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createEventType = /* GraphQL */ `
+  mutation CreateEventType(
+    $input: CreateEventTypeInput!
+    $condition: ModelEventTypeConditionInput
+  ) {
+    createEventType(input: $input, condition: $condition) {
+      id
+      typename
+      description
+      cover
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateEventType = /* GraphQL */ `
+  mutation UpdateEventType(
+    $input: UpdateEventTypeInput!
+    $condition: ModelEventTypeConditionInput
+  ) {
+    updateEventType(input: $input, condition: $condition) {
+      id
+      typename
+      description
+      cover
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteEventType = /* GraphQL */ `
+  mutation DeleteEventType(
+    $input: DeleteEventTypeInput!
+    $condition: ModelEventTypeConditionInput
+  ) {
+    deleteEventType(input: $input, condition: $condition) {
+      id
+      typename
+      description
+      cover
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createUserD = /* GraphQL */ `
+  mutation CreateUserD(
+    $input: CreateUserDInput!
+    $condition: ModelUserDConditionInput
+  ) {
+    createUserD(input: $input, condition: $condition) {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateUserD = /* GraphQL */ `
+  mutation UpdateUserD(
+    $input: UpdateUserDInput!
+    $condition: ModelUserDConditionInput
+  ) {
+    updateUserD(input: $input, condition: $condition) {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteUserD = /* GraphQL */ `
+  mutation DeleteUserD(
+    $input: DeleteUserDInput!
+    $condition: ModelUserDConditionInput
+  ) {
+    deleteUserD(input: $input, condition: $condition) {
+      id
+      email
       createdAt
       updatedAt
     }

@@ -1,5 +1,4 @@
 import React, { Fragment, useRef, useCallback, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import PropTypes, { resetWarningCache } from "prop-types";
 import classNames from "classnames";
@@ -12,41 +11,27 @@ import {
   List,
   IconButton,
   ListItem,
-  ListItemIcon,
-  ListItemText,
   Hidden,
-  Tooltip,
   Box,
   withStyles,
-  isWidthUp,
   withWidth,
-  Popover,
+  Menu,
+  MenuItem,
+  makeStyles,
+  useTheme,
+  Divider,
 } from "@material-ui/core";
-import DashboardIcon from "@material-ui/icons/Dashboard";
-import ImageIcon from "@material-ui/icons/Image";
-import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
-import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import MenuIcon from "@material-ui/icons/Menu";
-import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
-import MessagePopperButton from "./MessagePopperButton";
-import SideDrawer from "./SideDrawer";
-import Balance from "./Balance";
-import NavigationDrawer from "../../../shared/components/NavigationDrawer";
+import MessageIcon from "@material-ui/icons/Message";
+import CategoryIcon from '@material-ui/icons/Category';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import 'bootstrap/dist/css/bootstrap.css';
-import MessageListItem from "./MessageListItem";
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import * as queries from '../../../graphql/queries';
-import MessageIcon from "@material-ui/icons/Message";
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import NavItem from './NavItem';
 
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 const styles = (theme) => ({
   
   appBar: {
@@ -202,7 +187,19 @@ function NavBar(props) {
         console.log('error signing out: ', error);
     }
   }
- 
+  
+  const items = [
+    {
+      href: '/a/types',
+      icon: CategoryIcon,
+      title: 'Event type setting'
+    },
+    {
+      href: '/a/users',
+      icon: AccountBoxIcon,
+      title: 'User management'
+    }
+  ];
   const history = useHistory();
   const goListPage = () => history.push('/a/dashboard')
   const goLandingPage = () => history.push("/");
@@ -242,20 +239,17 @@ function NavBar(props) {
       {/* <div className={classes.toolbar} style = {{borderRight:"none",alignItems:"center"}}>photobie</div> */}
       <Divider />
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        
       </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
+        {items.map((item) => (
+          <NavItem
+            href={item.href}
+            key={item.title}
+            title={item.title}
+            icon={item.icon}
+          />
         ))}
       </List>
     </div>

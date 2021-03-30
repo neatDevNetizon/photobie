@@ -69,6 +69,7 @@ export const getUsers = /* GraphQL */ `
       payment
       verified
       favortype
+      venues
       createdAt
       updatedAt
     }
@@ -94,6 +95,7 @@ export const listUserss = /* GraphQL */ `
         payment
         verified
         favortype
+        venues
         createdAt
         updatedAt
       }
@@ -300,6 +302,64 @@ export const listTransactions = /* GraphQL */ `
         amount
         date
         status
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getEventType = /* GraphQL */ `
+  query GetEventType($id: ID!) {
+    getEventType(id: $id) {
+      id
+      typename
+      description
+      cover
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listEventTypes = /* GraphQL */ `
+  query ListEventTypes(
+    $filter: ModelEventTypeFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listEventTypes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        typename
+        description
+        cover
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getUserD = /* GraphQL */ `
+  query GetUserD($id: ID!) {
+    getUserD(id: $id) {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listUserDs = /* GraphQL */ `
+  query ListUserDs(
+    $filter: ModelUserDFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listUserDs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        email
         createdAt
         updatedAt
       }

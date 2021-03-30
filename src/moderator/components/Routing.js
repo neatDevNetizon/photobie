@@ -10,8 +10,9 @@ import Message from "./message/Message"
 import Detail from "./detail/Posts";
 import Finalize from "./detail/Final";
 import GetToken from "./pricing/Price"
-import Profile from "./profile/main"
+import Profile from "./profile/General"
 import History from "./history";
+import AccountSecure from './profile/General/main'
 
 const styles = (theme) => ({
   wrapper: {
@@ -77,9 +78,13 @@ function Routing(props) {
             path="/m/message"
             component={Message}
           />
-          <PropsRoute
+        <PropsRoute
           path="/m/editprofile"
           component={Profile}
+        />
+        <PropsRoute
+          path="/m/security"
+          component={AccountSecure}
         />
         <PropsRoute
           path="/m/history"

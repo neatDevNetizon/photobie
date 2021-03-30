@@ -144,6 +144,7 @@ function BadgeAvatars(props) {
       } else{
         const email = user.attributes.email;
         setUserEmail(email);
+        
         const userToken = await API.graphql(graphqlOperation(queries.listUserAs, {filter:{email:{eq:email}}}))
         setCurrent(userToken.data.listUserAs?.items[0]?.token);
         const userId = userToken.data.listUserAs?.items[0]?.id;
@@ -173,7 +174,8 @@ function BadgeAvatars(props) {
         setAvatarUrl(userData.photo)
         await Storage.get(userData.photo, { expires: 300 }).then(res=>{
           setPreview(res);
-        })
+        });
+        
       }
       return ;
     }

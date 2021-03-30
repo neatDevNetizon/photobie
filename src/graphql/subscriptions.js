@@ -85,6 +85,7 @@ export const onCreateUsers = /* GraphQL */ `
       payment
       verified
       favortype
+      venues
       createdAt
       updatedAt
     }
@@ -105,6 +106,7 @@ export const onUpdateUsers = /* GraphQL */ `
       payment
       verified
       favortype
+      venues
       createdAt
       updatedAt
     }
@@ -125,6 +127,7 @@ export const onDeleteUsers = /* GraphQL */ `
       payment
       verified
       favortype
+      venues
       createdAt
       updatedAt
     }
@@ -371,6 +374,72 @@ export const onDeleteTransaction = /* GraphQL */ `
       amount
       date
       status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateEventType = /* GraphQL */ `
+  subscription OnCreateEventType {
+    onCreateEventType {
+      id
+      typename
+      description
+      cover
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateEventType = /* GraphQL */ `
+  subscription OnUpdateEventType {
+    onUpdateEventType {
+      id
+      typename
+      description
+      cover
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteEventType = /* GraphQL */ `
+  subscription OnDeleteEventType {
+    onDeleteEventType {
+      id
+      typename
+      description
+      cover
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateUserD = /* GraphQL */ `
+  subscription OnCreateUserD {
+    onCreateUserD {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateUserD = /* GraphQL */ `
+  subscription OnUpdateUserD {
+    onUpdateUserD {
+      id
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteUserD = /* GraphQL */ `
+  subscription OnDeleteUserD {
+    onDeleteUserD {
+      id
+      email
       createdAt
       updatedAt
     }

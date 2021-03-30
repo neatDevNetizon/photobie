@@ -6,39 +6,40 @@ import Dashboard from "./dashboard/Dashboard";
 import Posts from "./posts/Posts";
 import Subscription from "./subscription/Subscription";
 import PropsRoute from "../../shared/components/PropsRoute";
+import EventType from "./eventype";
 
 const styles = (theme) => ({
   wrapper: {
     margin: theme.spacing(1),
-    width: "auto",
+    width: "100%",
     [theme.breakpoints.up("xs")]: {
-      width: "95%",
+      width: "100%",
       marginLeft: "auto",
       marginRight: "auto",
       marginTop: theme.spacing(4),
       marginBottom: theme.spacing(4),
     },
-    [theme.breakpoints.up("sm")]: {
-      marginTop: theme.spacing(6),
-      marginBottom: theme.spacing(6),
-      width: "90%",
-      marginLeft: "auto",
-      marginRight: "auto",
-    },
-    [theme.breakpoints.up("md")]: {
-      marginTop: theme.spacing(6),
-      marginBottom: theme.spacing(6),
-      width: "82.5%",
-      marginLeft: "auto",
-      marginRight: "auto",
-    },
-    [theme.breakpoints.up("lg")]: {
-      marginTop: theme.spacing(6),
-      marginBottom: theme.spacing(6),
-      width: "70%",
-      marginLeft: "auto",
-      marginRight: "auto",
-    },
+    // [theme.breakpoints.up("sm")]: {
+    //   marginTop: theme.spacing(6),
+    //   marginBottom: theme.spacing(6),
+    //   width: "90%",
+    //   marginLeft: "auto",
+    //   marginRight: "auto",
+    // },
+    // [theme.breakpoints.up("md")]: {
+    //   marginTop: theme.spacing(6),
+    //   marginBottom: theme.spacing(6),
+    //   width: "82.5%",
+    //   marginLeft: "auto",
+    //   marginRight: "auto",
+    // },
+    // [theme.breakpoints.up("lg")]: {
+    //   marginTop: theme.spacing(6),
+    //   marginBottom: theme.spacing(6),
+    //   width: "70%",
+    //   marginLeft: "auto",
+    //   marginRight: "auto",
+    // },
   },
 });
 
@@ -68,8 +69,8 @@ function Routing(props) {
     <div className={classes.wrapper}>
       <Switch>
         <PropsRoute
-          path="/c/posts"
-          component={Posts}
+          path="/a/types"
+          component={EventType}
           EmojiTextArea={EmojiTextArea}
           ImageCropper={ImageCropper}
           Dropzone={Dropzone}
@@ -80,7 +81,7 @@ function Routing(props) {
           selectPosts={selectPosts}
         />
         <PropsRoute
-          path="/c/subscription"
+          path="/a/users"
           component={Subscription}
           transactions={transactions}
           pushMessageToSnackbar={pushMessageToSnackbar}
@@ -89,15 +90,15 @@ function Routing(props) {
         />
         <PropsRoute
           path=""
-          component={Dashboard}
-          toggleAccountActivation={toggleAccountActivation}
+          component={Posts}
+          EmojiTextArea={EmojiTextArea}
+          ImageCropper={ImageCropper}
+          Dropzone={Dropzone}
+          DateTimePicker={DateTimePicker}
           pushMessageToSnackbar={pushMessageToSnackbar}
-          CardChart={CardChart}
-          statistics={statistics}
-          targets={targets}
-          setTargets={setTargets}
-          isAccountActivated={isAccountActivated}
-          selectDashboard={selectDashboard}
+          posts={posts}
+          setPosts={setPosts}
+          selectPosts={selectPosts}
         />
       </Switch>
     </div>

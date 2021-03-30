@@ -32,7 +32,8 @@ type Users @model {
   photo:String
   payment:String
   verified:Int
-  favortype:String
+  favortype:String,
+  venues:String
 }
 type Providers @model {
   id:ID!
@@ -83,4 +84,14 @@ type Transaction @model {
   amount:Int
   date:String
   status:Int
+}
+type EventType @model {
+  id:ID!
+  typename:String!
+  description:String
+  cover:String
+}
+type UserD @model{
+  id:ID!
+  email:String!
 }

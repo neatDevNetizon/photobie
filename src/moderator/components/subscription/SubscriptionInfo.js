@@ -19,7 +19,6 @@ import {
   makeStyles,
   BottomNavigation,
   BottomNavigationAction,
-  TextareaAutosize,
   Typography
 } from '@material-ui/core';
 import ImageSearchIcon from '@material-ui/icons/ImageSearch';
@@ -29,13 +28,12 @@ import { useSnackbar } from 'notistack';
 import CloseIcon from '@material-ui/icons/Close';
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import * as subscriptions from "../../../graphql/subscriptions";
-import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
-
+// import DateFnsUtils from '@date-io/date-fns';
+// import {
+//   MuiPickersUtilsProvider,
+//   KeyboardTimePicker,
+//   KeyboardDatePicker,
+// } from '@material-ui/pickers';
 
 const styles = {
   toolbar: {
@@ -162,6 +160,9 @@ const styles = {
   duration: {
     width: '100%',
     marginTop: 14
+  },
+  listItem: {
+    whiteSpace: "normal",
   }
 };
 const useStyles = makeStyles((theme) => ({
@@ -180,6 +181,8 @@ function SubscriptionInfo(props) {
   const [moderator, setModerator] = useState("");
   const [userToken, setUserToken] = useState();
   const [userId, setUserId] = useState();
+  const [favorTypes, setFavorTypes] = useState([]);
+  const [venues, setVenues] = useState([]);
   useEffect(() => {
     async function fetchData() {
       const user =await Auth.currentUserInfo()
@@ -191,11 +194,17 @@ function SubscriptionInfo(props) {
         if(hasToken.data.listUserCs.items[0].token){
           setUserToken(hasToken.data.listUserCs.items[0].token);
         } else setUserToken(0);
-        setUserId(hasToken.data.listUserCs.items[0].id)
+        setUserId(hasToken.data.listUserCs.items[0].id);
+        const userProps = await API.graphql(graphqlOperation(queries.listUserss, {filter:{email:{eq:user.attributes.email}}}));
+        const userFavorData = userProps.data.listUserss.items[0].favortype;
+        const venueList = JSON.parse(userProps.data.listUserss.items[0].venues);
+
+        const arr1 = venueList.filter(d => d.status === 2);
+        setVenues(arr1);
+        if(userFavorData)setFavorTypes(userFavorData.split(","));
       }
     }
     fetchData();
-    
   },[]);
 
   const handleChange = (event, newValue) => {
@@ -232,10 +241,7 @@ function SubscriptionInfo(props) {
       var d = new Date();
       var n = d.getTime();
       const picture = n+".jpg";
-      
-      
       setImageSource(reader)
-      
       setImageLetter("imageLetterHidden");
       setImageSection("showImageSection");
       scrollToBottom();
@@ -269,7 +275,6 @@ function SubscriptionInfo(props) {
   const [postbtn, setPostbtn] = useState(['next']);
   const [token, setToken] = useState(0);
   const [value, setValue] = useState("2");
-  const [locationrequired, setLocationrequired] = useState(['txtrequiredHidden']);
   const [textrequired, setTextrequired] = useState(['txtrequiredHidden']);
   const [cart, setCart] = useState(['txtFiled1']);
   const [security, setSecurity] = useState(['txtFiled2']);
@@ -277,6 +282,7 @@ function SubscriptionInfo(props) {
   const [titleRequired, setTitleRequired] = useState("txtrequiredHidden");
   const [typeRequired, setTypeRequired] = useState("txtrequiredHidden");
   const [capacityrequired, setCapacityrequired] = useState("twoFieldReqiredHidden");
+  const [locationrequired, setLocationrequired] = useState("twoFieldReqiredHidden");
   const [twocart, setTwocart] = useState("twoTextField1");
   const [tokenrequired, setTokenrequired] = useState("twoFieldReqiredHidden")
   const [type, setType] = useState("");
@@ -322,12 +328,13 @@ function SubscriptionInfo(props) {
       return
     }
     else if(count === 1){
-      setImage("showImageSection")
-      if(location.length > 2){
-        setLocationrequired('txtrequiredHidden')
+      setImage("showImageSection");
+      console.log(location);
+      if(location.length === [""]){
+        setLocationrequired('twoFieldReqiredHidden')
       }
       else{
-        setLocationrequired('txtrequired')
+        setLocationrequired('twoFieldReqired')
         return;
       }
       if(capacity.length > 0){
@@ -379,8 +386,6 @@ function SubscriptionInfo(props) {
           duration:duration
         }
         const event = await API.graphql(graphqlOperation(mutations.createEvents, {input: data}));
-        console.log(event);
-
         const transData = {
           userid:userId,
           detail:'Post a new event "' + event.data.createEvents.title+'"',
@@ -389,19 +394,15 @@ function SubscriptionInfo(props) {
           date:new Date(),
           status:1
         }
-
         await API.graphql(graphqlOperation(mutations.createTransaction,{input:transData}));
-        
         setIsLoading(false);
         history.push('/m/dashboard');
       }
-      
     }
   };
   useEffect(()=>{
     const events = API.graphql(graphqlOperation(queries.listEventss));
     console.log(events);
-
   },[])
   useEffect(() => {
     const subscription = API
@@ -412,7 +413,6 @@ function SubscriptionInfo(props) {
           // setEvents([...events, event.value.data.onCreateEvents]);
         }
       });
-
     return () => {
       subscription.unsubscribe();
     }
@@ -421,184 +421,175 @@ function SubscriptionInfo(props) {
     setDuration(event.target.value)
   }
   return (
-    
     <Toolbar className={classes.toolbar} >
       <form className={classess.root} noValidate autoComplete="off" ref={wholePage}>
-      
-      <div className={classes.toppadding}></div> 
-      <div className={classes.txtFiled}>
-          <TextField
-            onChange={titleSet}
-            id="outlined-search"
-            label="Event Title"
-            variant="outlined"
-          />
-      </div>
-      <div className={classes[titleRequired]}>
-      * Please enter at least 3 characters
-      </div>
-      <div className={classes.txtFiled}>
-        <Grid container x={12} spacing={3}>
-          <Grid item sm={12} md={6} xs={12}>
+        <div className={classes.toppadding}></div> 
+        <div className={classes.txtFiled}>
             <TextField
-              id="datetime-local"
-              label="Start time"
-              type="datetime-local"
+              onChange={titleSet}
+              id="outlined-search"
+              label="Event Title"
               variant="outlined"
-              defaultValue={new Date().toISOString()}
-              className={classes.textField}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              style={{width:'100%'}}
-              onChange={(event)=>{
-                const day = new Date(event.target.value);
-                setSelectedDate(day);
-              }}
             />
-          </Grid>
-          <Grid item sm={12} md={6} xs={12}>
-            <FormControl variant="outlined" className={classes.duration}>
-              <InputLabel id="demo-simple-select-outlined-label">Event Duration</InputLabel>
-              <Select
-                labelId="demo-simple-select-outlined-label"
-                id="demo-simple-select-outlined"
-                value={duration}
-                onChange={handleChangeDuration}
-                label="Event Duration"
-              >
-                <MenuItem value={15}>15 minutes</MenuItem>
-                <MenuItem value={30}>30 minutes</MenuItem>
-                <MenuItem value={45}>45 minutes</MenuItem>
-                <MenuItem value={60}>1 hour</MenuItem>
-                <MenuItem value={90}>1 hour 30 min</MenuItem>
-                <MenuItem value={120}>2 hours</MenuItem>
-                <MenuItem value={180}>3 hours</MenuItem>
-                <MenuItem value={240}>4 hours</MenuItem>
-                <MenuItem value={300}>5 hours</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      </div>
-      {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="MM/dd/yyyy"
-              margin="normal"
-              id="date-picker-inline"
-              label="Pick event date"
-              value={selectedDate}
-              onChange={handleDateChange}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-      </MuiPickersUtilsProvider> */}
-      <div className={classes.txtFiled}>
-          <TextField
-                onChange={typeSet}
-                id="outlined-search"
-                label="Event Type"
+        </div>
+        <div className={classes[titleRequired]}>
+        * Please enter at least 3 characters
+        </div>
+        <div className={classes.txtFiled}>
+          <Grid container x={12} spacing={3}>
+            <Grid item sm={12} md={6} xs={12}>
+              <TextField
+                id="datetime-local"
+                label="Start time"
+                type="datetime-local"
                 variant="outlined"
+                defaultValue={new Date().toISOString()}
+                className={classes.textField}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                style={{width:'100%'}}
+                onChange={(event)=>{
+                  const day = new Date(event.target.value);
+                  setSelectedDate(day);
+                }}
               />
-      </div>
-      <div className={classes[typeRequired]}>
-      * Please enter at least 3 characters
-      </div>
+            </Grid>
+            <Grid item sm={12} md={6} xs={12}>
+              <FormControl variant="outlined" className={classes.duration}>
+                <InputLabel id="demo-simple-select-outlined-label">Event Duration</InputLabel>
+                <Select
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
+                  value={duration}
+                  onChange={handleChangeDuration}
+                  label="Event Duration"
+                >
+                  <MenuItem value={15}>15 minutes</MenuItem>
+                  <MenuItem value={30}>30 minutes</MenuItem>
+                  <MenuItem value={45}>45 minutes</MenuItem>
+                  <MenuItem value={60}>1 hour</MenuItem>
+                  <MenuItem value={90}>1 hour 30 min</MenuItem>
+                  <MenuItem value={120}>2 hours</MenuItem>
+                  <MenuItem value={180}>3 hours</MenuItem>
+                  <MenuItem value={240}>4 hours</MenuItem>
+                  <MenuItem value={300}>5 hours</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </div>
+        <div className={classes.txtFiled}>
+        <FormControl variant="outlined" className={classes.duration}>
+          <InputLabel id="demo-simple-select-outlined-label">Event Type</InputLabel>
+          <Select
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            value={type}
+            label="Event Type"
+            onChange={typeSet}
+          >
+            {favorTypes.map((item, index) => {
+              return <MenuItem value={item} key={index}>{item}</MenuItem>
+            })}
+          </Select></FormControl>
+        </div>
+        <div className={classes[typeRequired]}>
+        * Please enter at least 3 characters
+        </div>
+        <div className={classes.txtFiled}>
+          <TextField
+              onChange={descriptionSet}
+              id="outlined-search"
+              label="Event Description"
+              multiline
+              rows={4}
+              variant="outlined"
+            />
+        </div>
+        <div className={classes[textrequired]}>
+        * Please enter at least 20 characters
+        </div>
 
-      <div className={classes.txtFiled}>
-        <TextField
-            onChange={descriptionSet}
-            id="outlined-search"
-            label="Event Description"
-            multiline
-            rows={4}
-            variant="outlined"
-          />
-      </div>
-      <div className={classes[textrequired]}>
-      * Please enter at least 20 characters
-      </div>
-      {/* hidden items */}
-      <div  className={classes[cart]}>
-        <div className={classes[imageLetter]}>
-          <div className = {classes.previews} onClick = {imageSelect} >
-            <input type="file" id = "image_select" onChange = {handleImageChange} className = {classes.fileModal}/>
-            <ImageSearchIcon fontSize = "large"/>
-            <Typography variant="h6" color="primary" component="h2" style = {{textAlign:"center"}}>
-              Drag and Drop Event image here
-            </Typography>
+        {/* hidden items */}
+        <div  className={classes[cart]}>
+          <div className={classes[imageLetter]}>
+            <div className = {classes.previews} onClick = {imageSelect} >
+              <input type="file" id = "image_select" onChange = {handleImageChange} className = {classes.fileModal}/>
+              <ImageSearchIcon fontSize = "large"/>
+              <Typography variant="h6" color="primary" component="h2" style = {{textAlign:"center"}}>
+                Drag and Drop Event image here
+              </Typography>
+            </div>
+          </div>
+          <div className = {classes[imageSection]}>
+            <img src = {imageSource} className = {classes.image} onClick = {imageSelect}></img>
+            <CancelIcon color = "primary" className = {classes.cancelImage} onClick={cancelImageSelect}/>
           </div>
         </div>
-        <div className = {classes[imageSection]}>
-          <img src = {imageSource} className = {classes.image} onClick = {imageSelect}></img>
-          <CancelIcon color = "primary" className = {classes.cancelImage} onClick={cancelImageSelect}/>
+        <div className={classes[cart]}>
+          <FormControl variant="outlined" className={classes.duration}>
+            <InputLabel id="demo-simple-select-outlined-label">Location</InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              value={location}
+              label="Location"
+              onChange={locationSet}
+            >
+              {venues.map((item, index) => {
+                return <MenuItem value={item.address} className={classes.listItem} key={index}>{item.address}</MenuItem>
+              })}
+            </Select>
+          </FormControl>
         </div>
-        
-      </div>
-      
-      <div  className={classes[cart]}>
-          <TextField
-                    onChange={locationSet}
-                    id="outlined-search"
-                    label="Location"
-                    variant="outlined"
-              />
-      </div>
-      <div className={classes[locationrequired]}>
-      * Please enter at least 3 characters
-      </div>
-      <div style = {{display:"flex", flexDirection:"row", width:"100%"}}>
-        <div className={classes[twocart]}>
-              <TextField
-                      onChange={capacitySet}
-                      id="outlined-search"
-                      label="Capacity"
-                      variant="outlined"
-                      type="number"
-                />
+        <div className={classes[locationrequired]}>
+          * Please select address (Check your profile).
         </div>
-        
-        <div className={classes[twocart]}>
-              <TextField
-                      onChange={tokenSet}
-                      id="outlined-search"
-                      label="Minimun token"
-                      variant="outlined"
-                      type="number"
-                />
-                
-            </div>
-        
-      </div>
-      <div className={classes[capacityrequired]}>
-        * Please enter value of capacity to Number.
+        <div style = {{display:"flex", flexDirection:"row", width:"100%"}}>
+          <div className={classes[twocart]}>
+            <TextField
+              onChange={capacitySet}
+              id="outlined-search"
+              label="Capacity"
+              variant="outlined"
+              type="number"
+            />
+          </div>
+          <div className={classes[twocart]}>
+            <TextField
+              onChange={tokenSet}
+              id="outlined-search"
+              label="Minimun token"
+              variant="outlined"
+              type="number"
+            />
+          </div>
         </div>
-      <div className={classes[tokenrequired]}>
-      * Please enter the minimum token value to Number.
-      </div>
-
-      <div className={classes[security]}>
-      <BottomNavigation value={value} showLabels onChange={handleChange} className={classes.root}>
-        <BottomNavigationAction label="Private" selected value="1" icon={<SecurityIcon />} />
-        <BottomNavigationAction label="Public" value="2" icon={<PublicIcon />} />
-      </BottomNavigation>
-      </div>
-      <div className={classes.bottompadding}  ref={wholePage}>
-        <Button variant="contained"
-          color="secondary"
-          onClick={() => {
-            test();
-          }}
-          className={classes.button}
-          disabled={isLoading} 
-          >
-            {postbtn} {isLoading && <ButtonCircularProgress />}
-        </Button>
-      </div>
-          
+        <div className={classes[capacityrequired]}>
+          * Please enter value of capacity to Number.
+        </div>
+        <div className={classes[tokenrequired]}>
+          * Please enter the minimum token value to Number.
+        </div>
+        <div className={classes[security]}>
+        <BottomNavigation value={value} showLabels onChange={handleChange} className={classes.root}>
+          <BottomNavigationAction label="Private" selected value="1" icon={<SecurityIcon />} />
+          <BottomNavigationAction label="Public" value="2" icon={<PublicIcon />} />
+        </BottomNavigation>
+        </div>
+        <div className={classes.bottompadding}  ref={wholePage}>
+          <Button variant="contained"
+            color="secondary"
+            onClick={() => {
+              test();
+            }}
+            className={classes.button}
+            disabled={isLoading} 
+            >
+              {postbtn} {isLoading && <ButtonCircularProgress />}
+          </Button>
+        </div>
       </form>
     </Toolbar>
   );

@@ -19,6 +19,9 @@ const styles = (theme) => ({
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
     },
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: 200,
+    },
   },
 });
 
