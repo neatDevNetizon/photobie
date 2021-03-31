@@ -445,3 +445,48 @@ export const onDeleteUserD = /* GraphQL */ `
     }
   }
 `;
+export const onCreateRequestToAdmin = /* GraphQL */ `
+  subscription OnCreateRequestToAdmin {
+    onCreateRequestToAdmin {
+      id
+      user
+      indexid
+      type
+      read
+      status
+      addname
+      updatedAt
+      createdAt
+    }
+  }
+`;
+export const onUpdateRequestToAdmin = /* GraphQL */ `
+  subscription OnUpdateRequestToAdmin {
+    onUpdateRequestToAdmin {
+      id
+      user
+      indexid
+      type
+      read
+      status
+      addname
+      updatedAt
+      createdAt
+    }
+  }
+`;
+export const onDeleteRequestToAdmin = /* GraphQL */ `
+  subscription OnDeleteRequestToAdmin {
+    onDeleteRequestToAdmin {
+      id
+      user
+      indexid
+      type
+      read
+      status
+      addname
+      updatedAt
+      createdAt
+    }
+  }
+`;

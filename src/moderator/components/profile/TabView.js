@@ -57,10 +57,10 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
         marginLeft: 0,
     },
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
         marginLeft: 200,
     },
   },

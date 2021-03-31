@@ -535,3 +535,57 @@ export const deleteUserD = /* GraphQL */ `
     }
   }
 `;
+export const createRequestToAdmin = /* GraphQL */ `
+  mutation CreateRequestToAdmin(
+    $input: CreateRequestToAdminInput!
+    $condition: ModelRequestToAdminConditionInput
+  ) {
+    createRequestToAdmin(input: $input, condition: $condition) {
+      id
+      user
+      indexid
+      type
+      read
+      status
+      addname
+      updatedAt
+      createdAt
+    }
+  }
+`;
+export const updateRequestToAdmin = /* GraphQL */ `
+  mutation UpdateRequestToAdmin(
+    $input: UpdateRequestToAdminInput!
+    $condition: ModelRequestToAdminConditionInput
+  ) {
+    updateRequestToAdmin(input: $input, condition: $condition) {
+      id
+      user
+      indexid
+      type
+      read
+      status
+      addname
+      updatedAt
+      createdAt
+    }
+  }
+`;
+export const deleteRequestToAdmin = /* GraphQL */ `
+  mutation DeleteRequestToAdmin(
+    $input: DeleteRequestToAdminInput!
+    $condition: ModelRequestToAdminConditionInput
+  ) {
+    deleteRequestToAdmin(input: $input, condition: $condition) {
+      id
+      user
+      indexid
+      type
+      read
+      status
+      addname
+      updatedAt
+      createdAt
+    }
+  }
+`;

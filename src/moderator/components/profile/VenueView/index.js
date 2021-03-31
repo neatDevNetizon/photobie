@@ -17,6 +17,7 @@ import TypeTable from './TypeTable';
 import Amplify, {API, graphqlOperation, Auth, Storage} from "aws-amplify";
 import * as mutations from '../../../../graphql/mutations';
 import * as queries from '../../../../graphql/queries';
+import * as subscriptions from '../../../../graphql/subscriptions';
 import VenueDialog from './Dialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -54,6 +55,7 @@ const EventType = () => {
         for(let i=0; i<typeArray.length; i++){
           newData.push({
             name: typeArray[i].address,
+            status: typeArray[i].status
           })
         }
         setRowData(newData);
@@ -62,17 +64,41 @@ const EventType = () => {
     fetchUser();
   }, []);
   const refreshFunc = async() => {
-    const userToken = await API.graphql(graphqlOperation(queries.listUserss, {filter:{email:{eq:userEmail}}}))
-    const typeArray = JSON.parse(userToken.data.listUserss.items[0].venues);
-    console.log(userToken);
-    let newData = [];
-    for(let i=0; i<typeArray.length; i++){
-      newData.push({
-        name: typeArray[i].address,
-      })
-    }
-    setRowData(newData);
+    // const userToken = await API.graphql(graphqlOperation(queries.listUserss, {filter:{email:{eq:userEmail}}}))
+    // const typeArray = JSON.parse(userToken.data.listUserss.items[0].venues);
+    // console.log(userToken);
+    // let newData = [];
+    // for(let i=0; i<typeArray.length; i++){
+    //   newData.push({
+    //     name: typeArray[i].address,
+    //     status: typeArray[i].status
+    //   })
+    // }
+    // setRowData(newData);
   }
+  useEffect(()=>{
+    async function refreshEvent() {
+      const subscription = API
+        .graphql(graphqlOperation(subscriptions.onUpdateUsers))
+        .subscribe({
+          next: (event) => {
+            const typeArray = JSON.parse(event.value.data.onUpdateUsers.venues);
+            let newData = [];
+            for(let i=0; i<typeArray.length; i++){
+              newData.push({
+                name: typeArray[i].address,
+                status: typeArray[i].status
+              })
+            }
+            setRowData(newData);
+          }
+        });
+      return () => {
+        subscription.unsubscribe();
+      }
+    }
+    refreshEvent();
+  },[])
   const goAddNewQuiz = () =>{
     setVenueModal(true)
   }

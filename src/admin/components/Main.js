@@ -7,7 +7,11 @@ import NavBar from "./navigation/NavBar";
 import ConsecutiveSnackbarMessages from "../../shared/components/ConsecutiveSnackbarMessages";
 import smoothScrollTop from "../../shared/functions/smoothScrollTop";
 import persons from "../dummy_data/persons";
-import LazyLoadAddBalanceDialog from "./subscription/LazyLoadAddBalanceDialog";
+import { useSnackbar } from 'notistack';
+import CloseIcon from '@material-ui/icons/Close';
+import {API, graphqlOperation} from 'aws-amplify';
+import * as subscriptions from '../../graphql/subscriptions';
+import * as queries from '../../graphql/queries';
 
 const styles = (theme) => ({
   main: {
@@ -55,6 +59,64 @@ function Main(props) {
   const [isAccountActivated, setIsAccountActivated] = useState(false);
   const [isAddBalanceDialogOpen, setIsAddBalanceDialogOpen] = useState(false);
   const [pushMessageToSnackbar, setPushMessageToSnackbar] = useState(null);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  useEffect(()=>{
+    async function refreshEvent() {
+      const subscription = API
+        .graphql(graphqlOperation(subscriptions.onUpdateRequestToAdmin))
+        .subscribe({
+          next: (event) => {
+            console.log(event)
+            const stateNum = event.value.data.onUpdateRequestToAdmin.status;
+            console.log(stateNum)
+            if(stateNum === 1){
+              enqueueSnackbar('Received new verification request', {
+                variant: 'success',
+                action: key => (
+                    <CloseIcon onClick={() => closeSnackbar(key)}/>
+                )
+              });
+            }
+            fetchList();
+          }
+        });
+      return () => {
+        subscription.unsubscribe();
+      }
+    }
+    refreshEvent();
+  },[])
+  async function fetchList() {
+    const requestList = await API.graphql(graphqlOperation(queries.listRequestToAdmins));
+    console.log(requestList)
+    setTransactions(requestList.data.listRequestToAdmins.items)
+  }
+  useEffect(()=>{
+    async function refreshEvent() {
+      const subscription = API
+        .graphql(graphqlOperation(subscriptions.onCreateRequestToAdmin))
+        .subscribe({
+          next: (event) => {
+            console.log(event)
+            const stateNum = event.value.data.onCreateRequestToAdmin.status;
+            console.log(stateNum)
+            if(stateNum === 1){
+              enqueueSnackbar('Received new verification request', {
+                variant: 'success',
+                action: key => (
+                    <CloseIcon onClick={() => closeSnackbar(key)}/>
+                )
+              });
+              fetchList();
+            }
+          }
+        });
+      return () => {
+        subscription.unsubscribe();
+      }
+    }
+    refreshEvent();
+  },[])
 
   const fetchRandomTargets = useCallback(() => {
     const targets = [];
@@ -112,64 +174,25 @@ function Main(props) {
     }
     setStatistics(statistics);
   }, [setStatistics]);
-
-  const fetchRandomTransactions = useCallback(() => {
-    const transactions = [];
-    const iterations = 32;
-    const oneMonthSeconds = Math.round(60 * 60 * 24 * 30.5);
-    const transactionTemplates = [
-      {
-        description: "Starter subscription",
-        isSubscription: true,
-        balanceChange: -1499,
-      },
-      {
-        description: "Premium subscription",
-        isSubscription: true,
-        balanceChange: -2999,
-      },
-      {
-        description: "Business subscription",
-        isSubscription: true,
-        balanceChange: -4999,
-      },
-      {
-        description: "Tycoon subscription",
-        isSubscription: true,
-        balanceChange: -9999,
-      },
-      {
-        description: "Added funds",
-        isSubscription: false,
-        balanceChange: 2000,
-      },
-      {
-        description: "Added funds",
-        isSubscription: false,
-        balanceChange: 5000,
-      },
-    ];
-    let curUnix = Math.round(
-      new Date().getTime() / 1000 - iterations * oneMonthSeconds
-    );
-    for (let i = 0; i < iterations; i += 1) {
-      const randomTransactionTemplate =
-        transactionTemplates[
-          Math.floor(Math.random() * transactionTemplates.length)
-        ];
-      const transaction = {
-        id: i,
-        description: randomTransactionTemplate.description,
-        balanceChange: randomTransactionTemplate.balanceChange,
-        paidUntil: curUnix + oneMonthSeconds,
-        timestamp: curUnix,
-      };
-      curUnix += oneMonthSeconds;
-      transactions.push(transaction);
+  useEffect(()=>{
+    async function fetchList() {
+      const requestList = await API.graphql(graphqlOperation(queries.listRequestToAdmins));
+      console.log(requestList)
+      setTransactions(requestList.data.listRequestToAdmins.items)
     }
-    transactions.reverse();
-    setTransactions(transactions);
-  }, [setTransactions]);
+    fetchList();
+  },[]);
+  const fetchRandomTransactions = useCallback(async() => {
+    // const requestList = await API.graphql(graphqlOperation(queries.listRequestToAdmins));
+    // const transaction = [{
+    //   addname:'adfadf',
+    //   status: 1,
+    //   updateAt: '2021-03-31T00:36:05.892Z',
+    //   id:'adfasdfasdf'
+    // }];
+    
+    // setTransactions(transaction);
+  }, [transactions]);
 
   const fetchRandomMessages = useCallback(() => {
     shuffle(persons);
@@ -322,11 +345,6 @@ function Main(props) {
 
   return (
     <Fragment>
-      <LazyLoadAddBalanceDialog
-        open={isAddBalanceDialogOpen}
-        onClose={closeAddBalanceDialog}
-        onSuccess={onPaymentSuccess}
-      />
       <NavBar
         selectedTab={selectedTab}
         messages={messages}

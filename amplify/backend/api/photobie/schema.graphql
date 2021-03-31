@@ -95,3 +95,13 @@ type UserD @model{
   id:ID!
   email:String!
 }
+type RequestToAdmin @model {
+  id:ID!
+  user:String!
+  indexid:Int!
+  type:Int!
+  read:Int
+  status:Int
+  addname:String
+  updatedAt:AWSDateTime
+}

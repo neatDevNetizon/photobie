@@ -19,6 +19,7 @@ const xl = 1920;
 const lg = 1280;
 const md = 960;
 const sm = 600;
+const ms = 300;
 const xs = 0;
 
 // spacing
@@ -58,6 +59,7 @@ const theme = createMuiTheme({
       lg,
       md,
       sm,
+      ms,
       xs
     }
   },

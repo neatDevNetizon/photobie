@@ -367,6 +367,43 @@ export const listUserDs = /* GraphQL */ `
     }
   }
 `;
+export const getRequestToAdmin = /* GraphQL */ `
+  query GetRequestToAdmin($id: ID!) {
+    getRequestToAdmin(id: $id) {
+      id
+      user
+      indexid
+      type
+      read
+      status
+      addname
+      updatedAt
+      createdAt
+    }
+  }
+`;
+export const listRequestToAdmins = /* GraphQL */ `
+  query ListRequestToAdmins(
+    $filter: ModelRequestToAdminFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRequestToAdmins(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        user
+        indexid
+        type
+        read
+        status
+        addname
+        updatedAt
+        createdAt
+      }
+      nextToken
+    }
+  }
+`;
 export const messagesByChannelId = /* GraphQL */ `
   query MessagesByChannelId(
     $channelID: ID

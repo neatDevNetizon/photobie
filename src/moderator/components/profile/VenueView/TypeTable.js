@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { lighten, makeStyles } from '@material-ui/core/styles';
+import { lighten, makeStyles, useTheme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,7 +21,9 @@ import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
-import VenueDialog from './Dialog'
+import VenueDialog from './Dialog';
+import MBadge from "../../../../shared/components/MBadge";
+import ColorfulChip from "../../../../shared/components/ColorfulChip";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -51,6 +53,7 @@ function stableSort(array, comparator) {
 
 const headCells = [
     { id: 'name', numeric: false, disablePadding: false, label: 'Venue Address' },
+    { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
     { id: 'aaa', numeric: false, disablePadding: false, label: '' }
 ];
 
@@ -193,6 +196,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable(props) {
   const rows = props.rowData;
+  const theme = useTheme();
   function refreshFunc(){
     props.refreshFunc();
   }
@@ -306,6 +310,15 @@ export default function EnhancedTable(props) {
                         />
                       </TableCell>
                       <TableCell align="left">{row.name}</TableCell>
+                      <TableCell align="left">
+                        {row.status*1 === 1?<ColorfulChip
+                          color={theme.palette.error.dark}
+                          label='Pending'
+                          />:<ColorfulChip
+                          color={theme.palette.secondary.main}
+                          label='Verified'
+                        />}
+                      </TableCell>
                       <TableCell align="right">
                         <IconButton color="primary" aria-label="add to shopping cart">
                           <EditRoundedIcon onClick={() => {handleEdit(index); }}/>

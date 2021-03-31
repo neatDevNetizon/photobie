@@ -10,9 +10,14 @@ import {
 } from "@material-ui/core";
 import EnhancedTableHead from "../../../shared/components/EnhancedTableHead";
 import ColorfulChip from "../../../shared/components/ColorfulChip";
-import unixToDateString from "../../../shared/functions/unixToDateString";
+import awsToDateString from "../../../shared/functions/awsToDateString";
 import HighlightedInformation from "../../../shared/components/HighlightedInformation";
 import currencyPrettyPrint from "../../../shared/functions/currencyPrettyPrint";
+import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
+import * as mutations from '../../../graphql/mutations';
+import * as queries from '../../../graphql/queries';
+import * as subscriptions from '../../../graphql/subscriptions';
+import {API, graphqlOperation} from 'aws-amplify';
 
 const styles = theme => ({
   tableWrapper: {
@@ -44,12 +49,12 @@ const rows = [
   {
     id: "description",
     numeric: false,
-    label: "Action"
+    label: "Address"
   },
   {
     id: "balanceChange",
     numeric: false,
-    label: "Balance change"
+    label: "Status"
   },
   {
     id: "date",
@@ -57,10 +62,10 @@ const rows = [
     label: "Date"
   },
   {
-    id: "paidUntil",
+    id: "date",
     numeric: false,
-    label: "Paid until"
-  }
+    label: ""
+  },
 ];
 
 const rowsPerPage = 25;
@@ -75,7 +80,40 @@ function SubscriptionTable(props) {
     },
     [setPage]
   );
-
+  async function handleVerify(reqId, indexId, userId, status){
+    console.log(reqId, indexId, status);
+    await API.graphql(graphqlOperation(mutations.updateRequestToAdmin, {input: {
+      id: reqId,
+      status: status===1?2:1,
+      read: 2
+    }}));
+    await API.graphql(graphqlOperation(queries.listUserss, {filter: {
+      id: {eq: userId}
+    }})).then(async(res) => {
+      const venue = JSON.parse(res.data.listUserss.items[0].venues);
+      let newVenueList = [];
+      for(let i=0; i<venue.length;i++){
+        if(i===indexId){
+          newVenueList.push({
+            address: venue[i].address,
+            detail: venue[i].detail,
+            status: status===1?2:1
+          })
+        } else {
+          newVenueList.push({
+            address: venue[i].address,
+            detail: venue[i].detail,
+            status: venue[i].status,
+          })
+        }
+      }
+      await API.graphql(graphqlOperation(mutations.updateUsers, {input: {
+        id: userId,
+        venues: JSON.stringify(newVenueList)
+      }}));
+    })
+    
+  }
   if (transactions.length > 0) {
     return (
       <div className={classes.tableWrapper}>
@@ -91,30 +129,28 @@ function SubscriptionTable(props) {
                     scope="row"
                     className={classes.firstData}
                   >
-                    {transaction.description}
+                    {transaction.addname}
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    {transaction.balanceChange > 0 ? (
+                    {transaction.status === 1 ? (
                       <ColorfulChip
-                        label={`+${currencyPrettyPrint(
-                          transaction.balanceChange
-                        )}`}
-                        color={theme.palette.secondary.main}
+                        label='Pending'
+                        color={theme.palette.error.dark}
                       />
                     ) : (
                       <ColorfulChip
-                        label={currencyPrettyPrint(transaction.balanceChange)}
-                        color={theme.palette.error.dark}
+                        label='Verified'
+                        color={theme.palette.secondary.main}
                       />
                     )}
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    {unixToDateString(transaction.timestamp)}
+                    {awsToDateString(transaction.updatedAt)}
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    {transaction.paidUntil
-                      ? unixToDateString(transaction.paidUntil)
-                      : ""}
+                    <SettingsApplicationsIcon onClick = {()=>{
+                      handleVerify(transaction.id, transaction.indexid, transaction.user, transaction.status);
+                    }} />
                   </TableCell>
                 </TableRow>
               ))}

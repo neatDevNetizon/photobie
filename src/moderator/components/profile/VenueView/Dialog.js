@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import Amplify, {API,graphqlOperation, Auth,Storage} from "aws-amplify";
 import * as mutations from '../../../../graphql/mutations';
 import * as queries from '../../../../graphql/queries';
+import * as subscriptions from '../../../../graphql/subscriptions'
 import {
   Box,
   Button,
@@ -109,9 +110,7 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
         setUserId(userToken.data.listUserss?.items[0]?.id);
 				const venueList = userToken.data.listUserss?.items[0]?.venues;
 				if(venueList){
-					console.log(JSON.parse(venueList));
 					setVenues(JSON.parse(venueList));
-					
 				} else console.log('none');
 				if(status!==''&&open){
 					setSelectedVenue(JSON.parse(venueList)[status])
@@ -215,14 +214,28 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 		if(status === ''){
 			let current = [...venues];
 			current.push(selectedVenue);
-			console.log(current, venues);
 			await API.graphql(graphqlOperation(mutations.updateUsers, {input: {
 				id: userId,
 				venues: JSON.stringify(current)
 			}}));
+			
+			const indexId = current.length - 1;
+			const data = {
+				user:userId,
+				addname: current[indexId].address,
+				indexid:indexId,
+				type:1,
+				read:1,
+				status:1,
+			}
+			await API.graphql(graphqlOperation(mutations.createRequestToAdmin, {input: data})).then((res) => {
+				console.log(res);
+			});
+			
+			onCreateRequest();
 			refreshFunc();
 			closeListener();
-			console.log('new', current);
+			
 		} else {
 			let current = [...venues];
 			let newArr=[];
@@ -233,16 +246,51 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 					newArr.push(current[i]);
 				}
 			}
+			console.log('Modify', selectedVenue.status, status);
 			await API.graphql(graphqlOperation(mutations.updateUsers, {input: {
 				id: userId,
 				venues: JSON.stringify(newArr)
 			}}));
+			const request = await API.graphql(graphqlOperation(queries.listRequestToAdmins, {filter: {
+				user: {eq: userId},
+				indexid: {eq: status}
+			}}));
+			
+			await API.graphql(graphqlOperation(mutations.updateRequestToAdmin, {input: {
+				id:request?.data?.listRequestToAdmins?.items[0].id,
+				addname:selectedVenue.address,
+				status:selectedVenue.status
+			}})).then((res)=>{console.log("aaaa", res)});
+			// await onChangeRequest();
 			refreshFunc();
 			closeListener();
-			console.log('Modify', selectedVenue.status);
 		}
 		setIsLoading(false);
   }
+	async function onCreateRequest() {
+		const subscription = API
+			.graphql(graphqlOperation(subscriptions.onCreateRequestToAdmin))
+			.subscribe({
+				next: (event) => {
+					console.log("asdfadf", event)
+				}
+			});
+		return () => {
+			subscription.unsubscribe();
+		}
+	}
+	async function onChangeRequest() {
+		// const subscription = API
+		// 	.graphql(graphqlOperation(subscriptions.onUpdateUsers))
+		// 	.subscribe({
+		// 		next: (event) => {
+		// 			// setEvents([...events, event.value.data.onCreateEvents]);
+		// 		}
+		// 	});
+		// return () => {
+		// 	subscription.unsubscribe();
+		// }
+	}
   const addNew = () => {
 		setViewMode(1);
     if(selectedVenue.length===0){
