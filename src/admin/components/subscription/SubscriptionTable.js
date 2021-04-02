@@ -187,7 +187,8 @@ function SubscriptionTable(props) {
     await API.graphql(graphqlOperation(mutations.updateRequestToAdmin, {input: {
       id: requestId,
       status: 3,
-      read: 2
+      read: 2,
+      reason: declineReason,
     }}));
     await API.graphql(graphqlOperation(queries.listUserss, {filter: {
       id: {eq: reqUserId}
