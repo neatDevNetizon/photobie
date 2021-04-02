@@ -104,4 +104,5 @@ type RequestToAdmin @model {
   status:Int
   addname:String
   updatedAt:AWSDateTime
+  reason:String
 }

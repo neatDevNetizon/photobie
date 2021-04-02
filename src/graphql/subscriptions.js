@@ -456,6 +456,7 @@ export const onCreateRequestToAdmin = /* GraphQL */ `
       status
       addname
       updatedAt
+      reason
       createdAt
     }
   }
@@ -471,6 +472,7 @@ export const onUpdateRequestToAdmin = /* GraphQL */ `
       status
       addname
       updatedAt
+      reason
       createdAt
     }
   }
@@ -486,6 +488,7 @@ export const onDeleteRequestToAdmin = /* GraphQL */ `
       status
       addname
       updatedAt
+      reason
       createdAt
     }
   }

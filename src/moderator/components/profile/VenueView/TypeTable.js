@@ -314,10 +314,13 @@ export default function EnhancedTable(props) {
                         {row.status*1 === 1?<ColorfulChip
                           color={theme.palette.error.dark}
                           label='Pending'
-                          />:<ColorfulChip
+                          />:row.status*1 === 2?<ColorfulChip
                           color={theme.palette.secondary.main}
                           label='Verified'
-                        />}
+                          />:<ColorfulChip
+                          color={theme.palette.common.darkBlack}
+                          label='Declined'
+                          />}
                       </TableCell>
                       <TableCell align="right">
                         <IconButton color="primary" aria-label="add to shopping cart">

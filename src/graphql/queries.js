@@ -378,6 +378,7 @@ export const getRequestToAdmin = /* GraphQL */ `
       status
       addname
       updatedAt
+      reason
       createdAt
     }
   }
@@ -398,6 +399,7 @@ export const listRequestToAdmins = /* GraphQL */ `
         status
         addname
         updatedAt
+        reason
         createdAt
       }
       nextToken
