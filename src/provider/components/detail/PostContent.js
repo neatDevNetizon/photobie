@@ -261,7 +261,9 @@ function PostContent(props) {
   
 
   function uploadSingleFile(e) {
+    console.log(e.target.files[0]);
     if(e.target.files[0]&&file.length<=8){
+      console.log("adfadf", URL.createObjectURL(e.target.files[0]));
       setFile([...file, URL.createObjectURL(e.target.files[0])]);
       setToUpload([...toUpload, e.target.files[0]]);
       if(file.length===7) setPlusFade("hidePlus")

@@ -64,7 +64,7 @@ function LoginDialog(props) {
       setStatus(null);
       const user = await Auth.signIn(loginEmail.current.value, loginPassword.current.value);
       // props.addTodo(loginEmail.current.value);
-      console.log(user)
+      console.log(user);
       localStorage.setItem('userEmail', loginEmail.current.value);
       onClose();
       enqueueSnackbar('Login success', {

@@ -329,8 +329,8 @@ function SubscriptionInfo(props) {
     }
     else if(count === 1){
       setImage("showImageSection");
-      console.log(location);
-      if(location.length === [""]){
+      console.log(typeof location);
+      if(location.length>0){
         setLocationrequired('twoFieldReqiredHidden')
       }
       else{

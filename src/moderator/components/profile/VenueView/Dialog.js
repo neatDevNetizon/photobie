@@ -21,7 +21,16 @@ import {
   Grid,
 	IconButton,
 	Tooltip,
-	Zoom
+	Zoom,
+	Input,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  ListItemText,
+  Select,
+  Checkbox,
+  Chip,
+	useTheme
 } from '@material-ui/core';
 import ButtonCircularProgress from "../../../../shared/components/ButtonCircularProgress";
 import BackupIcon from '@material-ui/icons/Backup';
@@ -30,6 +39,15 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import EditLocationRoundedIcon from '@material-ui/icons/EditLocationRounded';
 import Preview from './Preview';
+import load from 'little-loader';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from 'react-places-autocomplete';
+import LocationSearchInput from './PlaceDropDown';
+import 'react-phone-number-input/style.css'
+import PhoneInput, {isValidPhoneNumber} from 'react-phone-number-input';
 
 const useStyles = makeStyles((theme) => ({
   venueDialog: {
@@ -86,6 +104,29 @@ const useStyles = makeStyles((theme) => ({
 	previewGrid:{
 		display: 'flex',
 		justifyContent:'center'
+	},
+	chips:{
+    whiteSpace:"normal"
+  },
+	chip:{
+    margin:2,
+  },
+  main: {
+    transition: theme.transitions.create(["width", "margin"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    [theme.breakpoints.down("xs")]: {
+        marginLeft: 0,
+    },
+    [theme.breakpoints.up("sm")]: {
+        marginLeft: 200,
+    },
+  },
+	formControl: {
+		width: '100%',
+		textAlign: 'center',
+		marginTop: 5
 	}
 }));
 
@@ -98,6 +139,21 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 	const [userId, setUserId] = useState('');
 	const [venues, setVenues] = useState([]);
 	const [viewMode, setViewMode] = useState(1);
+	const [phoneNumber, setPhoneNumber] = useState()
+	const theme = useTheme();
+	const [typeList, setTypeList] = useState([]);
+	const [personName, setPersonName] = useState([]);
+
+	const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+	const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
 
   useEffect(()=>{
     async function fetchUser() {
@@ -114,11 +170,48 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 				} else console.log('none');
 				if(status!==''&&open){
 					setSelectedVenue(JSON.parse(venueList)[status])
+					setPersonName(JSON.parse(venueList)[status]?.eventype?JSON.parse(venueList)[status]?.eventype.split(","):[]);
 				}
+				await API.graphql(graphqlOperation(queries.listEventTypes)).then((res)=>{
+          const typeData = res.data.listEventTypes.items;
+          let newArr = [];
+          for(let i=0; i<typeData.length; i++){
+            newArr.push({
+              id: typeData[i].id,
+              name: typeData[i].typename
+            })
+          }
+          setTypeList(newArr);
+        });
       }
     }
 		fetchUser();
   }, [open]);
+	function getStyles(name, personName, theme) {
+    return {
+      fontWeight:
+        personName.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  };
+
+	const handleChangeFavor = (event) => {
+    if(event.target.value.length>5){
+      return false;
+    }
+    setPersonName(event.target.value);
+		const newVenuedata = {
+			'address': selectedVenue.address,
+			'status': selectedVenue.status,
+			'phone':selectedVenue.phone,
+			'eventype': selectedVenue.eventype,
+			'eventype':event.target.value.toString(),
+			'detail':selectedVenue.detail,
+		};
+		console.log(newVenuedata)
+		setSelectedVenue(newVenuedata);
+  };
 
   async function handleImageChange(index, e) {
 		console.log(index)
@@ -152,6 +245,8 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 			const newVenuedata = {
 				'address': selectedVenue.address,
 				'status': selectedVenue.status,
+				'phone':selectedVenue.phone,
+				'eventype': selectedVenue.eventype,
 				'detail':newArr,
 			};
 			setSelectedVenue(newVenuedata);
@@ -188,6 +283,8 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 			const newVenuedata = {
 				'address': selectedVenue.address,
 				'status':selectedVenue.status,
+				'phone':selectedVenue.phone,
+				'eventype': selectedVenue.eventype,
 				'detail':newArr,
 			};
 			setSelectedVenue(newVenuedata);
@@ -202,8 +299,10 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 	const handleTitle = (e) => {
 		let current = selectedVenue?.detail;
 		const newVenuedata = {
-			'address': e.target.value,
+			'address': e,
 			'status': 1,
+			'phone':selectedVenue.phone,
+			'eventype': selectedVenue.eventype,
 			'detail':current?current:[],
 		};
 		////////==================================================
@@ -297,6 +396,7 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 			const data = {
         'address':'',
 				'status':1,
+				'phone':'',
         'detail': [
           {
             'media': '',
@@ -316,6 +416,8 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 			const newVenuedata = {
 				'address': selectedVenue.address,
 				'status':selectedVenue.status,
+				'phone':selectedVenue.phone,
+				'eventype': selectedVenue.eventype,
 				'detail':current,
 			};
 			setSelectedVenue(newVenuedata);
@@ -327,6 +429,8 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 		const newVenuedata = {
 			'address': selectedVenue.address,
 			'status': selectedVenue.status,
+			'phone':selectedVenue.phone,
+			'eventype': selectedVenue.eventype,
 			'detail':current,
 		};
 		setSelectedVenue(newVenuedata);
@@ -334,6 +438,22 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 	async function closeListener() {
 		setSelectedVenue([]);
 		handleClose();
+		setPhoneNumber('');
+		setPersonName([]);
+	}
+	const onPlaceChange = (value) => {
+		console.log(value);
+	}
+	
+	const onChangePhoneNumber = (event) => {
+		const newVenuedata = {
+			'address': selectedVenue.address,
+			'status': selectedVenue.status,
+			'phone':event,
+			'eventype': selectedVenue.eventype,
+			'detail':selectedVenue.detail,
+		};
+		setSelectedVenue(newVenuedata);
 	}
   return (
     <div>
@@ -371,21 +491,50 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 							</Tooltip>
 						</Grid>
 					</Grid>
-          
-          <TextField
-            variant="outlined"
-            className={classes.quizName}
-            label="Venue Address"
-            value={selectedVenue?.address}
-            id="outlined-basic"
-						autoFocus
-            onChange={(event) => {
-              handleTitle(event);
-            }}
-          />
-          <Typography color="warnred" variant="body2" className={classes[valid]}>
+					<LocationSearchInput 
+						valueAddress={selectedVenue?.address}
+						onChangeAddress={value => handleTitle(value)}
+					/>
+					<Typography color="warnred" variant="body2" className={classes[valid]}>
             * Please enter at least 3 characters
           </Typography>
+					<PhoneInput
+						placeholder="Enter phone number..."
+						value={selectedVenue?.phone}
+						autocomplete
+						onChange={(event) => { onChangePhoneNumber(event); }}
+					/>
+					
+					{/* dfadfadsfadsf -----------------------------------------------------*/}
+					<FormControl className={classes.formControl} variant="outlined" >
+						<InputLabel htmlFor="outlined-age-native-simple" id="demo-mutiple-chip-label">Selectable Event Types</InputLabel>
+						<Select
+							labelId="demo-mutiple-chip-label"
+							id="demo-mutiple-chip"
+							multiple
+							// style = {{minWidth:300, }}
+							style={{whiteSpace:"none", minWidth:220}}
+							value={personName}
+							size = {5}
+							onChange={handleChangeFavor}
+							input={<Input id="select-multiple-chip"  />}
+							renderValue={(selected) => (
+								<div className={classes.chips}>
+									{selected.map((value) => (
+										<Chip key={value}  label={value} className={classes.chip} />
+									))}
+								</div>
+							)}
+							MenuProps={MenuProps}
+						>
+							{typeList.map((list, index) => (
+								<MenuItem key={list.id} name = {list.id} value={list.name} style={getStyles(list.name, personName, theme)}>
+									{list.name}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+          
         </DialogTitle>
         <DialogContent className={classes.venueContainer}>
           <DialogContentText id="alert-dialog-description">

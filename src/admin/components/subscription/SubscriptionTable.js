@@ -151,6 +151,8 @@ function SubscriptionTable(props) {
           newVenueList.push({
             address: venue[i].address,
             detail: venue[i].detail,
+            phone:venue[i].phone,
+            eventype: venue[i].eventype,
             status: 2,
             reason:''
           })
@@ -158,6 +160,8 @@ function SubscriptionTable(props) {
           newVenueList.push({
             address: venue[i].address,
             detail: venue[i].detail,
+            phone:venue[i].phone,
+            eventype: venue[i].eventype,
             status: venue[i].status,
             reason:''
           })
@@ -200,6 +204,8 @@ function SubscriptionTable(props) {
           newVenueList.push({
             address: venue[i].address,
             detail: venue[i].detail,
+            phone:venue[i].phone,
+            eventype: venue[i].eventype,
             status: 3,
             reason: declineReason,
           })
@@ -207,6 +213,8 @@ function SubscriptionTable(props) {
           newVenueList.push({
             address: venue[i].address,
             detail: venue[i].detail,
+            phone:venue[i].phone,
+            eventype: venue[i].eventype,
             status: venue[i].status,
             reason: venue[i].reason,
           })

@@ -121,7 +121,7 @@ function BadgeAvatars(props) {
   const [open, setOpen] = useState(false)
   const [profileName, setProfileName] = useState("")
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
+  const [personName, setPersonName] = useState([]);
   const [value, setValue] = useState('')
   const options = useMemo(() => countryList().getData(), [])
   const [userEmail, setUserEmail] = useState("");

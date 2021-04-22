@@ -317,7 +317,7 @@ function Main(props) {
   ]);
 
   const selectSubscription = useCallback(() => {
-    smoothScrollTop();
+    // smoothScrollTop();
     document.title = "Photobie - Subscription";
     setSelectedTab("Subscription");
   }, [setSelectedTab]);

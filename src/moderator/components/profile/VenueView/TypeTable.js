@@ -22,8 +22,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import VenueDialog from './Dialog';
+import VenueDetail from './VenueDetail';
 import MBadge from "../../../../shared/components/MBadge";
 import ColorfulChip from "../../../../shared/components/ColorfulChip";
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -209,6 +211,8 @@ export default function EnhancedTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [venueModal, setVenueModal] = React.useState(false);
   const [status, setStatus] = React.useState(0);
+  const [detailStatus, setDetailStatus] = React.useState(0);
+  const [venueDetailModal, setVenueDetailModal] = React.useState(false);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -264,13 +268,21 @@ export default function EnhancedTable(props) {
   const handleClose = () => {
     setVenueModal(false);
   }
+  const handleDetailClose = () => {
+    setVenueDetailModal(false);
+  }
   const handleEdit = (index) =>{
     setStatus(index);
     setVenueModal(true);
   }
+  const handleOnlyView = (index) => {
+    setDetailStatus(index);
+    setVenueDetailModal(true);
+  }
   return (
     <div className={classes.root}>
       <VenueDialog open={venueModal} status={status} refreshFunc={refreshFunc} handleClose={handleClose}/>
+      <VenueDetail open={venueDetailModal} status={detailStatus} refreshFunc={refreshFunc} handleClose={handleDetailClose}/>
       <Paper className={classes.paper}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
@@ -324,7 +336,7 @@ export default function EnhancedTable(props) {
                       </TableCell>
                       <TableCell align="right">
                         <IconButton color="primary" aria-label="add to shopping cart">
-                          <EditRoundedIcon onClick={() => {handleEdit(index); }}/>
+                         {row.status*1 === 1?<EditRoundedIcon onClick={() => {handleEdit(index); }}/>:<VisibilityIcon onClick={() => {handleOnlyView(index); }}/>}
                         </IconButton>
                       </TableCell>
                     </TableRow>
