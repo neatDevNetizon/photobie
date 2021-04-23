@@ -37,6 +37,8 @@ import Carousel from "react-multi-carousel";
 import Rating from '@material-ui/lab/Rating';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import "react-multi-carousel/lib/styles.css";
+import GoogleMapReact from 'google-map-react';
+import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 
 const styles = {
   dBlock: { display: "block" },
@@ -123,6 +125,10 @@ const useStyles = makeStyles((theme) => ({
       transform: "scale(1.02)"
     },
     boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px"
+  },
+  mapStyles:{
+    width:600,
+    height: 300
   }
 }));
 
@@ -144,7 +150,10 @@ const responsive = {
     slidesToSlide: 1 // optional, default to 1.
   }
 };
-
+const mapStyles = {
+  width: '100%',
+  height: '100%',
+};
 function PostContent(props) {
   const { openAddBalanceDialog } = props;
   const [bidText, setBidText] = useState(['']);
@@ -174,11 +183,28 @@ function PostContent(props) {
   const [clientList, setClientList] = useState("");
   const [providerId, setProviderId] = useState('');
   const [eventStart, setEventStart] = useState("");
+  const [mapCenter, setMapCenter] = useState([]);
+  const [mapZoom, setMapZoom] = useState(5)
 
   useEffect(() => {
     async function fetchUser() {
+      console.log(process.env);
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
       const selEvent = eventlist.data.listEventss.items[0];
+      const encodedAddress = encodeURI(selEvent.location)
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=AIzaSyCej2vLb-XXyKoWeMzdAUynqZbq0YVmWi0`, {
+          "method": "GET"
+      })
+      .then(response => response.json())
+      .then(response => {
+        console.log(response.results[0].geometry.location.lat)
+          setMapCenter({
+          lat: response.results[0].geometry.location.lat,
+          lng: response.results[0].geometry.location.lng
+          });
+          setMapZoom(12);
+      })
+      .catch(err => console.log(err))
       await Storage.get(selEvent.image, { expires: 300 }).then(res=>{
         setImageSrc(res)
         setTitle(selEvent.title);
@@ -198,6 +224,8 @@ function PostContent(props) {
           toDates = day.getHours()+":"+day.getMinutes();
         }
         setDuration(fromDate + " ~ " + toDates);
+
+        
       })
       
     }
@@ -455,10 +483,22 @@ function PostContent(props) {
       <Paper>
         <img src = {imageSrc} style = {{width:"100%", marginTop:-50, height:400,objectFit:"cover"}}></img>
       </Paper>
+
+      {/* Map ************************************************** */}
+      <div style={{ height: 250, width: '100%', zIndex:-1}} className="MapSectionDiv">
+        <Map
+          google={props.google}
+          zoom={mapZoom}
+          style={{width: '100%', height: 250, position: 'relative'}}
+          initialCenter={{lat: 40, lng: -120}}
+          center = {mapCenter}
+          containerStyle={{position: 'initial'}}
+        >
+          <Marker position={mapCenter}/>
+        </Map>
+      </div>
+
       <Grid container spacing={3} style = {{width:"70%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
-        {/* <Grid item xs = {12} md={1}  sm = {2}>
-        <Typography>Details</Typography>
-        </Grid> */}
         <Grid item xs = {12} md={8} sm = {10}>
           <Typography>Title : {title}</Typography>
           <Typography>Location : {location}</Typography>
@@ -624,4 +664,6 @@ PostContent.propTypes = {
   pushMessageToSnackbar: PropTypes.func,
 };
 
-export default withStyles(styles)(PostContent);
+export default GoogleApiWrapper({
+  apiKey: 'AIzaSyCCynf5qQzLMr2CLR0sWWLgsq6vT8ad4M0'
+})(PostContent);
