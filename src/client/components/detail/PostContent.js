@@ -32,6 +32,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import {useHistory} from "react-router-dom";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import { CellWifi } from "@material-ui/icons";
+import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 
 const styles = {
   dBlock: { display: "block" },
@@ -90,8 +91,13 @@ function PostContent(props) {
   const [canceling, setCanceling] = useState([]);
   const [duration, setDuration] = useState('');
   const [eventStart, setEventStart] = useState(0);
+  const [mapCenter, setMapCenter] = useState([]);
+  const [mapZoom, setMapZoom] = useState(5)
+
+
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+    
   };
   const history = useHistory();
   useEffect(() => {
@@ -111,6 +117,22 @@ function PostContent(props) {
       
       const eventlist = await API.graphql(graphqlOperation(queries.listEventss, { filter: {id:{eq:props.id}}}));
       const selEvent = eventlist.data.listEventss.items[0];
+
+      const encodedAddress = encodeURI(selEvent.location)
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=AIzaSyCej2vLb-XXyKoWeMzdAUynqZbq0YVmWi0`, {
+          "method": "GET"
+      })
+      .then(response => response.json())
+      .then(response => {
+        console.log(response.results[0].geometry.location.lat)
+          setMapCenter({
+          lat: response.results[0].geometry.location.lat,
+          lng: response.results[0].geometry.location.lng
+          });
+          setMapZoom(12);
+      })
+      .catch(err => console.log(err));
+
       await Storage.get(selEvent.image, { expires: 300 }).then(res=>{
         setImageSrc(res)
         setTitle(selEvent.title);
@@ -391,6 +413,18 @@ function PostContent(props) {
       <Paper>
         <img src = {imageSrc} style = {{width:"100%", marginTop:-50, height:500,objectFit:"cover"}} alt = "Loading"></img>
       </Paper>
+      <div style={{ height: 250, width: '100%', zIndex:-1}} className="MapSectionDiv">
+        <Map
+          google={props.google}
+          zoom={mapZoom}
+          style={{width: '100%', height: 250, position: 'relative'}}
+          initialCenter={{lat: 40, lng: -120}}
+          center = {mapCenter}
+          containerStyle={{position: 'initial'}}
+        >
+          <Marker position={mapCenter}/>
+        </Map>
+      </div>
       <Grid container spacing={3} style = {{width:"80%",marginTop:30,marginRight:"auto", marginLeft:"auto"}}>
         <Grid item xs = {12} md={4} >
         <Typography>Details</Typography>
@@ -536,4 +570,6 @@ PostContent.propTypes = {
   pushMessageToSnackbar: PropTypes.func,
 };
 
-export default withStyles(styles)(PostContent);
+export default GoogleApiWrapper({
+  apiKey: 'AIzaSyCCynf5qQzLMr2CLR0sWWLgsq6vT8ad4M0'
+})(PostContent);
