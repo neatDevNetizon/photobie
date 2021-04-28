@@ -340,51 +340,54 @@ function BadgeAvatars(props) {
               <CardContent>
                 <Grid container xs = {12} style = {{justifyContent:"center", textAlign: 'center'}}>
                   <Grid item xs={12} md={12} sm = {12}>
-                    <TextField
-                      variant="outlined"
-                      margin="none"
-                      required
-                      label="Your Full Name"
-                      value={profileName}
-                      onChange={event => {
-                        setProfileName(event.target.value);
-                      }}
-                      style = {{width:"80%", maxWidth: 400}}
-                      // autoFocus
-                      autoComplete="off"
-                      type="text"
-                    />
-
-                    <FormControl className={classes.formControl} variant="outlined" >
-                      <InputLabel htmlFor="outlined-age-native-simple" id="demo-mutiple-chip-label">Favourite Event Types</InputLabel>
-                      <Select
-                        labelId="demo-mutiple-chip-label"
-                        id="demo-mutiple-chip"
-                        multiple
-                        // style = {{minWidth:300, }}
-                        style={{whiteSpace:"none", minWidth:220}}
-                        value={personName}
-                        size = {5}
-                        onChange={handleChange}
-                        input={<Input id="select-multiple-chip"  />}
-                        renderValue={(selected) => (
-                          <div className={classes.chips}>
-                            {selected.map((value) => (
-                              <Chip key={value}  label={value} className={classes.chip} />
+                    <Grid container xs = {12} style = {{textAlign:"center", marginTop:10}}>
+                      <Grid item xs = {12}>
+                        <TextField
+                          variant="outlined"
+                          margin="none"
+                          required
+                          label="Your Full Name"
+                          value={profileName}
+                          onChange={event => {
+                            setProfileName(event.target.value);
+                          }}
+                          style = {{width:"80%", maxWidth: 400}}
+                          // autoFocus
+                          autoComplete="off"
+                          type="text"
+                        />
+                      </Grid>
+                      <Grid item xs = {12}>
+                        <FormControl className={classes.formControl} variant="outlined" >
+                          <InputLabel htmlFor="outlined-age-native-simple" id="demo-mutiple-chip-label">Favourite Event Types</InputLabel>
+                          <Select
+                            labelId="demo-mutiple-chip-label"
+                            id="demo-mutiple-chip"
+                            multiple
+                            // style = {{minWidth:300, }}
+                            style={{whiteSpace:"none", minWidth:220}}
+                            value={personName}
+                            size = {5}
+                            onChange={handleChange}
+                            input={<Input id="select-multiple-chip"  />}
+                            renderValue={(selected) => (
+                              <div className={classes.chips}>
+                                {selected.map((value) => (
+                                  <Chip key={value}  label={value} className={classes.chip} />
+                                ))}
+                              </div>
+                            )}
+                            MenuProps={MenuProps}
+                          >
+                            {typeList.map((list, index) => (
+                              <MenuItem key={list.id} name = {list.id} value={list.name} style={getStyles(list.name, personName, theme)}>
+                                {list.name}
+                              </MenuItem>
                             ))}
-                          </div>
-                        )}
-                        MenuProps={MenuProps}
-                      >
-                        {typeList.map((list, index) => (
-                          <MenuItem key={list.id} name = {list.id} value={list.name} style={getStyles(list.name, personName, theme)}>
-                            {list.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    
-                    
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
                     <Grid container xs = {12} style = {{textAlign:"center", marginTop:10}}>
                       <Grid item xs = {12} sm = {6}>
                         <TextField

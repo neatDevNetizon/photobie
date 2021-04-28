@@ -502,6 +502,7 @@ const Toolbar = ({ className, open, handleClose, status,refreshFunc, ...rest }) 
 						placeholder="Enter phone number..."
 						value={selectedVenue?.phone}
 						autocomplete
+						defaultCountry="US"
 						onChange={(event) => { onChangePhoneNumber(event); }}
 					/>
 					

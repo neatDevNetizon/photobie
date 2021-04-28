@@ -198,10 +198,11 @@ function SubscriptionInfo(props) {
         const userProps = await API.graphql(graphqlOperation(queries.listUserss, {filter:{email:{eq:user.attributes.email}}}));
         const userFavorData = userProps.data.listUserss.items[0].favortype;
         const venueList = JSON.parse(userProps.data.listUserss.items[0].venues);
-
+        
         const arr1 = venueList.filter(d => d.status === 2);
         setVenues(arr1);
-        if(userFavorData)setFavorTypes(userFavorData.split(","));
+        console.log("venue", arr1);
+        // if(userFavorData)
       }
     }
     fetchData();
@@ -217,8 +218,10 @@ function SubscriptionInfo(props) {
     setTitle(e.target.value);
     console.log(moderator)
   }
-  const locationSet = (e) =>{
+  const locationSet = (e, index) =>{
     setLocation(e.target.value);
+    const userFavorData = venues[index.props.name].eventype;
+    setFavorTypes(userFavorData.split(","));
   }
   const capacitySet = (e) =>{
     setCapacity(e.target.value);
@@ -480,6 +483,25 @@ function SubscriptionInfo(props) {
           </Grid>
         </div>
         <div className={classes.txtFiled}>
+          <FormControl variant="outlined" className={classes.duration}>
+            <InputLabel id="demo-simple-select-outlined-label">Location</InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              value={location}
+              label="Location"
+              onChange={(event, value) => { locationSet(event, value); }}
+            >
+              {venues.map((item, index) => {
+                return <MenuItem value={item.address} name={index} className={classes.listItem} key={index}>{item.address}</MenuItem>
+              })}
+            </Select>
+          </FormControl>
+        </div>
+        <div className={classes[locationrequired]}>
+          * Please select address (Check your profile).
+        </div>
+        <div className={classes.txtFiled}>
         <FormControl variant="outlined" className={classes.duration}>
           <InputLabel id="demo-simple-select-outlined-label">Event Type</InputLabel>
           <Select
@@ -527,7 +549,7 @@ function SubscriptionInfo(props) {
             <CancelIcon color = "primary" className = {classes.cancelImage} onClick={cancelImageSelect}/>
           </div>
         </div>
-        <div className={classes[cart]}>
+        {/* <div className={classes[cart]}>
           <FormControl variant="outlined" className={classes.duration}>
             <InputLabel id="demo-simple-select-outlined-label">Location</InputLabel>
             <Select
@@ -545,7 +567,7 @@ function SubscriptionInfo(props) {
         </div>
         <div className={classes[locationrequired]}>
           * Please select address (Check your profile).
-        </div>
+        </div> */}
         <div style = {{display:"flex", flexDirection:"row", width:"100%"}}>
           <div className={classes[twocart]}>
             <TextField

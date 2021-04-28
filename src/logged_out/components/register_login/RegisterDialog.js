@@ -282,7 +282,6 @@ function RegisterDialog(props) {
               "Client",
               "Provider",
               "Moderator",
-              "Admin",
             ].map((element) => (
               <MenuItem value={element} key={element}>
                 {element}
