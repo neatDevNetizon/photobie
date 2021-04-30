@@ -99,40 +99,41 @@ function PastEvent(props) {
         const awardEventList = awardedEvent.data.listProviderss.items;
         for(let x=0; x<awardEventList.length; x++){
             const eventlist = await API.graphql(graphqlOperation(queries.listEventss, {filter: {id: {eq: awardEventList[x].eventid}, status: {eq: 3}}}));
-            eventArray.push(eventlist.data.listEventss.items[0])
-        }
-        
-        console.log(eventArray); 
+            const newArr = eventlist?.data?.listEventss?.items[0];
+            if(typeof newArr !== 'undefined')eventArray.push(newArr);
+        } 
         const data = eventArray.sort((a, b) => new Date(b.createdAt) > new Date(a.createdAt) ? 1: -1);
           let array = [];
-          for(let i=0; i<data.length; i++){
-            const downloadUrl = await Storage.get(data[i].image, { expires: 300 }).then(res=>{
-              const day = new Date(data[i].cdate);
-              const fromDate = day.getFullYear()+"/"+(day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
-              const date = day.getDate();
-              day.setMinutes(day.getMinutes()+data[i].duration);
-              var toDates;
-              if(date!==day.getDate()){
-                toDates = (day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
-              } else {
-                toDates = day.getHours()+":"+day.getMinutes();
-              }
-              const dateData = fromDate + " ~ " + toDates;
-              array.push({
-                id:data[i].id,
-                user:data[i].user,
-                token:data[i].token,
-                location:data[i].location,
-                title:data[i].title,
-                secure:data[i].secure,
-                capacity:data[i].capacity,
-                description:data[i].description,
-                type:data[i].type,
-                status:data[i].status,
-                image:res,
-                cDate: dateData
-              })
-            });
+          if(data[0] !=='undefined'){
+            for(let i=0; i<data.length; i++){
+              const downloadUrl = await Storage.get(data[i]?.image, { expires: 300 }).then(res=>{
+                const day = new Date(data[i]?.cdate);
+                const fromDate = day.getFullYear()+"/"+(day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+                const date = day.getDate();
+                day.setMinutes(day.getMinutes()+data[i]?.duration);
+                var toDates;
+                if(date!==day.getDate()){
+                  toDates = (day.getMonth()+1)+"/"+day.getDate()+ " "+day.getHours()+":"+day.getMinutes();
+                } else {
+                  toDates = day.getHours()+":"+day.getMinutes();
+                }
+                const dateData = fromDate + " ~ " + toDates;
+                array.push({
+                  id:data[i]?.id,
+                  user:data[i]?.user,
+                  token:data[i]?.token,
+                  location:data[i]?.location,
+                  title:data[i]?.title,
+                  secure:data[i]?.secure,
+                  capacity:data[i]?.capacity,
+                  description:data[i]?.description,
+                  type:data[i]?.type,
+                  status:data[i]?.status,
+                  image:res,
+                  cDate: dateData
+                })
+              });
+            }
           }
           setEvents(array);
           setLoadingState(true)
